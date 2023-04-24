@@ -1,0 +1,2878 @@
+
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<meta name="description" content="">
+		<meta name="author" content="">
+        <title>Portfolio Manager local</title>
+
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://checkout.stripe.com/v3/checkout/button.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+		<link href="../static/styles.css" rel="stylesheet" type="text/css"/>
+
+        <script src="http://cdn.jsdelivr.net/jstat/latest/jstat.min.js"></script>
+		<!-- JQuery links  -->
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"> </script>-->
+		<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>-->
+		<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"  rel="stylesheet" type="text/css" />
+
+		<!--script type="text/javascript" src="../static/comp.js"></script-->
+        <script type="text/javascript" src="../static/get_historic_data2.js"></script>
+        <script type="text/javascript" src="../static/parse-csv2.js"></script>
+		<script type="text/javascript" src="../static/optimize.js"></script>
+		<script type="text/javascript" src="../static/QuoteCharts.js"></script>
+		<script type="text/javascript" src="../static/sugg.js"></script>
+		<script type="text/javascript" src="../static/tables.js"></script>
+        <script type="text/javascript" src="../static/stats.js"></script>
+<!--		<script type="text/javascript" src="../static/jquery-ui.min.js"></script>-->
+        <script type="text/javascript" src="../static/moment.min.js"></script>
+		<script type="text/javascript" src="../static/math.min.js"></script>
+        <script type="text/javascript" src="../static/date.format.js"></script>
+        <script type="text/javascript" src="../static/tickers.js"></script>
+        <script type="text/javascript" src="../static/symbols3.js"></script>
+		<script type="text/javascript" src="../static/Currency.json"></script>
+		<script type="text/javascript" src="../static/bootstrap-select.js"></script>
+		<script type="text/javascript" src="../static/Common-Currency.js"></script>
+		<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<!--		<script src="https://checkout.stripe.com/checkout.js"></script>-->
+<!--		<script src="https://www.paypalobjects.com/api/checkout.js"></script>-->
+		<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+		<script src="https://code.highcharts.com/highcharts-more.js"></script>
+		<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/js/bootstrap-dialog.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css" rel="stylesheet" type="text/css"/>
+
+
+
+
+
+<!-- Latest compiled and minified JavaScript -->
+
+    </head>
+	<body data-spy="scroll" data-target=".navbar" data-offset="50">
+
+<!--<?php-->
+
+<!--// Set session variables-->
+<!--//$_SESSION["user"] = 'traubt';-->
+<!--//print_r($_SESSION);-->
+
+<!--// init stripe-->
+
+<!--//require_once('vendor\autoload.php');-->
+<!--require_once('vendor/stripe/stripe-php/init.php');-->
+
+<!--$stripe  = [-->
+<!--	'publishable' => 'pk_test_2a2xAELM6ClF3lkWXCpH2mCh',-->
+<!--	'private'	=> 'sk_test_vMa7e6IvrLlQowG1I7NL9EsO'-->
+<!--];-->
+
+<!--\Stripe\Stripe::setApiKey('sk_test_vMa7e6IvrLlQowG1I7NL9EsO');-->
+
+<!--?>-->
+
+
+		<nav class="navbar navbar-default" data-spy="affix" data-offset-top="150" >
+			  <div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+				  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+				  <a class="navbar-brand" href="../"><b>Cashizada</b><i class="fa fa-line-chart"></i></a>
+				</div>
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				  <form class="navbar-form navbar-left">
+					<div class="form-group">
+					  <input type="text" class="form-control" id="1" style="width : 280px" placeholder="Search symbols or company">
+					</div>
+					<button type="submit" id="SearchSymbol" class="btn btn-info" disabled="disabled" data-toggle="tooltip" data-placement="left" title="Enter symbol to enable search">Search</button>
+				  </form>
+				  <ul class="nav navbar-nav navbar-right">
+					<li><a href="#stockInfo">Stock Information</a></li>
+					<li><a href="#myPortfolio">My Portfolio</a></li>
+					<li><a href="#analysis">Analysis</a></li>
+					<li><a href="#suggestPortfolio">Suggest Portfolio</a></li>
+					<li class="dropdown">
+					  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<span class="glyphicon glyphicon-user" aria-hidden="true"></span><?php echo $_SESSION["user"];?><span class="caret"></span></a>
+					  <ul class="dropdown-menu">
+						<li><a href="#historicPurchase">My Purchases</a></li>
+						<li><a href="../">Sign out</a></li>
+					  </ul>
+					</li>
+				  </ul>
+				</div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
+
+		<div class="container">
+			<div class="row" style="border-top: 6px solid red">
+				<div  id="symbolPrice" class="col-sm-4" style="line-height: 0.2em ">
+					<h3 id="symbol_name" class="stock_info_txt"></h3>
+					<br><small id="exchange_info" class="stock_info_txt"></small>
+				</div>
+				<div class="col-sm-5" style="padding-top:20px">
+					<button id="add2portfolio" style="visibility: hidden " type="button" class="btn btn-primary"><i class="glyphicon glyphicon-folder-open"></i> Add to Portfolio</button>
+				</div>
+			</div>
+			<div  id="stockPrice">  <!-- stock price-->
+				<span style="font-size: 200%;" id="quote" class="stock_info_txt"></span><span  class="stock_info_txt" id="change" style="font-size: 170%;">  </span>
+			</div> <!-- End stock price -->
+			<div class="row"> <!--rest of wells-->
+				<div class="col-md-12">
+						<div class="well" id="stockInfo"> <!--Well Stock Information -->
+								<div class="row" style="margin-top : 5px"> <!-- stock indicators + stock chart-->
+							<h1>Stock Information</h1>
+									<div>
+									<button class="btn btn-info wellInfo"  type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+									  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+									</button>
+									</div>
+									<div class="collapse" id="collapseExample">
+									  <div class="well inWell">
+										This pane displays information of your searched/selected stock.<br> There are two ways to fetch stock information:<br>1. Search symbol or company from the input box in the main menu above and click on the "Search" button to view the stock details. <br>2. Click on any record in the poftfolio table in the "My Portfolios" section.<br><br>Note: any selected stock can be added ONLY to Main/Secodary portfolio. (i.e. Sample Portfolio can't be modified!)	<br><br> Please press the blue " i " icon on the top left to close this pane.
+									  </div>
+									</div>
+									<div class="col-sm-3" id="stock_stats" style="visibility:hidden" >
+								<!--Stock-quotes table list -->
+									<h3>Main Indicators</h3>
+										<table id="quote_tbl">
+											<tbody>
+											</tbody>
+										</table>
+								 <!-- End stock-quotes table list -->
+									</div> <!-- column-table -->
+									<div class="col-sm-8"> <!-- stock-chart -->
+										<h4 class="companyName" style="text-align:center"></h4>
+										<div class="input-group" id="compareDiv" style="visibility:hidden">
+										  <input type="text" class="form-control"  id="compare" placeholder="Add Comparison" aria-describedby="basic-addon2">
+										<span class="input-group-btn">
+												<button class="btn btn-default"  id="plusCmp" type="button"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+											  </span>
+										</div><br>
+										<!--<div id="chart" style="min-width: 310px; height: 350px; margin: 0 auto">-->
+										<div id="chart" >
+										</div>
+									</div>	 <!--End stock-chart -->
+								</div> <!--End stock-chart -->
+										<ul class="nav nav-tabs stockTab" style="visibility:hidden">
+										  <li role="presentation"  id="profileW" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapse">Profile</li>
+										  <li role="presentation" id="earningW" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapse">Earnings</li>
+										  <li role="presentation" id="keyStatsW" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapse">Key Stats</li>
+										  <li role="presentation" id="finDataW" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapse">Financial</li>
+										  <li role="presentation" id="priceW" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapse">Price</li>
+										  <li role="presentation" id="summaryW" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapse">Summary</li>
+										</ul>
+
+										<div class="collapse" id="collapse">
+										  <div class="well" id="stockWell"  style="background:white">
+										  </div>
+										</div>
+							</div> <!-- End Well Stock Information -->
+
+						<div class="well" id="myPortfolio"> <!-- start portfolio -->
+			<!-- MAIN PORTOFLIO SECTION -->
+			<div class="row" style="margin-top : 10px">
+			<h1>My Portfolios</h1>
+									<div>
+									<button class="btn btn-info wellInfo"  type="button" data-toggle="collapse" data-target="#collapseP" aria-expanded="false" aria-controls="collapseExample">
+									  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+									</button>
+									</div>
+									<div class="collapse" id="collapseP">
+									  <div class="well inWell">
+		Display Portfolio information.<BR> There are 3 types of Portfolios - Sample, Main and Secondary.<br>If you just registered, a Sample portfolio is displayed by default with predefine stocks. All premium features are available for Sample portfolio - free of charge.<br> Start populating Main/Secondary portfolios with your choice of stocks by examing a stock in the section above and pressing "Add To Portfolio" button.<br>You can add up to 25 stocks to your portfolio. Any selection/removal of stocks are saved to the database for future use.
+									  </div>
+									</div><br>
+				<div class="form-group">
+			 <label class="radio-inline">
+			  <input type="radio" name="inlineRadioOptions" id="RadioSample" value="3" > Sample Portfolio
+			</label>
+			 <label class="radio-inline">
+			  <input type="radio" name="inlineRadioOptions" id="RadioPrimary" value="1"> My Portfolio
+			</label>
+<!--			<label class="radio-inline">-->
+<!--			  <input type="radio" name="inlineRadioOptions" id="RadioSecondary" value="2">Secondary Portfolio-->
+<!--			</label>-->
+			<!-- show hide -->
+			<div class="row">
+					<div class="col-sm-8">
+						<div class="form-group">
+						<div class="btn-group bootstrap-select form-control">
+							<select class="selectpicker"  id="show_hide" data-width="fit" name="showHide"   multiple data-container="body" title="Hide columns:">
+								<option  value=1>Exch			</option>
+								<option  value=2>Symbol             </option>
+								<option  value=3>Name               </option>
+								<option  value=4>Quantity           </option>
+								<option  value=5>Start Date         </option>
+								<option  value=6>Start Price        </option>
+								<option  value=7>Start Settlement   </option>
+								<option  value=8>Currency           </option>
+								<option  value=9>Last Price         </option>
+								<option  value=10>Total              </option>
+								<option  value=11>Last %Change      </option>
+								<option  value=12>Today Change      </option>
+								<option  value=13>Sum %Change       </option>
+								<option  value=14>Cur change Today  </option>
+								<option  value=15>Cur Tot           </option>
+								<option  value=17>%Portfolio        </option>
+								<option  value=18>Last Trade Date   </option>
+							</select>
+						</div>
+					</div>
+				</div>
+					<div class="col-sm-4">
+						<div class="form-group base-currency">
+							<div class="btn-group bootstrap-select form-control premium">
+								<span  class="glyphicon glyphicon-shopping-cart noPortfolio" data-name="Change Base Currency" style="color:blue" ></span>
+<!--								<select class="selectpicker"  id="combobox" data-width="fit" disabled="disabled"  name="size" data-container="body" title="Change Base Currency:"></select>-->
+								<select class="selectpicker"  id="combobox" data-width="fit"  name="size" data-container="body" title="Change Base Currency:"></select>
+							</div>
+						</div>
+					</div>
+			</div>	<!--row-->
+	<table id="tblPortfolioM" class="row-border hover order-column" cellspacing="0" width="100%">
+		<thead>
+			  <tr>
+					<th>Exchange</th>
+					<th>Symbol</th>
+					<th>Name</th>
+					<th>Quantity</th>
+					<th>Start Date</th>
+					<th>Start Price</th>
+					<th>Start Settlement</th>
+					<th>Currency</th>
+					<th>Last Price</th>
+					<th>Total</th>
+					<th>Today %Change</th>
+					<th>Today Change</th>
+					<th>Sum %Change</th>
+					<th>Today Change Forex</th>
+					<th>Total Forex</th>
+					<th>%Portfolio</th>
+					<th>priceFactor</th>
+					<th>Last Trade Date</th>
+			  </tr>
+		</thead>
+
+		<script>
+
+		$.ajax({
+		  method: "get",
+		  //url: "quotes.php",
+		  datatype:'json',
+		  url: "http://127.0.0.1:5000/get_user_portfolio",
+		  data: {
+					q : "NA"
+				}
+		})
+		 .done(function(data) {
+		 	if (data.length == 1){
+		 			$( "#RadioSample" ).prop( "checked" , true).parent().css({  "font-size": "larger", "text-decoration": "underline" });
+		 			$('#tblPortfolioM').append( '<tbody>' + data[0].portfolio_data + '</tbody>' ); // sample portfolio
+		 			}
+		 	else {
+		 			$( "#RadioPrimary" ).prop( "checked" , true).parent().css({  "font-size": "larger", "text-decoration": "underline" });
+		 			$('#tblPortfolioM').append( '<tbody>' + data[0].portfolio_data + '</tbody>' ); // user main portfolio
+		 			}
+			})
+
+		</script>
+		<tfoot>
+			  <tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th>Average</th>
+					<th>NA</th>
+					<th>Average</th>
+					<th>Total</th>
+					<th>Total</th>
+					<th>Total</th>
+					<th></th>
+					<th></th>
+			  </tr>
+		</tfoot>
+	</table>
+	<br>
+</div>
+
+									<button id="calcPortfolio" type="button" class="btn btn-info" data-toggle="tooltip" style="display:none" data-placement="left" title="Change base currency">Calc Portfolio</button>
+
+									<button id="refresh_data" type="button" class="btn btn-info" >Refresh Data</button>
+	<button  id="checkButton" class="btn btn-info premium" ><span  class="glyphicon glyphicon-shopping-cart noPortfolio" data-name="Auto-Refresh Data" ></span> Auto Refresh <input type="checkbox" name="checkbox-2" id="checkbox-2"></button>
+									<button id="remove_rec" type="button" class="btn btn-danger"  style="visibility:hidden"  data-toggle="tooltip" data-placement="top" title="Click on record to remove">Remove Record</button>
+									<button id="remove_all" type="button" class="btn btn-danger"  style="visibility:hidden"  data-toggle="tooltip" data-placement="top" title="Click to clean portorflio">Remove All</button>
+
+						</div>
+						</div> <!--End  Portfolios -->
+
+						<div class="well" id="analysis"><h1>Portfolio Statistics and Analysis<button id="reload" type="button" class="btn btn-info pull-right" onclick="location.reload(true)">Refresh Data</button></h1>
+								<div>
+								<button class="btn btn-info wellInfo"  type="button" data-toggle="collapse" data-target="#collapseS" aria-expanded="false" aria-controls="collapseExample">
+								  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</button>
+								</div>
+								<div class="collapse" id="collapseS">
+								  <div class="well inWell">
+									Please press "Analyse Portfolio" button before selecting any feature. If payment process successfully, a "check" icon will replace the "cart" icon, indicates feature is available.<br><br> Note: Please make sure prices of all stocks in portfolio are stable for last one year, before buying any feature. Stable price can be determine by checking stock chart in the "Stock Information" section above. Please make sure prices are bigger than zero and no spike of prices.
+								  </div>
+								</div>
+								<form class="form-inline">
+								  <div class="form-group">
+									<h5>from:</h5>
+									<label class="sr-only" for="from_date">From Date</label>
+									<input type="date" class="form-control" disabled id="from_date" min="2019-02-02">
+								  </div>
+								  <div class="form-group">
+									<h5>To:</h5>
+									<label class="sr-only" for="to_date">To Date</label>
+									<input type="date" class="form-control" disabled id="to_date" max="2023-02-16"  >
+								  </div>
+								  <div class="form-group">
+									<h5>.</h5>
+										<button type="button" id="buildPortfolio" data-loading-text="Loading..."  class="btn btn-primary" disabled="disabled"  data-toggle="tooltip" data-placement="left" title="Click to build Portfolio" ><i class="fa fa-refresh fa-spin"></i>
+											Loading Data...
+										</button>
+										</div>
+								<!--<div id="paypal-button" class="pull-right" style="visibility: hidden "></div>-->
+								</form>
+
+						<p>*System calculates statistics based on a period of 1 year. </p>
+
+
+							<div role="tabpanel" id="statsTabs">
+							  <ul class="nav nav-tabs" role="tablist">
+								<!-- <li role="presentation" class="active"><a href data-target="#history" aria-controls="history" role="tab" data-toggle="tab">History</a></li> -->
+									<li class="dropdown">
+										<a class="dropdown-toggle premium" data-toggle="dropdown" href="#"><span  class="glyphicon glyphicon-shopping-cart" data-max_tickers=0 data-name="Analyse Portfolio" ></span> Analyse Portfolio<b class="caret"></b></a>
+										<ul class="dropdown-menu">
+											<li><a href id="perf"  data-target="#performance" aria-controls="portfolio return" role="tab" data-toggle="tab">Portfolio Performance</a></li>
+											<li><a href data-target="#prediction" aria-controls="prediction" role="tab" data-toggle="tab">Prediction</a></li>
+											<li><a href data-target="#SellPredict" aria-controls="Sell Simulator" role="tab" data-toggle="tab">Backdated Prediction</a></li>
+										</ul>
+									</li>
+									<li role="presentation"><a href class="premium" id="wgt" data-target="#weights" aria-controls="weights" role="tab" data-toggle="tab"><span  class="glyphicon glyphicon-shopping-cart" data-name="Optimize Portfolio" data-max_tickers=0></span> Optimize Portfolio</a></li>
+
+									<li role="presentation"><a href id="cor" class="premium" data-target="#correlation" aria-controls="correlation" role="tab" data-toggle="tab"><span  class="glyphicon glyphicon-shopping-cart"  data-max_tickers=0 data-name="Stocks Correlation" ></span> Stocks Correlations</a></li>
+
+									<li role="presentation"><a href id="mntCarlo" class="premium"  data-target="#montecarlo" aria-controls="montecarlo" role="tab" data-toggle="tab"><span  class="glyphicon glyphicon-shopping-cart" data-max_tickers=0 data-name="When to Sell" ></span> When to Sell?</a></li>
+
+									<li role="presentation"><a href data-target="#indicators" class="premium" id="ind" aria-controls="indicators" role="tab" data-toggle="tab"><span  class="glyphicon glyphicon-shopping-cart"  data-max_tickers=0 data-name="Compare Indicators" id="corShop"></span> Compare Indicators</a></li>
+
+									<li role="presentation"><a href id="trk" class="premium" data-target="#dailyTracking" aria-controls="dailyTracking" role="tab" data-toggle="tab"><span  class="glyphicon glyphicon-shopping-cart" data-max_tickers=0 data-name="Daily Tracking" id="corShopi"></span> Daily Tracking</a></li>
+
+
+									<li class="dropdown active">
+										<a class="dropdown-toggle premium" data-toggle="dropdown" href="#" ><span  class="glyphicon glyphicon-shopping-cart" data-max_tickers=0 data-name="History Data" ></span> History<b class="caret"></b></a>
+										<ul class="dropdown-menu">
+											<li><a href id="day" data-target="#daily" aria-controls="daily" role="tab" data-toggle="tab">Daily Prices</a></li>
+											<li><a href id="mon" data-target="#monthly" aria-controls="monthly" role="tab" data-toggle="tab">Monthly Prices</a></li>
+										</ul>
+									</li>
+									<!--<li role="presentation"><a href id="ret" data-target="#returns" aria-controls="returns" role="tab" data-toggle="tab">Returns</a></li>-->
+									<li class="dropdown">
+										<a class="dropdown-toggle premium"  data-toggle="dropdown" href="#"><span  class="glyphicon glyphicon-shopping-cart" data-max_tickers=0 data-name="Returns Data" ></span> Returns<b class="caret"></b></a>
+										<ul class="dropdown-menu">
+											<li><a href id= "ret_d" data-target="#returnsD" aria-controls="daily return" role="tab" data-toggle="tab">Daily Returns</a></li>
+											<li><a href id="ret" data-target="#returns" aria-controls="monthly return" role="tab" data-toggle="tab">Monthly Returns</a></li>
+										</ul>
+									</li>
+
+									<li role="presentation"><a href id="cov" class="premium" data-target="#covariance" aria-controls="covariance" role="tab" data-toggle="tab"><span  class="glyphicon glyphicon-shopping-cart" data-max_tickers=0 data-name="Stock Covariance" ></span> Stocks Covariance</a></li>
+
+
+									<li role="presentation">
+										<a href id="rx" class="premium" data-target="#rateEx" aria-controls="rateExchange" role="tab" data-toggle="tab">
+											<span  class="glyphicon glyphicon-shopping-cart glyphicon-ok" data-name="Rate Exchange Data" ></span> Rate Exchange
+										</a>
+									</li>
+							  </ul>
+							  <div class="tab-content">
+								<div role="tabpanel" class="tab-pane" id="daily"><div id="dailyTB" >
+								</div></div>
+								<div role="tabpanel" class="tab-pane" id="monthly"><div id="monthlyTB" ></div></div>
+								<div role="tabpanel" class="tab-pane" id="returnsD"><div id="daily_returnTB" ></div></div>
+								<div role="tabpanel" class="tab-pane" id="returns"><div id="returnTB" ></div></div>
+								<div role="tabpanel" class="tab-pane" id="indicators" ><br>
+									<div class="row">
+										<select class="selectpicker col-xs-11" name="indicators" multiple data-container="body" title="Select indicators">
+											  <option selected>Name</option>
+											  <optgroup label="System Calculated Indicators">
+												  <option>Monthly growth</option>
+												  <option>Risk</option>
+												  <option>Eficiency</option>
+												  <option>Yearly growth over risk</option>
+											  </optgroup>
+											  <optgroup label="Main Indicators">
+												  <option>Change in Percent</option>
+												  <option>50d Average</option>
+												  <option>200d Average</option>
+												  <option>Volume</option>
+												  <option>Revenue</option>
+												  <option>Gross Profit</option>
+												  <option>Earning</option>
+												  <option>52 Week Change</option>
+												  <option>Book Value</option>
+												  <option>Quartely Growth</option>
+												  <option>Beta</option>
+												  <option>EPS (TTM)</option>
+												  <option>P/E Ratio (TTM)</option>
+												  <option>Net Income</option>
+												  <option>Current Ratio</option>
+												  <option>EBITDA</option>
+												  <option>Total Revenue</option>
+												  <option>Market Capital</option>
+												  <option>1y Target est</option>
+											  </optgroup>
+										</select>
+										<button id="dispIndicator" type="button" class="btn btn-info col-xs-1" >Display</button>
+										<div id="indicatorsTB"></div>
+									</div>
+								</div>
+								<div role="tabpanel" class="tab-pane" id="weights" >
+				<div>
+				<button class="btn btn-info wellInfo"  type="button" data-toggle="collapse" data-target="#collw" aria-expanded="false" aria-controls="collapseExample">
+				  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+				</button>
+				</div>
+				<div class="collapse" id="collw">
+				  <div class="well inWell">
+							Optimization is define as how to allocate the money between the different stocks in order to improve portfolio return.
+									<BR>The system uses statistical algorithm ("Markowitz") to suggest an optimized distribution.
+									A definition of a better distribution/optimization means, better return on the same/lower level of risk.
+									<br>Note that system might not find feasible optimization range. (usually when number of stocks in portfolio is low)
+				  </div>
+				</div>
+										<div class="row">
+											<div class="col-md-4">
+												<div id="weightsTB">
+												</div>
+											</div>
+											<div class="col-md-8">
+												<div id="pie1">
+												</div>
+												<div id="pie2" style="display:none">
+												</div>
+												<div id="pie3">
+												</div>
+											</div>
+										</div>
+								</div>
+								<div role="tabpanel" class="tab-pane" id="dailyTracking" >
+									<div class="row" style="margin-top : 3px">
+										<div class="col-md-6">
+											<div id="trackTB">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div id="trackChart">
+											</div>
+										</div>
+									</div>
+								</div>
+								<div role="tabpanel" class="tab-pane" id="correlation" >
+				<div>
+				<button class="btn btn-info wellInfo"  type="button" data-toggle="collapse" data-target="#collr" aria-expanded="false" aria-controls="collapseExample">
+				  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+				</button>
+				</div>
+				<div class="collapse" id="collr">
+				  <div class="well inWell">
+							Correlation is a statistical term for measuring the association between two items. The measurement ranges between -1 and 1.<br>
+-1 : Absolute opposite association.<br>
+0 : No association at all between the items.<br>
+1 : Absolute association.<br>
+For example, the price correlation between a given stock and itself, is 1. <br>
+								You want to diversify your portfolio by having close to zero correlations between the stocks.<br>
+								Color code:<br>
+								blank: No Correlation.<br>Green: Low Correlation.<br>Yellow: Medium Correlation.<br>Orange: Strong Correlation.<br>Red: Very strong Correlation.<br>Avoid "Very Strong Correlation" if possible.
+								<br>By clicking on the cells with colour, the system will display performance comparison of the pair stocks, which will help you to take action.
+
+				  </div>
+				</div>
+										<div id="correlationTB">
+										</div>
+								</div>
+								<div role="tabpanel" class="tab-pane" id="covariance">
+								<div>
+								<button class="btn btn-info wellInfo"  type="button" data-toggle="collapse" data-target="#collapseh" aria-expanded="false" aria-controls="collapseExample">
+								  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</button>
+								</div>
+								<div class="collapse" id="collapseh">
+								  <div class="well inWell">
+									covariance explenation
+								  </div>
+								</div>
+
+								<div id="covarianceTB" ></div></div>
+								<div role="tabpanel" class="tab-pane" id="montecarlo" >
+			<div>
+			<button class="btn btn-info wellInfo"  type="button" data-toggle="collapse" data-target="#collapsem" aria-expanded="false" aria-controls="collapseExample">
+			  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+			</button>
+			</div>
+			<div class="collapse" id="collapsem">
+			  <div class="well inWell">
+				This tab uses a statistical algorithm ("Brownian Motion") which calculates if a stock under-performs recently.<br>
+				There are two parameters which the user needs to set ("tolerance"):<br>
+				Backdated -  how many days in the past you wish the system to run simulation.<br>
+				Standard Deviation - What is the level of accuracy of each calculated price.<br>
+				Please note, Standard Deviation DOES NOT predict accuracy of the overall results. For example, 100% accuracy means, a calculated price would be in the range of 0 and 1,000,000. But this obviously would be meaningless.<br>
+				The system defaults to "medium tolerance" - 5 days backdated and Standard Deviation 1. <br> We would recommend to leave Standard Deviation on level 1.
+			  </div>
+			</div>
+											<input id="ex6" type="text" data-slider-min="1" data-slider-max="30" data-slider-step="1" data-slider-value="5"/>
+											<span id="ex6CurrentSliderValLabel">Backdated: <span id="ex6SliderVal">5<span> days</span></span></span>
+											<br>
+											<input id="ex7" type="text" data-slider-min="0.5" data-slider-max="1.5" data-slider-step="0.1" data-slider-value="1"/>
+											<span id="ex7CurrentSliderValLabel">Standard Deviation: <span id="ex7SliderVal">1  ( accuracy: 68.27% ) </span></span>
+											<br>
+
+											<button id="monteBTN"  type="button" class="btn btn-primary">Run Simulation</button>
+											<div id="monteTB"></div>
+								</div>
+<!-------------------------------------    Analysis Tab ------------------------------------------------------->
+								<div role="tabpanel" class="tab-pane" id="performance" >
+			<div>
+			<button class="btn btn-info wellInfo"  type="button" data-toggle="collapse" data-target="#collapsepi" aria-expanded="false" aria-controls="collapseExample">
+			  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+			</button>
+			</div>
+			<div class="collapse" id="collapsepi">
+			  <div class="well inWell">
+				Here you can visualize the performanc of your portfolio as well as any stock in your portfolio.<br>
+				We define performance by measuring three parameters:<br>
+				Return/Growth: the average gain/loss in percentage over a month.<br>
+				Risk: Standard Deviation. How erratic the stocks behaves. <br>
+				Efficiency: the ratio between return and risk taking into consideration risk-free rate asset. ("Sharpe Ratio")
+			  </div>
+			</div>
+									<div>
+											<select id="perf_select" class="selectpicker" name="sort"  data-container="body" title="Sort by:">
+												<option value="growth">Sort by Growth</option>
+												<option value="risk">Sort by Risk</option>
+												<option value="eff">Sort by Efficiency</option>
+											</select>
+
+									</div><br><div id="performance1"></div>
+								</div>
+								<div role="tabpanel" class="tab-pane" id="prediction" >
+
+													<div class="tab-pane" id="prd">
+														<input id="ex8" type="text" data-slider-min="5" data-slider-max="60" data-slider-step="1" data-slider-value="30"/>
+														<span id="ex8CurrentSliderValLabel">Prediction Range: <span id="ex8SliderVal">30<span> days</span></span></span>
+														<br>
+														<input id="ex9" type="text" data-slider-min="0.5" data-slider-max="1.5" data-slider-step="0.1" data-slider-value="1"/>
+														<span id="ex9CurrentSliderValLabel">Standard Deviation: <span id="ex9SliderVal">1  ( accuracy: 68.27% ) </span></span>
+														<br>
+															<input id="ex13" type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="5"/>
+															<span id="ex13CurrentSliderValLabel">No. of Simulations: <span id="ex13SliderVal">5</span></span><br>
+															<select class="selectpicker" id="stockSelect1" name="stockExch"  data-container="body" title="Select Stock">
+															</select>
+														<button id="predictBTN"  type="button" class="btn btn-primary">Run Prediction</button>
+													</div>
+
+											<div class="row">
+												<div class="col-md-7">
+														<div id="predictChart"></div>
+												</div> <!--col-md-7-->
+												<div class="col-md-5" id="monte_prd_table">
+												</div>
+											</div>			<!-- div row -->
+								</div>		<!-- div prediction -->
+								<div role="tabpanel" class="tab-pane" id="SellPredict" >
+
+										<div  class="tab-pane" id="sim">
+											<input id="ex10" type="text" data-slider-min="1" data-slider-max="30" data-slider-step="1" data-slider-value="5"/>
+											<span id="ex10CurrentSliderValLabel">Back Dated: <span id="ex10SliderVal">5<span> days</span></span></span>
+											<br>
+											<input id="ex11" type="text" data-slider-min="0.5" data-slider-max="1.5" data-slider-step="0.1" data-slider-value="1"/>
+											<span id="ex11CurrentSliderValLabel">Standard Deviation: <span id="ex11SliderVal">1  ( accuracy: 68.27% ) </span></span>
+											<br>
+											<input id="ex12" type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="5"/>
+											<span id="ex12CurrentSliderValLabel">No. of Simulations: <span id="ex12SliderVal">5</span></span><br>
+											<select class="selectpicker" id="stockSelect2" name="stockExch"  data-container="body" title="Select Stock">
+											</select>
+											<button id="sellpredictBTN"  type="button" class="btn btn-primary">Run Simulator</button><br>
+										</div>
+										<div class="row">
+												<div class="col-md-7">
+													<div id="MonteChart">
+													</div>
+												</div> <!--col-md-7-->
+												<div class="col-md-5" id="monte_sim_table">
+												</div>
+										</div>
+								</div>	<!-- end sell prediction -->
+
+<!--------------------------------------------------------------------------------------------------------------->
+
+								<div role="tabpanel" class="tab-pane" id="rateEx" > <!--  Rate Exchnage  --------------------------->
+								<p class="bg-info">This tab provides information of rate exchange.<br>Select pair of currencies and the system will provide current rate exchange and history infomration
+								which you can download.</p>
+									<form class="form-inline">
+									  <div class="form-group">
+										<input type="number" class="form-control" id="Amount"  placeholder="Enter Amount: 1">
+									  </div>
+									  <div class="form-group">
+											<div class="input-group">
+													<div class="input-group-addon" id="f_sym">$</div>
+													<select class="selectpicker currency"  id="f_cur"   data-container="body" title="From Currency:"  >
+													</select>
+											</div>
+									  </div>
+									  <div class="form-group">
+											<button id="swap_cur" ><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+											<div class="input-group">
+													<div class="input-group-addon" id="t_sym">$</div>
+													<select class="selectpicker currency"  id="t_cur"   data-container="body" title="To Currency:"  >
+													</select>
+											</div>
+									  </div>
+									</form>
+									<div class="rxCls" id="rxDiv" style="height: 150px;width: 500px;border: 0.5px solid blue;background: white;margin: auto;text-align: center;margin-top: 20px; visibility:hidden;">
+									</div>
+									<div class="row">
+										<div class="col-md-5">
+											<div id="rxTB">
+											</div>
+										</div>
+										<div class="col-md-7">
+											<div id="rxChart" style="padding-top: 29px;">
+											</div>
+										</div>
+									</div>
+								</div>	<!-- End Rate Exchnage  --------------------------->
+							  </div>
+							</div>
+						</div>	<!-- Portfolio Stats -->
+			</div>
+			</div>
+		</div> <!-- containder-->
+
+<!--</div>	&lt;!&ndash;   Moving close div container &ndash;&gt;-->
+
+<!--					        <div class="well" id="suggestPortfolio">-->
+<!--							<h1>Suggest Portfolio</h1>-->
+<!--									<div>-->
+<!--									<button class="btn btn-info wellInfo"  type="button" data-toggle="collapse" data-target="#collapseS2" aria-expanded="false" aria-controls="collapseExample">-->
+<!--									  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>-->
+<!--									</button>-->
+<!--									</div>-->
+<!--									<div class="collapse" id="collapseS2">-->
+<!--									  <div class="well inWell" >-->
+<!--In this section the system will  recommend 10 stocks from selected market.<br> Except of "Sample Portfolio", all suggested market portfolios are premium.<br> Please note that during "Beta Version", only sample portfolio is enabled. All other markets are disabled.-->
+<!--									  </div>-->
+<!--									</div><br>-->
+<!--										<div>-->
+<!--											<select class="selectpicker" id="market_select" name="stockExch"  data-container="body" title="Select Stock Exchange" >-->
+<!--												<option data-subtext="Cashizada Sample Portfolio" class="SAMPLE glyphicon glyphicon-ok"	value="SAMPLE" selected >Sample Portfolio</option>-->
+<!--												<option data-subtext="London Stock Exchange" class="FTSE"  value="FTSE"   >United Kingdom (FTSE)</option>-->
+<!--												<option data-subtext="NASDAQ Stock Market (NASDAQ)" class="NASDAQ" value="NASDAQ"  >United States (NASDAQ)</option>-->
+<!--												&lt;!&ndash;option data-subtext="New York Stock Exchange (NYSE)" class="NYSE"  value="NYSE"  >United States (NYSE)</option&ndash;&gt;-->
+<!--												<option data-subtext="Deutch Borse Frankfurt Stock Exchange" class="FRA"  value="FRA" >Germany (FRA)</option>-->
+<!--												<option data-subtext="NYSE Euronext Paris" class="EPA"  value="EPA" >France(EPA)</option>-->
+<!--												<option data-subtext="TLV Stock Exchange(TLV)" class="TLV"value="TLV" >Israel(TLV)</option>-->
+<!--											</select>-->
+
+<!--										</div><BR><BR>-->
+<!--										<div id = "suggest_table">-->
+<!--										</div>-->
+
+<!--									<form class="form-inline" style="display:none" >-->
+<!--									  <div class="form-group">-->
+<!--										<label class="sr-only" for="from_date">From Date</label>-->
+<!--										<input type="date" class="form-control" id="from_date2"  min="<?php echo date('Y-m-d', strtotime(' - 3 year')); ?>"-->
+<!--										 value="<?php echo date('Y-m-d', strtotime(' - 1 year')); ?>">-->
+<!--									  </div>-->
+
+<!--									  <div class="form-group">-->
+<!--										<label class="sr-only" for="to_date">To Date</label>-->
+<!--										<input type="date" class="form-control" id="to_date2" max="<?php print(date("Y-m-d")); ?>" value="<?php print(date("Y-m-d")); ?>">-->
+<!--									  </div>-->
+<!--									</form><br>-->
+
+<!--								&lt;!&ndash;button id="market"  type="button" class="btn btn-primary">Suggest Stocks</button> &ndash;&gt;-->
+
+<!--								<button type="button" id="market" data-loading-text="Please Wait..."  class="btn btn-primary"  data-toggle="tooltip" data-placement="top" title="Search 10 top stocks"  >Suggest Portfolio-->
+<!--								</button>-->
+<!--							</div>	&lt;!&ndash; Recommended Portfolios &ndash;&gt;-->
+
+<!--					        <div class="well" id="historicPurchase">-->
+<!--							<h1>My Purchases</h1>-->
+<!--								<table id="purchase_historyTb" class="display" width="100%"></table>-->
+<!--							</div>	&lt;!&ndash; Historic Purchase &ndash;&gt;-->
+
+<!--				</div> &lt;!&ndash; End class="col-md-12"> &ndash;&gt;-->
+<!--			</div> &lt;!&ndash; row &ndash;&gt;-->
+<!--		</div> &lt;!&ndash; container &ndash;&gt;-->
+
+<!--&lt;!&ndash; stripe payment &ndash;&gt;-->
+<!--<form id="myForm" action="premium_charge.php" method="POST">-->
+<!--    <input type="hidden" id="formAmount" name="amount"></input>-->
+<!--	<input type="hidden" id="ftrUserSelection" name="features"></input>-->
+<!--	<input type="hidden" id="portfolioInd" name="portfolioInd"></input>-->
+<!--	<input type="hidden" id="countTickers" name="countTickers"></input>-->
+<!--	<input type="hidden" id="tickerList" name="tickerList"></input>-->
+<!--    <input type="hidden" id="stripeToken" name="stripeToken"></input>-->
+<!--    <input type="hidden" id="stripeEmail" name="stripeEmail"></input>-->
+<!--	<input type="hidden" id="description" name="description"></input>-->
+<!--	<input type="hidden" id="paypalObj" name="paypalObj"></input>-->
+<!--</form>-->
+
+<!----------------------    M O D A L      S E C T I O N           ---->
+
+<!-- <div class="container">-->
+<!--  &lt;!&ndash; Trigger the modal with a button &ndash;&gt;-->
+<!--  <button type="button" class="btn btn-default btn-lg" id="purchaseItemsBtn" style="visibility:hidden">Buy Features  </button>-->
+
+<!--  &lt;!&ndash; Modal &ndash;&gt;-->
+<!--  <div class="modal fade" id="myModal" role="dialog">-->
+<!--    <div class="modal-dialog">-->
+
+<!--      &lt;!&ndash; Modal content&ndash;&gt;-->
+<!--      <div class="modal-content">-->
+<!--        <div class="modal-header" style="padding:35px 50px;">-->
+<!--          <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+<!--          <h4><span class="glyphicon glyphicon-shopping-cart"></span> Portfolio Features</h4>-->
+<!--        </div>-->
+<!--		<div class="modal-body">-->
+<!--		</div>-->
+<!--        <div class="modal-footer">-->
+<!--			<form id="paymentForm" method="post" action="/redirect-to-paypal">-->
+<!--					<button type="button" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>-->
+<!--						<button id="paypal-button" data-dismiss="modal"></button>-->
+<!--						&lt;!&ndash;<button type="button" id="payment" class="btn btn-success btn-default pull-right" data-dismiss="modal">Pay with card</button>&ndash;&gt;-->
+<!--						<button id="payment" class="stripe-button-el">-->
+<!--							<span style="display: block; min-height: 30px;" data-toggle="tooltip" data-placement="top" title="Using Stripe payment gatway">Pay with Card</span>-->
+<!--						</button>-->
+
+<!--			</form>-->
+<!--<div id="beta" style="text-align: left;">-->
+<!--<h4>Beta-Version:</h4>-->
+<!--<h5>All features are free of charge while Beta-Version.<br>Please use your own PayPal account or test credit card number:4242 4242 4242 4242</h5>-->
+<!--<h5><b>Please read and understand our Term Of Use before using any of the features</h5>-->
+<!--</div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--    </div>-->
+<!--  </div> &lt;!&ndash; my modal &ndash;&gt;-->
+<!--</div>-->
+<!----------------------  END   M O D A L      S E C T I O N           ---->
+<!--test area---------->
+<!--<div class="modali">&lt;!&ndash; Place at bottom of page &ndash;&gt;</div>-->
+
+<!-- end of test area ---------------->
+
+<!-- <div class="test" id="phpvar"><?php echo $_SESSION["portfolio_type"]-->
+<!-- ?></div>-->
+
+		<script>
+			var ticker_arr = []; // contain list of tickers selected by the user
+			var slice_ticker_arr = []; // contains subset of history quote with the relevant ticker
+			var ticker_list_arr = []; // contain list of tickers which contains actual quotes.
+			var ticker_months_arr = []; // holds calendar months array
+			var suggest_ticker = [];
+			var stock_list;
+			var tickers_history_quotes = {}; // object holds history quotues
+			var date_range_arr = [];
+			var input_history_quote = {};
+			var consolidate_history_quote_arr = []; //array contains all tickers history quotes
+			var search_from_date;
+			var csv_arr		= [] ;  // parses request data
+			var ticker_quote = {} ;  // ticker object contains symbol, history data, csv arr
+			var json_quotes =[]
+			var monthly_quotes = [] ;  // array of ticker quotes
+			var portfolio = {} ;
+			var portfolio_m	= {} ;  // object contains all quotes
+			var portfolio_history = {}; // object contains history (copy of portfolio for benchmark)
+			var two_dim_arr 	= [];
+			var covariance_arr = [];
+			var begin, end;
+			var optim_obj 	= {};
+			var weight_option = 0;
+			var growth_readings = 0;
+			var weight_arr = [];
+			var base_currency ;
+			var temp_currency = "";
+			var exchange_rate = {}; // holds all exchange rate exist in portfolio in respect to the base currency
+			var quote = {}; // holds rate exchange history
+			var monte_carlo_obj = {};
+			var monte_carlo_sim ; // week simulation
+			var current_quotes_obj = {};
+			var current_quote;
+			var parsed_value; // translation of indicators value
+			//var ind_arr = ["Symbol", "Name","ChangeinPercent","YearLow","YearHigh","PERatio", "MarketCapitalization", "EBITDA", "DaysRange", "Change","FiftydayMovingAverage","PercentChangeFromYearLow","ChangeFromYearHigh","EarningsShare","Volume","TwoHundreddayMovingAverage","BookValue"];
+			var indicator_arr = [];
+			var portfolio_indicator = []; //holds portfolio indicator
+			//["Symbol", "Name","ChangeinPercent","s_ratio","growth_mean", "MarketCapitalization", "Sell_At", "DaysRange", "Change","FiftydayMovingAverage","PercentChangeFromYearLow"];
+			var p_indicator_arr = ["StockExchange","Symbol","Name","Holdings","Start_Date","Start_Price","Start_Settlement","Currency","Price", "Total","Last_Change","Change_Since_Inception","Total_Base_Currency","Pctg_Portfolio"];
+			//var p_indicator_arr = ["StockExchange","Symbol","Name","Holdings","Start_Date","Start_Price","Start_Settlement"];
+			var d_indicator_arr = ["london","ibm","ibm.ltd","567","2017-03-03","867","Start_Settlement"];
+			var s_r_arr = []; // sharp ration array used to select tickers for simulation
+			var data = []; // holds array for html disply
+			var main_portfolio, sec_portfolio = {}; // main and secondary portfolio
+			var tb, tb1, tb_ret,tb_Dret, tb_cov, tb_cor, tb_day, tb_mon, tb_ind, tb_wgt, tb_mcarlo, tb_trk, tb_rx; //datatable instance
+			var chart_arr = []; // data for chart
+			var single_quote = {}; // holds single quote object
+			var company_name, asset_type, exchange  ;
+			var settled_date, settled_amt, settled_holding; // holds the symbol settled values entered via add2portfolio modal
+			var search_month;
+			var DT_portfolio; // dataTable portfolio
+			var tbRows; // holds number of records in main portfolio
+			var selected_symbol;
+			var wp_user;
+			var interval = null; // interval for autorefresh
+			var promised = {}; // objecs holds of ajax historic data
+			var promised_m = {}; // object holds monthly ajax historic data
+			var promised_s = {};
+			var portfolio_suggest = {};
+			var portfolio_main = {};
+			var json_promised = [];
+			var json_m_promised = [];
+			var quotes_data_arr = [] ; // hold a jason which check if all full/monthly data received
+			var quotes_data_obj = {}; // symbol object check if data exist for monthly and full
+			var combine_price = []; // holds combined prices of portfolio.info daily prices
+			var combine_return = []; // holds combine returns based on combine prices
+			var latest_quotes = {};
+			var portfolio_ready = false;
+			var slider_d, slider_s, slider_p1, slider_p2, slider_m1, slider_m2, slider_m3;
+			var monte_carlo_arr = [];
+			var std_dev = 1;
+			var p_type = "main";
+			var p_semaphor = 0; // use or portfolio once
+			var daily_track = []; // holds daily pricing track for one year
+			var curr_arr = []; // hold unique currency from tb1
+			var currency_history_obj = {};
+			var containerGrowth ="div";
+			var containerRisk = "div" ;
+			var containerEfficiency = "div";
+			var chartGrowth,chartRisk, chartEfficiency;
+			var sql_operation;
+			var single_currency = true; // check if portfolio has single currency then no need to get exchange rates
+			var historical_data = true; // check if webservice can return history data
+			var chart_symbols = []; // holds all the symbol for chart
+			var seriesOptions = []; // use for compare assets charts
+			var seriesCounter = 0; //charts
+			var monte_sim_arr = []; //  holds the monte carlo simulation stats
+			var prediction_sim_arr = []; // holds prediction information
+			var sim_counter = 0; // holds simulation counter
+			var  max_monte, min_monte;
+			var single_quote_r = {}; // replace single quote
+			var single_quote_rx = {}; // rate exchange
+			var c_arr = []; // saved tb1 columns selection
+			var current_rx_quote = {};
+			var c_today = 0; // holds the number of stocks trade today
+			var stripe_amount = 0;
+			var stripe_description;
+			var features_user_selection = "[]"; // holds json array of user selection for payment
+			var purchase=[]; // holds the user purchased feature
+			var purchase_market = [];
+			var global; // general global var
+			var message_h, message_b;
+			var test = true;
+
+
+
+
+// charts initialization
+
+	var gaugeOptions = {
+
+    chart: {
+        type: 'solidgauge'
+    },
+
+    title: null,
+
+    pane: {
+        center: ['50%', '85%'],
+        size: '140%',
+        startAngle: -90,
+        endAngle: 90,
+        background: {
+            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+            innerRadius: '60%',
+            outerRadius: '100%',
+            shape: 'arc'
+        }
+    },
+
+    tooltip: {
+        enabled: false
+    },
+
+    // the value axis
+    yAxis: {
+        stops: [
+            [0.1, '#DF5353'], // red
+            [0.5, '#DDDF0D'], // yellow
+            [0.9, '#55BF3B'] // green  '#55BF3B'
+        ],
+        lineWidth: 0,
+        minorTickInterval: null,
+        tickAmount: 2,
+        title: {
+            y: -70
+        },
+        labels: {
+            y: 16
+        }
+    },
+
+    plotOptions: {
+        solidgauge: {
+            dataLabels: {
+                y: 5,
+                borderWidth: 0,
+                useHTML: true
+            }
+        }
+    }
+};
+
+	var riskOptions = {// different than gauge option in the directioin of risk : log good high bad => color are inverted.
+
+    chart: {
+        type: 'solidgauge'
+    },
+
+    title: null,
+
+    pane: {
+        center: ['50%', '85%'],
+        size: '140%',
+        startAngle: -90,
+        endAngle: 90,
+        background: {
+            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+            innerRadius: '60%',
+            outerRadius: '100%',
+            shape: 'arc'
+        }
+    },
+
+    tooltip: {
+        enabled: false
+    },
+
+    // the value axis
+    yAxis: {
+        stops: [
+            [0.1, '#55BF3B'], // green
+            [0.5, '#DDDF0D'], // yellow
+            [0.9, '#DF5353'] // red  '#55BF3B'
+        ],
+        lineWidth: 0,
+        minorTickInterval: null,
+        tickAmount: 2,
+        title: {
+            y: -70
+        },
+        labels: {
+            y: 16
+        }
+    },
+
+    plotOptions: {
+        solidgauge: {
+            dataLabels: {
+                y: 5,
+                borderWidth: 0,
+                useHTML: true
+            }
+        }
+    }
+};
+
+//  payment body div
+
+<!--var $ftr_options = $('<table id="priceTB" style="border-color: blue; margin-left: auto; margin-right: auto;" border="1px">\-->
+<!--			<thead>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;">\-->
+<!--				<h3><strong>Select</strong></h3>\-->
+<!--				</td>\-->
+<!--				<td style="text-align: center;">\-->
+<!--				<h3><strong>Feature</strong></h3>\-->
+<!--				<td style="text-align: center;">\-->
+<!--				<h3><strong>Price</strong></h3>\-->
+<!--				</td>\-->
+<!--				<td style="text-align: center;">\-->
+<!--				<h3><strong>Total</strong></h3>\-->
+<!--				</td>\-->
+<!--			</tr>\-->
+<!--			</thead>\-->
+<!--			<tbody>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="OC" data-name="Change Base Currency" type="checkbox" value="5" /></td>\-->
+<!--				<td style="text-align: center;">Change Base Currency&nbsp;</td>\-->
+<!--				<td style="text-align: center;">$ 5</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="UC" data-name="Analyse Portfolio" type="checkbox" value="4" /></td>\-->
+<!--				<td style="text-align: center;">Analyse Portfolio&nbsp;</td>\-->
+<!--				<td style="text-align: center;">$ 4 p/s</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="UC" data-name="Optimize Portfolio" type="checkbox" value="4" /></td>\-->
+<!--				<td style="text-align: center;">Optimize Portfolio&nbsp;</td>\-->
+<!--				<td style="text-align: center;">$ 4 p/s</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="UC" data-name="When to Sell" type="checkbox" value="3" /></td>\-->
+<!--				<td style="text-align: center;">When to Sell&nbsp;</td>\-->
+<!--				<td style="text-align: center;">$ 3 p/s</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="UC" data-name="Daily Tracking" type="checkbox" value="3" /></td>\-->
+<!--				<td style="text-align: center;">Daily Tracking&nbsp;</td>\-->
+<!--				<td style="text-align: center;">$ 3 p/s</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="UC" data-name="Compare Indicators" type="checkbox" value="3" /></td>\-->
+<!--				<td style="text-align: center;">Compare Indicators&nbsp;</td>\-->
+<!--				<td style="text-align: center;">$ 3 p/s</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="UC" data-name="Stocks Correlation" type="checkbox" value="2" /></td>\-->
+<!--				<td style="text-align: center;">Stocks Correlation&nbsp;</td>\-->
+<!--				<td style="text-align: center;">$ 2 p/s</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="UC" data-name="History Data" type="checkbox" value="1" /></td>\-->
+<!--				<td style="text-align: center;">History Data</td>\-->
+<!--				<td style="text-align: center;">$ 1 p/s</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="UC" data-name="Returns Data" type="checkbox" value="1" /></td>\-->
+<!--				<td style="text-align: center;">Returns Data</td>\-->
+<!--				<td style="text-align: center;">$ 1 p/s</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="UC" data-name="Stock Covariance" type="checkbox" value="1" /></td>\-->
+<!--				<td style="text-align: center;">Stock Covariance</td>\-->
+<!--				<td style="text-align: center;">$ 1 p/s</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="feature" data-type="OC" data-name="Rate Exchange Data" type="checkbox" value="4" /></td>\-->
+<!--				<td style="text-align: center;">Rate Exchange Data</td>\-->
+<!--				<td style="text-align: center;">$ 4</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			<tr>\-->
+<!--				<td style="text-align: center;"><input name="features" data-type="ALL" data-name="ALL" type="checkbox" value="99" /></td>\-->
+<!--				<td style="text-align: center;"><strong>Select All</strong></td>\-->
+<!--				<td style="text-align: center;">$ 99</td>\-->
+<!--				<td style="text-align: center;">&nbsp;</td>\-->
+<!--			</tr>\-->
+<!--			</tbody>\-->
+<!--			<tfoot>\-->
+<!--				<tr>\-->
+<!--					<td>\-->
+<!--					</td>\-->
+<!--					<td>\-->
+<!--					</td>\-->
+<!--					<td><h5 style="text-align: center;">total:</h5>\-->
+<!--					</td>\-->
+<!--					<td style="text-align: center;\-->
+<!--				font-size: large;\-->
+<!--				text-shadow: beige;\-->
+<!--				font-weight: 700;">	\-->
+<!--					</td>\-->
+<!--				</tr>\-->
+<!--			</tfoot>\-->
+<!--			</table>\-->
+<!--</div>');-->
+
+<!--var $select_market_message = $('<h3>Select market feature - $45.<br>Please select payment option below.</h3>');-->
+
+<!--var handler = StripeCheckout.configure({-->
+<!--    key: "pk_test_2a2xAELM6ClF3lkWXCpH2mCh",-->
+<!--    image: 'https://stripe.com/img/documentation/checkout/marketplace.png',-->
+<!--    token: function (token) {-->
+<!--        $("#stripeToken").val(token.id);-->
+<!--        $("#stripeEmail").val(token.email);-->
+<!--        $("#formAmount").val(stripe_amount * 100 );-->
+<!--		$("#ftrUserSelection").val(features_user_selection);-->
+<!--		$("#portfolioInd").val($(".form-group").find("input[type='radio']:checked").val());-->
+<!--		$("#countTickers").val(tbRows);-->
+<!--		$("#tickerList").val(JSON.stringify(get_table_column(tb1,1)));-->
+<!--		$("#description").val(stripe_description);-->
+<!--        $("#myForm").submit();-->
+<!--    }-->
+<!--});-->
+
+var $stock_profile = $('<div class="stockProfile">\
+<h4><strong><span id="f1"></span ></strong></h4>\
+<h5>Sector :<span id="f2"></span></h5>\
+<h5>Industry :<span id="f3"></span></h5>\
+<h4>Description:</h4>\
+<h5><span id="f4" style="line-height: 1.4"></span></h5>\
+</div>');
+
+
+
+
+//initialize
+
+$(document).ready(function(){
+
+// set dates
+var d = new Date();
+document.getElementById('to_date').valueAsDate = d;
+var last_year = new Date(d.getFullYear()-1, d.getMonth(), d.getDay())
+document.getElementById('from_date').valueAsDate = last_year;
+
+// remove shopping cart
+$(".glyphicon-shopping-cart ").each(function(){	$(this).removeClass('glyphicon-shopping-cart').addClass('glyphicon-ok')});
+
+// populate portfolio
+<!--		$.ajax({-->
+<!--		  method: "get",-->
+<!--		  //url: "quotes.php",-->
+<!--		  datatype:'json',-->
+<!--		  url: "http://127.0.0.1:5000/get_user_portfolio",-->
+<!--		  data: {-->
+<!--					q : "NA"-->
+<!--				}-->
+<!--		})-->
+<!--		 .done(function(data) {-->
+<!--		 	if (data.length == 1){-->
+<!--		 			$( "#RadioSample" ).prop( "checked" , true).parent().css({  "font-size": "larger", "text-decoration": "underline" });-->
+<!--		 			$('#tblPortfolioM').append( '<tbody>' + data[0].portfolio_data + '</tbody>' ); // sample portfolio-->
+<!--		 			}-->
+<!--		 	else {-->
+<!--		 			$( "#RadioPrimary" ).prop( "checked" , true).parent().css({  "font-size": "larger", "text-decoration": "underline" });-->
+<!--		 			$('#tblPortfolioM').append( '<tbody>' + data[0].portfolio_data + '</tbody>' ); // user main portfolio-->
+<!--		 			}-->
+<!--			})-->
+
+ 	// Create data table
+ 	tb1 = $('#tblPortfolioM').DataTable({
+												"paging":   false,
+												"info":     false,
+												"searching": false,
+												"responsive": true,
+												"scrollX": true,
+												"scrollY":        "600px",
+												"scrollCollapse": true
+ 	})
+
+<!--	//test_history(); // check if can fetch history data-->
+
+	ticker_list_arr = $(tb1.column(1).data()).splice(0,tb1.column(1).data().length);
+	tbRows = tb1.rows().data().length;
+
+<!--	//tb1 radio button checked-->
+
+<!--	console.time("get_history");-->
+<!--	console.time("get_history2");-->
+	if( ticker_list_arr.length > 0 ){
+		base_currency = get_table_column(tb1,7);
+		refresh_table_data();
+	}
+
+<!--	// hide price factor-->
+	$('#tblPortfolioM_wrapper thead tr th:nth-child(17)').css("display","none");
+	$('#tblPortfolioM_wrapper tbody tr td:nth-child(17)').css("display","none");
+	$('.dataTables_scrollFoot table tfoot tr th:nth-child(17)').css("display","none");
+
+<!--	// get customer purchase-->
+<!--&lt;!&ndash;	get_purchase_feature("NA","select_purchase",$("input[name=inlineRadioOptions]:checked").val());&ndash;&gt;-->
+
+<!--	// get customer historic purchase-->
+<!--	//get_historic_purchase("NA","historic_purchase",1);-->
+
+<!--	// get customer market purchase-->
+<!--	//get_purchase_market("NA","select_market",$("input[name=inlineRadioOptions]:checked").val());-->
+
+<!--	// get sample suggested market-->
+<!--	//get_tickers_for_market('SAMPLE');-->
+
+	//default sample portfolio for new register
+		if($( "#RadioSample" ).prop( "checked" )){
+			reset_portfolio();
+			$("#RadioSample").parent().css({ "font-size": "larger", "text-decoration": "underline" });
+			update_db_portfolio("NA", "select", 3);
+			// mark all premiums features - free except rate exchange.
+			$(".glyphicon-shopping-cart ").each(function(){
+							$(this).removeClass('glyphicon-shopping-cart')
+									.addClass('glyphicon-ok');
+						});
+			//reverse rate exchange free
+			$(" #rx .glyphicon-ok ")
+							.removeClass('glyphicon-ok')
+									.addClass('glyphicon-shopping-cart');
+			//enable change base currency
+			$("#combobox").removeAttr("disabled")
+		}else $("#RadioSample").parent().attr('style','');
+
+<!--		//Display explanation of "my stock"-->
+<!--		//$("#stockInfo .wellInfo").trigger("click");-->
+
+<!--// check loading spinner-->
+<!--	//$body = $("body");-->
+
+<!--	//$(document).on({-->
+<!--		//ajaxStart: function() { $body.addClass("loading");    },-->
+<!--		// ajaxStop: function() { $body.removeClass("loading"); }-->
+<!--	//});-->
+
+});
+
+///////////////////////////////////////   Stock Indicators Tab  ///////////////////////////////////
+
+
+$("#profileW").on('click',function(){
+		$("#stockWell").empty();
+		$("#stockWell").html($summaryProfileTB);
+		$.each($(".stockTB tbody td:nth-child(2)"),function(idx,el){$(el).text(eval($(el).data().value))});
+});
+
+$("#earningW").on('click',function(){
+		$("#stockWell").empty();
+		$("#stockWell").html($earningTB);
+		$.each($(".stockTB tbody td:nth-child(2)"),function(idx,el){$(el).text(eval($(el).data().value))});
+});
+
+$("#keyStatsW").on('click',function(){
+		$("#stockWell").empty();
+		$("#stockWell").html($keyStatsTB);
+		$.each($(".stockTB tbody td:nth-child(2)"),function(idx,el){$(el).text(eval($(el).data().value))});
+
+});
+
+$("#finDataW").on('click',function(){
+		$("#stockWell").empty();
+		$("#stockWell").html($finDataTB);
+		$.each($(".stockTB tbody td:nth-child(2)"),function(idx,el){$(el).text(eval($(el).data().value))});
+});
+
+$("#priceW").on('click',function(){
+		$("#stockWell").empty();
+		$("#stockWell").html($priceTB);
+		$.each($(".stockTB tbody td:nth-child(2)"),function(idx,el){$(el).text(eval($(el).data().value))});
+});
+
+$("#summaryW").on('click',function(){
+		$("#stockWell").empty();
+		$("#stockWell").html($summaryTB);
+		$.each($(".stockTB tbody td:nth-child(2)"),function(idx,el){$(el).text(eval($(el).data().value))});
+});
+
+
+///////////////////////////////////////////////////////////
+
+
+$("#checkButton").on('click', function(){
+
+	if($(this).find('.glyphicon-shopping-cart').length > 0){
+		$("#checkbox-2").prop( "checked" , false);
+		return;
+	}
+
+
+	if($( "#checkbox-2" ).prop( "checked" )){
+			alert("Auto refreshing portfolio - 30 sec interval");
+			interval = setInterval(function(){ $("#refresh_data").click();},30000)
+	}else{
+		//alert("stop interval");
+		clearInterval(interval)
+	}
+});
+
+// handle which portfolio to display
+$('input[type="radio"]').on('click', function(e) {
+	if($( "#RadioSample" ).prop( "checked" )){
+			reset_portfolio();
+			$(this).parent().css({ "font-size": "larger", "text-decoration": "underline" });
+			update_db_portfolio("NA", "select", 3);
+			// mark all premiums features - free.
+			$(".glyphicon-shopping-cart ").each(function(){
+							$(this).removeClass('glyphicon-shopping-cart')
+									.addClass('glyphicon-ok');
+						});
+			//reverse rate exchange free
+			//$(" #rx .glyphicon-ok ")
+			//				.removeClass('glyphicon-ok')
+			//						.addClass('glyphicon-shopping-cart');
+			//enable change base currency
+			$("#combobox").removeAttr("disabled")
+	}else $("#RadioSample").parent().attr('style','');
+
+	if($( "#RadioPrimary" ).prop( "checked" )){
+			reset_portfolio();
+			$(this).parent().css({  "font-size": "larger", "text-decoration": "underline" });
+			update_db_portfolio("NA", "select", 1);
+			// reset purchase
+			//$(".glyphicon-ok ").each(function(){$(this).removeClass('glyphicon-ok').addClass('glyphicon-shopping-cart')});
+			$(".glyphicon-shopping-cart ").each(function(){	$(this).removeClass('glyphicon-shopping-cart').addClass('glyphicon-ok')});
+
+			//get_purchase_feature("NA","select_purchase",1);
+	}else $("#RadioPrimary").parent().attr('style','');
+
+	if($( "#RadioSecondary" ).prop( "checked" )){
+			$(this).parent().css({  "font-size": "larger", "text-decoration": "underline" });
+			reset_portfolio();
+			update_db_portfolio("NA", "select", 2);
+			// reset purchase
+			//$(".glyphicon-ok ").each(function(){$(this).removeClass('glyphicon-ok').addClass('glyphicon-shopping-cart')});
+			$(".glyphicon-shopping-cart ").each(function(){	$(this).removeClass('glyphicon-shopping-cart').addClass('glyphicon-ok')});
+			get_purchase_feature("NA","select_purchase",2);
+	}else $("#RadioSecondary").parent().attr('style','');
+
+});
+
+ 	for(c in CurrFull){
+		$("#combobox").append('<option value="'+ CurrFull[c].code +'">' + CurrFull[c].name + ' : ' + CurrFull[c].code  +'</option>');
+		$(".currency").append('<option value="'+ CurrFull[c].code +'">' + CurrFull[c].name + ' : ' + CurrFull[c].code  +'</option>');
+		};
+
+	//$("#combobox").val(get_table_column(tb1,7)[0]||base_currency);
+
+
+    $('#example tbody')
+        .on( 'mouseenter', 'td', function () {
+            var colIdx = tb.cell(this).index().column;
+
+            $( tb.cells().nodes() ).removeClass( 'highlight' );
+            $( tb.column( colIdx ).nodes() ).addClass( 'highlight' );
+        } );
+
+	 // set base currency
+	// $("#combobox").val(get_table_column(tb1,7)[0]||base_currency);
+
+	 // check if need to get exchange rate
+	 //$.unique(get_table_column(tb1,7)).length === 1 ? single_currency = true : single_currency = false;
+
+//select record and remove it
+<!--$(“table”).delegate(“td”,”click”,function(){-->
+<!--alert(‘I am’ + $(this).text());-->
+<!--});-->
+<!--	$(“#tblPortfolioM”).delegate(“tr”,”click”,function(){-->
+    $('#tblPortfolioM')
+	.delegate('tr', 'click', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+			$("#remove_rec").css("visibility","hidden");
+			$("#remove_all").css("visibility","hidden");
+        }
+        else {
+            tb1.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+			if(!$( "#RadioSample" ).prop( "checked" )) $("#remove_rec").css("visibility","visible");
+			if(!$( "#RadioSample" ).prop( "checked" )) $("#remove_all").css("visibility","visible");
+			$("#stock_stats").css("visibility","visible");
+			$(".stockTab").css("visibility","visible");
+			$("#compareDiv").css("visibility","visible");
+			reset_quote();
+			selected_symbol = tb1.rows('.selected').data()[0][1];
+			company_name = tb1.rows('.selected').data()[0][2];
+			$(".companyName").text(company_name);
+			//get_symbol_current_quote2(selected_symbol);
+			get_symbol_current_quote5(selected_symbol);
+				//don't call history if already been called.
+			if(Object.keys(tickers_history_quotes).indexOf(selected_symbol) == -1){
+					get_symbol_hist(selected_symbol);
+			}
+			else
+			{
+					// display chart
+					symbol_data2(selected_symbol,"chart");
+					chart_symbols = [];
+					chart_symbols.push(selected_symbol);
+			}
+        }
+    } );
+
+
+$('#remove_rec').click( function () {
+	if ( $('#tblPortfolioM tbody tr').hasClass('selected') ) {
+		BootstrapDialog.confirm('Are you sure you want to delete symbol :' + tb1.row('.selected').data()[1] + ' ?', function(result){
+			if(result) {
+				tb1.row('.selected').remove().draw( false );
+				tbRows = tb1.rows().data().length;
+				update_db_portfolio($("#tblPortfolioM tbody").html(),"delete",$("input[name=inlineRadioOptions]:checked").val());
+			   $("#remove_rec").css("visibility","hidden");
+			   $("#remove_all").css("visibility","hidden");
+			    $("#stock_stats").css("visibility","visible");
+			   $('#refresh_data').trigger( "click" );
+			   handle_footer();
+			}
+		});
+	}else{alert("please select a record")};
+});
+
+$('#remove_all').click( function () {
+	if ( $('#tblPortfolioM tbody tr').hasClass('selected') ) {
+		BootstrapDialog.confirm('Are you sure you want to remove all symbols from portfolio ?', function(result){
+			if(result) {
+				tb1.row('.selected').remove().draw( false );
+				tbRows = tb1.rows().data().length;
+				update_db_portfolio($("#tblPortfolioM tbody").html(),"delete_all",$("input[name=inlineRadioOptions]:checked").val());
+			   $("#remove_rec").css("visibility","hidden");
+			   $("#remove_all").css("visibility","hidden");
+			    $("#stock_stats").css("visibility","visible");
+			   $('#refresh_data').trigger( "click" );
+			   tb1.rows().remove().draw()
+			   handle_footer();
+			}
+		});
+	}else{alert("please select a record")};
+});
+
+
+
+/////////////////////////////////////////  controls /////////////////////////////////
+
+//calculate portfolio currency total and  percentage
+$('#calcPortfolio').click( function () {
+
+	var pair_currency = [];
+	var currencies = [];
+	//tbRows = tb1.rows().data().length;
+	base_currency = $("#combobox").val()||get_table_column(tb1,7)[0];
+
+	curr_arr = $.unique($(tb1.column(7).data()).splice(0,tbRows));
+	console.log("base currency: "+ base_currency + ".  /////     Table currencies: "+ curr_arr.join(",") );
+
+
+		$.each(curr_arr,function(idx,el){pair_currency.push(el+base_currency+"=X")});
+		$.each(curr_arr,function(idx,el){currencies.push(el)});
+		ajax_current_quotes5(pair_currency,"rates");
+		if(historical_data) get_rateExHistory(currencies);
+	handle_footer();
+
+});
+
+
+// currency combo box
+$("#combobox").on('change',function(){
+
+		base_currency = $("#combobox").val();
+		$('#calcPortfolio').trigger( "click" )
+
+});
+
+        $( "#1" ).autocomplete({
+                      source: function(request, response) {
+                            $.ajax({
+                            //type: 'get',
+                              datatype:'json',
+                              url: 'http://127.0.0.1:5000/autocomp',
+                              data: {
+                                    q: request.term
+                                    },
+                              success: function(data){
+
+                                   // alert(data);
+                                   //response($.map($.parseJSON(data).ResultSet.Result, function(item) {
+                                   response($.map(data, function(item) {
+                                     if (item.shortname) {
+                                         return {
+                                                    label: item.shortname + ' , ' + item.typeDisp + " , " + item.exchange,
+                                                    value: item.symbol
+                                         }
+                                     } //item is not define
+                                   }));
+                             }// end function(data)
+                           });//ajax
+                         },//source
+                      minLength: 2,
+						select: function( event, ui ) {
+																$("#SearchSymbol").prop('disabled', false);
+																company_name = ui.item.label.substring(0, ui.item.label.indexOf(',')-1);
+																asset_type = ui.item.label.substring(ui.item.label.indexOf(',')+2, ui.item.label.lastIndexOf(',')-1 );
+																exchange = ui.item.label.substring(ui.item.label.lastIndexOf(',')+2);
+																ticker_arr.push(ui.item.value);
+																chart_symbols = [];
+																chart_symbols.push(ui.item.value);
+																$("#ticker_list").append("<div>" + ui.item.value + "<button class=\"remove\">x</button></div>")
+
+														}
+						}); // autocomplete
+
+$( "#compare" ).autocomplete({
+                      source: function(request, response) {
+                            $.ajax({
+                            //type: 'get',
+                              datatype:'json',
+                              url: 'http://127.0.0.1:5000/autocomp',
+                              data: {
+                                    q: request.term
+                                    },
+                              success: function(data){
+
+                                   // alert(data);
+                                   //response($.map($.parseJSON(data).ResultSet.Result, function(item) {
+                                   response($.map(data, function(item) {
+                                     if (item.shortname) {
+                                         return {
+                                                    label: item.shortname + ' , ' + item.typeDisp + " , " + item.exchange,
+                                                    value: item.symbol
+                                         }
+                                     } //item is not define
+                                   }));
+                             }// end function(data)
+                           });//ajax
+                         },//source
+                      minLength: 2,
+						  select: function( event, ui ) {
+														//	console.time("get_symbols_history_quotes");
+														//	if(chart_symbols.indexOf(ui.item.value) == -1){
+														//			chart_symbols.push(ui.item.value);
+														//	}
+														//	if(Object.keys(tickers_history_quotes).indexOf(ui.item.value) == -1){
+														//			get_symbols_history_quotes()
+														//	}
+														//	CompareAssetsChart();
+														console.log(ui.item.value + " selected")
+														}
+						});
+
+$("#compare").bind("keypress", function(e) {
+	if (e.keyCode == 13) {
+		$('#plusCmp').trigger( "click" );
+	}
+});
+
+$("#plusCmp").click(function(event){
+	var symbol = $("#compare").val();
+	if(symbol){
+		// console.time("get_symbols_history_quotes");
+		if(chart_symbols.indexOf(symbol) == -1){
+				chart_symbols.push(symbol);
+		}
+		if(Object.keys(tickers_history_quotes).indexOf(symbol) == -1){
+				get_symbols_history_quotes()
+		}
+		CompareAssetsChart();
+	}
+});
+
+
+$("#1").on('keyup',function(){window.scrollBy(0, -3100)});
+
+// populate symbol quote and chart
+$("#SearchSymbol").click(function(event){
+	event.preventDefault();
+	reset_quote();
+	selected_symbol = $( "#1" ).val();
+		$("#stock_stats").css("visibility","visible");
+		$("#compareDiv").css("visibility","visible");
+		$(".stockTab").css("visibility","visible");
+	//$("#compare").css("visibility","visible");
+	get_symbol_current_quote5(selected_symbol);
+
+
+	//don't call history if already been called.
+	if(Object.keys(tickers_history_quotes).indexOf(selected_symbol) == -1){
+			get_symbol_hist(selected_symbol);
+	}
+	else
+	{
+			// display chart
+			symbol_data2(selected_symbol,"chart");
+			chart_symbols = [];
+			chart_symbols.push(selected_symbol);
+	}
+
+
+});
+
+// toggle stockTab items
+$('.stockTab li').on('click',function(){
+
+	$(this).css({"color":"blue", "font-weight": "bold"});
+
+	if($(this).hasClass('collapsed')){
+		$('.stockTab li').css({"color":"black", "font-weight": "normal"});
+		$(this).css({"color":"blue", "font-weight": "bold"});
+		}
+})
+
+
+var $textAndPic = $('<div class="add2portfolio"></div>');
+
+
+
+// dialog : enter initial information
+
+$("#add2portfolio").click(function(){
+
+		if( tbRows > 25 ){
+			dialog('Maximum symbols', "Can't add more than 25 symbols to portfolio" ,BootstrapDialog.TYPE_INFO);
+			return;
+		}
+
+			get_single_quote_obj();
+
+			$("textAndPic #amountLable").text("Initiated total amount in: " + single_quote.Currency.toUpperCase());
+			BootstrapDialog.show({
+				size:	'size-normal' ,
+				title: company_name ,
+			//handle remote HTML
+			message:
+				function(dialog) {
+				//create message/div content
+				var $symbolInput = $(
+				'<div class="form-group">\
+					<p class="validate" style="color:red ; font-weight:normal; font-size:95%"></p><br> \
+					<label for="symbolStDate" >Start Date</label>\
+						<input type="date" class="form-control" id="symbolStDate" >\
+						<span id="helpBlock" class="help-block" style="font-size:75%">Enter date when stock was purchased</span>\
+					<label for="symbolAmount"  control-label" id="amountLable">Total settled amount in: '+ single_quote.Currency.toUpperCase() +'</label>\
+					  <div class="input-group">\
+							<span class="input-group-addon" id="curIcon">'+ curSym[single_quote.Currency.toUpperCase()] +'</span>\
+							<input type="number" class="form-control" id="symbolAmount" >\
+					  </div>\
+					  <span id="helpBlock" class="help-block" style="font-size:75%">If Amount is blank, system will estimate Amount based on price/holding/start-date.</span>\
+					<label for="symbolHolding" id="holdingLbl"  control-label">No. of Holding Units</label>\
+					  <input type="number" class="form-control" id="symbolHolding" >\
+					  <span id="helpBlock" class="help-block" style="font-size:75%">If Holding is blank, system will estimate Holding based on price/amount/start-date.</span>\
+				</div>'
+				);
+
+				$textAndPic.empty().append($symbolInput);
+
+				var $message = $textAndPic;
+<!--				var pageToLoad = dialog.getData('pageToLoad');-->
+<!--				$message.load(pageToLoad);-->
+				//$textAndPic.empty();
+
+				return $message;
+			},
+			data: {
+				'pageToLoad': $textAndPic
+			}	,
+
+			buttons: [
+					{
+						label: 'Cancel',
+						action: function(dialog){
+							$textAndPic = $('<div class="add2portfolio"></div>');
+							dialog.close();
+						}
+					},
+					{
+						id: 'btn-ok',
+						icon: 'glyphicon glyphicon-check',
+						label: 'Add',
+						cssClass: 'btn-primary',
+						data: {
+							js: 'btn-confirm',
+							'user-id': '3'
+							},
+			action: function(dialog){
+						try{
+							var quote_history = tickers_history_quotes[single_quote.Symbol];
+							var price_factor = factor10(numeral(single_quote.LastTradePriceOnly)._value, quote_history[quote_history.length-1][1]);
+							settled_date = $("#symbolStDate").val();
+							settled_amt = $("#symbolAmount").val();
+							settled_holding = $("#symbolHolding").val();
+
+							var valid = validate_add2portfolio();
+
+
+
+							if (valid){
+										//get price of symbol for settled date
+										var price_element = quote_history.find(find_closest_date_unix);
+
+										if($('#symbolAmount').val() && $('#symbolHolding').val() ) {
+											settled_amt = parseFloat($("#symbolAmount").val());
+											settled_holding = parseFloat($("#symbolHolding").val());
+										}
+										if($('#symbolAmount').val() && !$('#symbolHolding').val() ) {
+											settled_amt = parseFloat($("#symbolAmount").val());
+											//c: settled_holding = round_to(($("#symbolAmount").val()) / price_element[1] / price_factor * 100,2);
+											settled_holding = round_to(($("#symbolAmount").val()) / price_element[1]  * currency_denominator(single_quote.Currency),2);
+										}
+										if(!$('#symbolAmount').val() && $('#symbolHolding').val() ) {
+											settled_holding = parseFloat($("#symbolHolding").val());
+											//c: settled_amt 	= round_to(parseFloat($("#symbolHolding").val()) * price_element[1] * price_factor/100,2);
+											settled_amt 	= round_to(parseFloat($("#symbolHolding").val()) * price_element[1]/currency_denominator(single_quote.Currency),2);
+										}
+										var price = single_quote.LastTradePriceOnly/price_factor;
+										//c: var total = round_to(settled_holding*price/100 ,2);
+										var total = round_to(settled_holding*price/currency_denominator(single_quote.Currency) ,2);
+										var data=[
+													exchange,
+													single_quote.Symbol,
+													company_name ,
+													settled_holding,
+													settled_date,
+													CurrFull[single_quote.Currency.toUpperCase()].symbol + n(price_element[1]), //initial price from the chart
+													CurrFull[single_quote.Currency.toUpperCase()].symbol + n(settled_amt) ,
+													CurrFull[single_quote.Currency.toUpperCase()].code,
+													CurrFull[single_quote.Currency.toUpperCase()].symbol + n(price),
+													CurrFull[single_quote.Currency.toUpperCase()].symbol + n(total) ,
+													ps(single_quote.ChangeinPercent),
+													"today change",
+													ps(total/settled_amt - 1),
+													"Select Currency",
+													"Select Currency",
+													"%Portfolio",
+													price_factor,
+													single_quote.LastTradeTime
+												];
+
+										tb1.row.add(data).draw();
+										$textAndPic = $('<div class="add2portfolio"></div>');
+										//update database
+										tbRows = tb1.rows().data().length;
+										update_db_portfolio($("#tblPortfolioM tbody").html(),"add",$("input[name=inlineRadioOptions]:checked").val());
+										$('#refresh_data').trigger( "click" );
+										dialog.close();
+									}
+							}//end try
+							catch(e){
+								console.log("error in index add2portfolio");
+								alert( e + "\n\nCan't add symbol to portfolio");
+							}
+						}//end function
+					}
+				]
+
+			}); // end-dialog
+			$('#symbolAmount').empty();
+			$(this).css("visibility","hidden");
+			$("#curIcon").text(curSym[single_quote.Currency.toUpperCase()]);
+			//$("#amountLable").text("Initiated total amount in: " + single_quote.Currency.toUpperCase());
+
+			$('html,body').animate({
+				scrollTop: $("#tblPortfolioM").offset().top},
+			'slow');
+}); // end add2portfolio click
+
+//refresh datatable
+$("#refresh_data").click(function(event){
+	event.preventDefault();
+	refresh_table_data();
+});
+
+
+$('#show_hide').on('hide.bs.select', function (e) {
+
+	var temp_arr = [];
+
+	temp_arr = ($($('#show_hide').val()).not(c_arr).get()).concat($(c_arr).not($('#show_hide').val()).get());
+
+	$.each(temp_arr, function(idx, column){
+			$('#tblPortfolioM_wrapper thead tr th:nth-child('+ column +')').toggle();
+			$('#tblPortfolioM_wrapper tbody tr td:nth-child('+ column +')').toggle();
+			$('.dataTables_scrollFoot table tfoot tr th:nth-child('+ column +')').toggle();
+	})
+
+	c_arr = $('#show_hide').val(); // for next selection
+
+})
+
+/////////////////////////////////   Portfolio Statistics Tabs /////////////////////////////////////////////////
+
+
+
+//2. 	Build combine portfolio
+
+$("#buildPortfolio").on('click', function(event){
+		reset_portfolio();
+		var weight_option = 0;
+		portfolio = portfolio_main;
+		//promised = promised_m;
+		portfolio._from_date 	= $("#from_date").val();
+		portfolio._to_date		= $("#to_date").val();
+		portfolio._ticker_list = get_table_column(tb1,1);
+		portfolio._count_tickers = tb1.column(1).data().length;
+
+		if (portfolio._count_tickers < 3){
+			alert("can't build portfolio with less than 3 stocks");
+			return;
+		};
+
+		if(p_semaphor == 0)
+			{
+
+								resource_portfolio(1); // reserve portfolio
+								console.log("set resource portfolio to 1 from main portfolio");
+
+					create_portfolio_obj2();
+
+					// attached latest quote to portfolio.info and update last record
+
+						if(latest_quotes){
+							for(obj in portfolio.info) {
+								//latest_quotes.map(function(c_obj){
+								//if (portfolio.info[obj].Symbol == c_obj.symbol) {portfolio.info[obj].current_quote = c_obj} })
+<!--								portfolio.info[obj].current_quote = flattenObject(JSON.parse(JSON.parse(latest_quotes[portfolio.info[obj].Symbol])))-->
+									portfolio.info[obj].current_quote = flattenObject(latest_quotes[portfolio.info[obj].Symbol])
+								}
+								// updatding last daily price
+/*
+								$.each(portfolio.info,function(idx, el){
+									var history_last_date_price	= moment(el.daily_prices[el.daily_prices.length-1][0])._d;
+									var latest_quote_trade_date = moment.unix(el.current_quote["quoteSummary.result.0.price.regularMarketTime"]).format('YYYY-MM-DD');
+									var index 	= el.daily_prices.length-1;
+									var price_factor = factor10(el.current_quote["quoteSummary.result.0.price.regularMarketPrice.raw"], el.current_quote["quoteSummary.result.0.summaryDetail.fiftyDayAverage.raw"]);
+									var latest_quote_price		= el.current_quote["quoteSummary.result.0.price.regularMarketPrice.raw"] / price_factor;
+
+									if(moment(history_last_date_price).format("YYYYMMDD") < moment(latest_quote_trade_date).format("YYYYMMDD")){
+										var temp_arr = [moment.unix(el.current_quote["quoteSummary.result.0.price.regularMarketTime"]).format('YYYY-MM-DD'), latest_quote_price];
+										el.daily_prices.push(temp_arr);
+									}
+
+									if(moment(history_last_date_price).format("YYYYMMDD") == moment(latest_quote_trade_date).format("YYYYMMDD")){
+										el.daily_prices[index][1] = latest_quote_price;
+									}
+								});
+*/
+						} // end "if latest quote"
+
+						growth_readings = max_size_of_range_growth_arr();
+						validate_portfolio();
+						if (portfolio._count_tickers > 2) {
+
+								build_portfolio(weight_option);
+								combine_prices();  // creaet a combine daily prices and return.
+								$("#buildPortfolio").text("Portfolio is Ready");
+								$("#buildPortfolio").attr("disabled","disabled");
+								portfolio_ready = true;
+								// change v icon color to green
+								//$(".glyphicon-ok ").each(function(){$(this).css( "color", "white" )});
+
+								portfolio_main = portfolio;
+								resource_portfolio(0);
+					//populate all select symbol options
+							var option = '<option value="portfolio">Portfolio</option>';
+							var option2 = '';
+							$.each(portfolio.info, function(ix,el){
+								option += '<option value="' + el.Symbol + '">'+ el.current_quote["quoteSummary.result.0.price.longName"]  +'</option>';
+								option2 += '<option value="' + el.Symbol + '">'+ el.current_quote["quoteSummary.result.0.price.longName"]  +'</option>';
+							})
+							$("#stockSelect1").html(option).selectpicker('refresh');
+							$("#stockSelect2").html(option2).selectpicker('refresh');
+							daily_stats();
+						}
+					   else {
+								alert("can't build portfolio with less than 3 stocks");
+								resource_portfolio(0)
+						};
+			//          }else {alert("Sorry, No quotes found ;-(")};
+
+						resource_portfolio(0)
+			}// portfolio resource is not availabe (probably used by suggest or secondary)
+			else
+			{
+					dialog("Error", "Can not build portfolio at this stage.\nPlease try again later",BootstrapDialog.TYPE_INFO);
+					console.log("index.php - p_semaphor is occupied by other process.")	;
+					resource_portfolio(0)
+			}
+			resource_portfolio(0)
+//
+});
+
+
+//3. Handle tabs selection
+
+
+$("#ret").on('click', function(event){
+
+	if (!validate_license($(this))) return;
+
+	if(tb_ret) {
+		return;
+	//	tb_ret.destroy();
+	//	$("#returnTB").empty();
+	};
+
+	create_table("_returns");	// the if(!table) is to avoid instansiating the TB twice
+
+});
+
+// daily returns
+$("#ret_d").on('click', function(event){
+
+	if (!validate_license($(this))) return;
+
+	if(tb_Dret) {
+		return;
+//		tb_Dret.destroy();
+//		$("#daily_returnTB").empty();
+
+	};
+
+	create_table("_daily_returns");	// the if(!table) is to avoid instansiating the TB twice
+
+});
+
+
+
+$("#cov").on('click', function(event){
+
+	if (!validate_license($(this))) return;
+
+	if($(this).find('.glyphicon-shopping-cart').length > 0){
+		return;
+	}
+
+	if(tb_cov){
+		tb_cov.destroy();
+		$("#covarianceTB").empty();
+	}
+	create_table("_covariance");
+});
+
+
+
+$("#mntCarlo").on('click', function(event){
+
+		if (!validate_license($(this))) return;
+
+	if($(this).find('.glyphicon-shopping-cart').length > 0){
+		$(this).data('target', 'null');
+	}
+})
+
+
+$("#cor").on('click', function(event){
+
+	if (!validate_license($(this))) return;
+
+	if($(this).find('.glyphicon-shopping-cart').length > 0){
+		return;
+	}
+
+
+	event.preventDefault;
+
+	if(tb_cor){
+		tb_cor.destroy();
+		$("#correlationTB").empty();
+	}
+	create_table("_correlation");
+
+	// paint the table in scale colors
+	var cor1 = 0.5;
+	var cor2 = 0.6;
+	var cor3 = 0.7;
+	var cor4 = 0.8;
+
+	// color code
+		for(var i=0; i < portfolio._correlation._data.length; i++){
+			for( var b=i; b < portfolio._correlation._data.length ; b++){
+				//arr._data[b][i] = portfolio._correlation._data[b][i]
+				if ( Math.abs(numeral(portfolio._correlation._data[b][i])._value ) >= cor1 && Math.abs(numeral(portfolio._correlation._data[b][i])._value) < cor2 )
+						$("#correlationTB tr:nth-child("+ (b+1) +") td:nth-child("+ (i+2) +") ").css( "background", "green");
+				if ( Math.abs(numeral(portfolio._correlation._data[b][i])._value)  >= cor2 && Math.abs(numeral(portfolio._correlation._data[b][i])._value) < cor3 )
+						$("#correlationTB tr:nth-child("+ (b+1) +") td:nth-child("+ (i+2) +") ").css( "background", "yellow");
+				if ( Math.abs(numeral(portfolio._correlation._data[b][i])._value)  >= cor3 && Math.abs(numeral(portfolio._correlation._data[b][i])._value) < cor4 )
+						$("#correlationTB tr:nth-child("+ (b+1) +") td:nth-child("+ (i+2) +") ").css( "background", "orange");
+				if ( Math.abs(numeral(portfolio._correlation._data[b][i])._value)  >= cor4 && Math.abs(numeral(portfolio._correlation._data[b][i])._value) < 1)
+						$("#correlationTB tr:nth-child("+ (b+1) +") td:nth-child("+ (i+2) +") ").css( "background", "red");
+			}
+		}
+
+
+});
+
+
+
+$("#day").on('click', function(event){
+
+	if (!validate_license($(this))) return;
+
+	if(tb_day){
+		tb_day.destroy();
+		$("#dailyTB").empty();
+	}
+	 create_table("_history_d");
+});
+
+$("#mon").on('click', function(event){
+
+	if (!validate_license($(this))) return;
+
+
+	if(tb_mon){
+		return;
+//		tb_mon.destroy();
+//		$("#monthlyTB").empty();
+	}
+	create_table("_history_m");
+});
+
+$("#trk").on('click', function(event){
+
+	if (!validate_license($(this))) return;
+
+
+		if(tb_trk){
+			tb_trk.destroy();
+			$("#trackTB").empty();
+		}
+		create_table("_daily_tracking");
+
+});
+
+$("#perf").on('click', function(event){
+
+	if (!validate_license($(this))) return;
+
+	$("#performance1").empty();
+			//create gauge charts for portfolio
+
+			//1. build dynamic container
+			create_chart_container_for("portfolio", "#performance1");
+			//2. set values to the charts
+			risk_chart(round_to(portfolio._mean * 100,2), round_to(portfolio._std_dev * 100,2), round_to(portfolio._s_Ratio,2));
+			//3. same for all stocks
+			for(var i = 0 ; i < portfolio._count_tickers; i++){
+				create_chart_container_for(portfolio.info[i].Symbol, "#performance1");
+				risk_chart(round_to(portfolio.info[i].growth_mean * 100,2), round_to(portfolio.info[i].growth_std * 100,2), round_to(portfolio.info[i].s_ratio,2))
+			}
+
+});
+
+
+
+
+// sort performance results TODO: toggle sort.
+$("#perf_select").on('change', function(event){
+
+	var temp_array = []; // holds sorted array of portfolio.info
+	var selected = this.value;
+
+	$("#performance1").empty();
+
+	switch (selected){
+
+
+		case "growth":
+		//alert("sort by growth");
+			temp_array = portfolio.info.sort(function(a,b){return (a.growth_mean - b.growth_mean)});
+
+		break;
+		case "risk":
+		//alert("sort by risk");
+			temp_array = portfolio.info.sort(function(a,b){return (a.growth_std - b.growth_std)});
+		break;
+
+		case "eff":
+		//alert("sort by efficiency");
+			temp_array = portfolio.info.sort(function(a,b){return (a.s_ratio - b.s_ratio)});
+
+		break;
+	};
+
+			//1. build dynamic container
+			create_chart_container_for("portfolio", "#performance1");
+			//2. set values to the charts
+			risk_chart(round_to(portfolio._mean * 100,2), round_to(portfolio._std_dev * 100,2), round_to(portfolio._s_Ratio,2));
+			//3. same for all stocks
+			for(var i = 0 ; i < temp_array.length; i++){
+				create_chart_container_for(temp_array[i].Symbol, "#performance1");
+				risk_chart(round_to(temp_array[i].growth_mean * 100,2), round_to(temp_array[i].growth_std * 100,2), round_to(temp_array[i].s_ratio,2))
+			}
+
+}); //end sort performance
+
+
+// handle indicators
+
+$("#ind").on('click', function(event){
+
+	if (!validate_license($(this))) return
+	else{
+			$("#dispIndicator").on('click', function(event){
+
+			if($(this).find('.glyphicon-shopping-cart').length > 0){
+				return;
+			}
+
+				if(tb_ind){
+					tb_ind.destroy();
+					$("#indicatorsTB").empty();
+				}
+
+				indicator_arr = [];
+				$( "#indicators option:selected" ).each(function() {
+				  indicator_arr.push( $( this ).text() )
+				});
+				portfolio_indicator = create_indicators_array()  ;
+				create_table("_stock_indicators");
+		});
+
+	}
+})
+
+
+
+
+// handle weights
+			$("#wgt").on('click', function(event){
+
+			if (!validate_license($(this))) return;
+
+			if($(this).find('.glyphicon-shopping-cart').length > 0){
+				return;
+			}
+
+				if(tb_wgt){
+					tb_wgt.destroy();
+					$("#weightsTB").empty();
+				}
+					if(portfolio_ready){
+					//	if (!tb_wgt){
+							weight_arr = create_weight_array(); // input for DataTable
+							create_table("_weight_optim");
+							// populate current weight portfolio
+							$("#weightsTB table tfoot tr:nth-child(1) th:nth-child(2)").text(p(portfolio._mean));
+							$("#weightsTB table tfoot tr:nth-child(2) th:nth-child(2)").text(p(portfolio._std_dev));
+							$("#weightsTB table tfoot tr:nth-child(3) th:nth-child(2)").text(n(portfolio._s_Ratio));
+
+
+							// populate equal weight portfolio summary
+							var eq_arr = [];
+							eq_arr = weight_arr._data.map(function(el){return numeral(el[2])._value});
+							optim_obj = eq_balance_portfolio(eq_arr);
+							$("#weightsTB table tfoot tr:nth-child(1) th:nth-child(3)").text(p(optim_obj._target_return));
+							$("#weightsTB table tfoot tr:nth-child(2) th:nth-child(3)").text(p(optim_obj._target_std));
+							$("#weightsTB table tfoot tr:nth-child(3) th:nth-child(3)").text(n(optim_obj._s_ratio));
+							optim_obj = {};
+
+							// calculate optimized portfolio summary
+							optim_obj = optimize_portfolio();
+							if (optim_obj._solved){
+								optim_obj._weight.map(function(el,idx){tb_wgt.cell(idx,3).data(p(el)).draw()});
+								//calculate buy/sell amount
+								for(i=0; i<tb_wgt.rows().data().length; i++){
+									tb_wgt.cell(i,4).data(
+										(CurrFull[tb1.cell(i,7).data()].symbol +
+										n((numeral(tb_wgt.cell(i,3).data())._value - numeral(tb_wgt.cell(i,1).data())._value) * numeral(tb1.cell(i,9).data())._value))
+										)
+								};
+								$("#weightsTB table tfoot tr:nth-child(1) th:nth-child(4)").text(p(optim_obj._target_return));
+								$("#weightsTB table tfoot tr:nth-child(2) th:nth-child(4)").text(p(optim_obj._target_std));
+								$("#weightsTB table tfoot tr:nth-child(3) th:nth-child(4)").text(n(optim_obj._s_ratio));
+							}
+							else{
+								$("#weightsTB table tfoot tr:nth-child(1) th:nth-child(4)").text("Not found");
+								$("#weightsTB table tfoot tr:nth-child(2) th:nth-child(4)").text("Not found");
+								$("#weightsTB table tfoot tr:nth-child(3) th:nth-child(4)").text("Not found");
+
+							}
+							// create pie chart
+
+								var title;
+								var pie_data_arr = [];
+								var pie_data_element = {};
+								var ticker_list = get_table_column(tb_wgt,0);
+								for(var i = 1; i < 4; i++){
+										if(i==1)title="Current Weights";
+										if(i==2)title="Equal Weights";
+										if(i==3)title="Optimal Weights";
+										var distribution = get_table_column(tb_wgt,i);
+										$.each(ticker_list,function(idx,el){
+											pie_data_element.name = ticker_list[idx];
+											pie_data_element.y = numeral(distribution[idx])._value;
+											pie_data_arr.push(pie_data_element);
+											pie_data_element = {};
+											})
+										portfolio_dist_pie_chart('pie'+i,title, pie_data_arr);
+										pie_data_arr = [];
+									}
+					//	}
+					}
+				//	else {
+				//		dialog('Portfolio not ready', "Please select valid date range and press analyse portfolio" ,BootstrapDialog.TYPE_INFO)
+				//	}
+								// hide equals
+								$("#weightsTB table thead tr th:nth-child(3)").css("display","none");
+								$("#weightsTB table tbody tr td:nth-child(3) ").css("display","none");
+								$("#weightsTB table tfoot tr th:nth-child(3) ").css("display","none");
+			});
+
+
+//sliders
+slider_d = new Slider("#ex6");
+slider_d.on("slide", function(sliderValue) {
+	document.getElementById("ex6SliderVal").textContent = sliderValue + ' days';
+});
+
+slider_s = new Slider("#ex7");
+slider_s.on("slide", function(sliderValue) {
+	document.getElementById("ex7SliderVal").textContent = sliderValue + "  (  accuracy: " + p( (jStat.normal.cdf( sliderValue,0,1) - jStat.normal.cdf( -sliderValue,0,1))) + " )";
+});
+
+slider_p1 = new Slider("#ex8");
+slider_p1.on("slide", function(sliderValue) {
+	document.getElementById("ex8SliderVal").textContent = sliderValue + ' days';
+});
+
+slider_p2 = new Slider("#ex9");
+slider_p2.on("slide", function(sliderValue) {
+	document.getElementById("ex9SliderVal").textContent = sliderValue + "  (  accuracy: " + p( (jStat.normal.cdf( sliderValue,0,1) - jStat.normal.cdf( -sliderValue,0,1))) + " )";
+});
+
+slider_p3 = new Slider("#ex13");
+slider_p3.on("slide", function(sliderValue) {
+	document.getElementById("ex13SliderVal").textContent = sliderValue;
+});
+
+slider_m1 = new Slider("#ex10");
+slider_m1.on("slide", function(sliderValue) {
+	document.getElementById("ex10SliderVal").textContent = sliderValue + ' days';
+
+
+});
+
+slider_m2 = new Slider("#ex11");
+slider_m2.on("slide", function(sliderValue) {
+	document.getElementById("ex11SliderVal").textContent = sliderValue + "  (  accuracy: " + p( (jStat.normal.cdf( sliderValue,0,1) - jStat.normal.cdf( -sliderValue,0,1))) + " )";
+});
+
+slider_m3 = new Slider("#ex12");
+slider_m3.on("slide", function(sliderValue) {
+	document.getElementById("ex12SliderVal").textContent = sliderValue;
+});
+
+// calculate monte
+	$("#monteBTN").on('click', function(event){
+
+			if(portfolio_ready){
+					var strike_price_arr = [] ; // holds an array of historical prices based on user slide input
+					strike_price_arr = initialize_two_dim_array(portfolio._count_tickers , 2)
+
+					// 1. striking price from the daily pricint array (update the the tb_montecarlo.)
+					$.each(portfolio.info, function(idx, el){
+						strike_price_arr._data[idx][0] = el.daily_prices[el.daily_prices.length - slider_d.getValue()][0];
+						strike_price_arr._data[idx][1] = el.daily_prices[el.daily_prices.length - slider_d.getValue()][1]
+						})
+					// 2. Get fluctuation
+					// if tb_mcarlo destroy it.
+
+					// 3. create monte carlo array - update functio internal formula
+					monte_carlo_arr = create_monte_carlo_array(strike_price_arr._data); // input for DataTable
+
+					//4.  create table
+					if(tb_mcarlo) {
+						tb_mcarlo.destroy();
+						$("#monteTB").empty()
+					}
+
+					create_table("_monte_carlo");
+
+			}
+	});
+
+// display popup chart
+$("#tblPortfolioM  tbody  tr  td:nth-child(2)").hover(
+  function(event) {
+	  event.preventDefault();
+	 $(this).append('<div class="popup" id="spark" style=" height: 200px;position:absolute;width:300px;border: 0.5px solid blue;overflow: hidden;z-index:10000;"></div>' );
+	//$(this).append('<div class="popup"></div>' );
+    $(this).find('.popup').show();
+	sparkChart($(this).text(),"spark");
+	$(".highcharts-button").css("display","none");
+  }, function(event) {
+    //$(this).find('.popup').hide();
+	event.preventDefault();
+	$(this).find('.popup').remove();
+	//$(this).remove('.popup');
+  }
+);
+
+
+
+///////////////////////////   Rate Exchange handlers ////////////////////////////
+
+$("#Amount").on('keyup', function(event){
+	if($(".rxCls #rx")){
+
+		var c1 = $( "#f_cur option:selected" ).text();
+		var c2 = $("#t_cur option:selected" ).text();
+		var amount = n(numeral($('#Amount').val())._value * current_rx_quote['quoteSummary.result.0.price.regularMarketPrice.raw']);
+		var title = ($("#Amount").val()||1)+" "+ c1.substring(0,c1.indexOf(":")-1) +"  to  "+ c2.substring(0,c2.indexOf(":")-1);
+		$(".rxCls #titleRX").text(title);
+		$(".rxCls #rx").text(curSym[$("#t_cur").val()] + amount);
+	}
+});
+
+$("#f_cur").on('change', function(event){
+	$("#f_sym").text(curSym[$("#f_cur").val()])
+
+		if($("#t_cur").val()){
+			calc_exchange_rate();
+		}
+	return false;
+});
+
+$("#t_cur").on('change', function(event){
+
+	if($("#f_cur").val()){
+		calc_exchange_rate();
+	}
+	return false;
+})
+
+$("form").bind("keypress", function(e) {
+	if (e.keyCode == 13) {
+		return false;
+	}
+});
+
+$("#swap_cur").on('click', function(event){
+
+	var v1, v2;
+	event.preventDefault();
+
+	if($("#t_cur").val() && $("#f_cur").val()){
+
+		v1 = $("#t_cur").val();
+		v2 = $("#f_cur").val();
+		$('#f_cur').val(v1).change();
+		$('#t_cur').val(v2).change();
+	}
+	return false;
+});
+
+///////////////////////////////      Suggest Portfolio /////////////////////
+
+$("#market_select").on('change', function(event){
+
+	var selected = this.value;
+
+
+	// add confirmation for payment...
+	  if(!$( '.' + selected  ).hasClass('glyphicon-ok')){
+				$("#market").prop("disabled",true);
+				if(selected !== 'SAMPLE'){
+					global = "Suggest Portfolio";
+					features_user_selection = '["MARKET-' + selected + '"]';
+					stripe_amount = 45;
+					stripe_description = "Feature/s selected : Suggest Portfolio" ;
+					//$('#purchaseItemsBtn').trigger( "click" );
+					//$('.modal-body').empty().text('Market :' + selected + ' premium of $45\n\n Would you like to purchase a report?');
+					//$('#payment').trigger( "click" );
+					$("#myModal").modal();
+					$('.modal-body').empty().html($select_market_message);
+					return;
+				}
+
+	//			BootstrapDialog.confirm('Market :' + selected + ' premium of $45\n\n Would you like to purchase a report?', function(ok){
+	//			if(ok) {
+	//				if(selected !== 'SAMPLE'){// and not purchased...
+	//					global = "Suggest Portfolio";
+	//					features_user_selection = '["MARKET-' + selected + '"]';
+	//					stripe_amount = 45;
+	//					$('#payment').trigger( "click" );
+	//					return;
+	//				}
+	//			}
+	//		})
+
+	  }
+	  else{
+		 $("#market").prop("disabled",false);
+			 get_tickers_for_market(selected);
+	  }
+
+
+})
+
+// suggest stocks
+	$("#market").on('click', function(event){
+
+		if(!suggest_ticker){
+			dialog("Error", "no tickers found",BootstrapDialog.TYPE_INFO);
+			return false;
+		}
+
+		var ticker_array = [];
+		var number_of_stocks_to_suggest = 10;
+		            //generate random list of symbols
+//1. set tickers based on market selected
+		//19-Dec-17: Work on all tickers return from google finanace
+       // ticker_array = generate_uniqe_numbers(number_of_stocks_to_suggest).map(function(el){return suggest_ticker[el]});
+		ticker_array = suggest_ticker;
+			begin = new Date($( "#from_date2" ).val());
+			end = new Date($( "#to_date2" ).val());
+
+			if( ticker_array.length > 0 ){
+					$("#market").add('<i class="fa fa-refresh fa-spin"></i>');
+					$("#market").text("Please wait...");
+				if(p_semaphor == 0){
+
+						////////////////////////////     CURRENT QUOTES ///////////////////////////////////////
+					get_current_quotes4sugg(ticker_array, "quotes");
+
+						////////////////////////////     History QUOTES ///////////////////////////////////////
+					get_history_4_suggested2(ticker_array);
+				}
+				else
+				{
+					dialog("Error", "Search is not available at this time.\nPlease try again later",BootstrapDialog.TYPE_INFO);
+					console.log("index.php - p_semaphor is occupied by other process.")
+				}
+			}
+			else
+			{
+					dialog("Error", "No symbols found",BootstrapDialog.TYPE_INFO);
+					resource_portfolio(0);
+			}
+			resource_portfolio(0)
+	});
+
+
+// calculate prediction
+	$("#predictBTN").on('click', function(event){
+
+		var arr = [];
+		var avg_price;
+		var avg_dev;
+		var simulations = slider_p3.getValue();
+
+			if(portfolio_ready){
+				monte_prd_arr = [];
+				monte_prd_arr = initialize_two_dim_array(simulations + 2 , 7);
+				sim_counter = 0;
+
+				monte_prd_arr._data[0][0]="Run #";
+				monte_prd_arr._data[0][1]="Min Price";
+				monte_prd_arr._data[0][2]="Max Price";
+				monte_prd_arr._data[0][3]="Predicted Price";
+				monte_prd_arr._data[0][4]="Latest Price";
+				monte_prd_arr._data[0][5]="Growth%";
+				monte_prd_arr._data[0][6]="Predicted Total";
+
+
+				var ticker = $("#stockSelect1").val();
+				if(ticker == "portfolio"){
+					var ticker_value =	math.sum(get_table_column(tb1,14).map(function(el){return numeral(el)._value}));
+				}
+				else{
+					var tb1_ticker_idx = get_table_column(tb1,1).indexOf(ticker);
+					var ticker_value = numeral(tb1.cell(tb1_ticker_idx,9).data())._value;
+				}
+
+
+				if(ticker){
+					for(var x = 0; x < simulations; x++){
+							calculate_prediction(ticker);
+					};
+						simulations == 1 ? avg_price = monte_prd_arr._data[1][3]
+						:avg_price = n(monte_prd_arr._data.map(function(el){return el[3]}).splice(1,simulations).reduce(function(a,b){return numeral(a)._value + numeral(b)._value})/simulations);
+
+						simulations == 1? avg_dev = monte_prd_arr._data[1][5]
+						:avg_dev = ps(monte_prd_arr._data.map(function(el){return el[5]}).splice(1,simulations).reduce(function(a,b){return numeral(a)._value + numeral(b)._value})/(simulations));
+						monte_prd_arr._data[simulations+1][0] = "";
+						monte_prd_arr._data[simulations+1][1] = "";
+						monte_prd_arr._data[simulations+1][2] = "Average:";
+						monte_prd_arr._data[simulations+1][3] = avg_price;
+						monte_prd_arr._data[simulations+1][4] = monte_prd_arr._data[simulations][4];
+						monte_prd_arr._data[simulations+1][5] = avg_dev;
+
+						// calculate total prediction
+						for(var i=1; i<simulations+2; i++){
+							if(ticker !== "portfolio"){
+								monte_prd_arr._data[i][6] = n((1 + numeral(monte_prd_arr._data[i][5])._value) * ticker_value);
+							}
+							else{
+								monte_prd_arr._data[i][6] = monte_prd_arr._data[i][3];
+							}
+
+						}
+
+						arr = monte_prd_arr;
+						inject_table(arr._data,"#monte_prd_table");
+					//$( "#monte_prd_table tr:last" ).css({ backgroundColor: "yellow", fontWeight: "bolder" });
+				}
+				else{
+					dialog("Select Symbol", "Please Select a company from the list",BootstrapDialog.TYPE_INFO);
+				}
+			}// end if portfolio ready
+	});
+
+// calculate monte carlo compare
+	$("#sellpredictBTN").on('click', function(event){
+
+		var arr = [];
+		var avg_price;
+		var avg_dev;
+		var simulations = slider_m3.getValue();
+
+		min_monte = 0;
+		max_monte = 0;
+
+			if(portfolio_ready){
+				monte_sim_arr = [];
+				monte_sim_arr = initialize_two_dim_array(simulations + 2, 6);
+				sim_counter = 0;
+				monte_sim_arr._data[0][0]="Run #";
+				monte_sim_arr._data[0][1]="Min Price";
+				monte_sim_arr._data[0][2]="Max Price";
+				monte_sim_arr._data[0][3]="Final Predict Price";
+				monte_sim_arr._data[0][4]="Latest Price";
+				monte_sim_arr._data[0][5]="Deviation";
+
+				var ticker = $("#stockSelect2").val();
+				if(ticker){
+					for(var x = 0; x < simulations; x++){
+						calculate_sell_simulator(ticker);
+					};
+						simulations == 1 ? avg_price = monte_sim_arr._data[1][3]
+						:avg_price = n(monte_sim_arr._data.map(function(el){return el[3]}).splice(1,simulations).reduce(function(a,b){return numeral(a)._value + numeral(b)._value})/simulations);
+
+						simulations == 1? avg_dev = monte_sim_arr._data[1][5]
+						:avg_dev = ps(monte_sim_arr._data.map(function(el){return el[5]}).splice(1,simulations).reduce(function(a,b){return numeral(a)._value + numeral(b)._value})/(simulations));
+						monte_sim_arr._data[simulations+1][0] = "";
+						monte_sim_arr._data[simulations+1][1] = "";
+						monte_sim_arr._data[simulations+1][2] = "Average:";
+						monte_sim_arr._data[simulations+1][3] = avg_price;
+						monte_sim_arr._data[simulations+1][4] = monte_sim_arr._data[simulations][4];
+						monte_sim_arr._data[simulations+1][5] = avg_dev;
+
+						arr = monte_sim_arr;
+						inject_table(arr._data,"#monte_sim_table");
+					//$( "#monte_sim_table tr:last" ).css({ backgroundColor: "yellow", fontWeight: "bolder" });
+				}
+				else{
+				dialog("Select Symbol", "Please Select a company from the list",BootstrapDialog.TYPE_INFO)
+				}
+			}//end if portfolio ready
+
+	});
+
+// handle premium
+$(".premium").on('click', function(event){
+
+	event.preventDefault;
+
+	var valid = false;
+
+	if(!$(this).children().hasClass('glyphicon-ok')){
+		global = $(this).children().data().name ;
+
+		valid = validate_before_purchase($(this));
+
+		if(!valid){
+			dialog(message_h,message_b,BootstrapDialog.TYPE_INFO);
+			return;
+		}
+
+		$('#purchaseItemsBtn').trigger( "click" );
+	}
+})
+
+//	else
+//	{
+//		if(!portfolio_ready &&  ($(this).find('.noPortfolio').length == 0)){
+//				dialog('Portfolio Not Ready', "Please click on Analys Portfolio." ,BootstrapDialog.TYPE_INFO);
+//		}
+//	}
+
+
+	// handle pricing table
+	$("#myModal").on('click', "#priceTB td input[type='checkbox']", function(){
+				var num_of_stocks = tbRows;
+				var value = numeral($(this).val())._value;
+				var chk_idx = $(this).parent().index() ; // select day/week license
+				var total = 0;
+				var user_select = []; // array of features selected TODO: mark selected features which the user already subscribed to.
+
+				//hide paypal
+				$("#paypal-button").css("visibility","hidden");
+				$("#payment").css("visibility","hidden");
+				//toggle check
+				//$(this).parents('td').siblings().find('input:checkbox').removeAttr('checked');
+
+				//if any of "ALL" is checked reset all.
+				if($("#priceTB tbody tr:nth-child(13)").find("input[type='checkbox']:checked").length == 1){
+					$("#priceTB tbody input[name='feature']").prop("checked", false);
+				//	$("#priceTB tbody tr td:nth-child(4)").text("");
+					$("#priceTB tbody td:nth-child(" + (chk_idx+4) + ")").text("");
+				}
+
+				//if no checkbox selected in row set total to zero
+			if(!$(this).prop("checked")){
+				$("#priceTB tbody tr:nth-child(13) input[type='checkbox']").prop("checked", false);
+				$(this).parents('tr').find('td').eq(3).text("")
+			}
+			else
+			{
+					// write total 	depends on datatype
+					switch($(this).data().type){
+						case "UC":
+							//reset "ALL" value
+							$("#priceTB tbody tr:nth-child(14) input[type='checkbox']").prop("checked", false);
+							$("#priceTB tbody tr:nth-child(14) td:nth-child(4)").text("");
+							// calculate
+							(chk_idx == 0)?
+							$(this).parents('tr').find('td').eq(3).text("$ "+ $(this).val() * num_of_stocks):
+							$(this).parents('tr').find('td').eq(4).text("$ "+ $(this).val() * num_of_stocks * 4);
+							break;
+						case "OC":
+							//reset "ALL" value
+							$("#priceTB tbody tr:nth-child(14) input[type='checkbox']").prop("checked", false);
+							$("#priceTB tbody tr:nth-child(14) td:nth-child(4)").text("");
+							// calculate
+							(chk_idx == 0)?
+							$(this).parents('tr').find('td').eq(3).text("$ "+ $(this).val() ):
+							$(this).parents('tr').find('td').eq(4).text("$ "+ $(this).val()  * 4);
+							break;
+						case "ALL":
+							// unchecked all
+							$("#priceTB tbody  input[type='checkbox']").prop("checked", false);
+							// null totals
+							$("#priceTB tbody td:nth-child(" + (chk_idx+4) + ")").text("");
+							// check all column's features
+							$("#priceTB tbody td:nth-child(1) input[type='checkbox']").prop("checked", true)
+							$(this).parents('tr').find('td').eq(3).text("$ "+ $(this).val());
+							break;
+					}
+				}
+
+				// calculae total
+				for(var i=1; i<$("#priceTB tbody tr").length+1;i++){
+						total+=numeral($("#priceTB tbody tr:nth-child("+i+") td:nth-child(4)").text())._value
+					}
+
+				// text total
+				$("#priceTB tfoot td:nth-child(4)").text("$ "+total);
+
+				if(total == 0) $("#priceTB tbody  input[type='checkbox']").prop("checked", false);
+				$("#stripe_amount").val($("#priceTB tfoot td:nth-child(4)").text());
+				stripe_amount = numeral($("#priceTB tfoot td:nth-child(4)").text())._value;
+
+				//prepare list of selected items
+				$("#priceTB tbody").find("input[type='checkbox']:checked").each(function() {
+						user_select.push($(this).data().name);
+
+				});
+
+				// handle all
+				if(user_select.indexOf("ALL") > -1) user_select = ["ALL"];
+
+				//invoice description
+				stripe_description = $('input[name="inlineRadioOptions"]:checked').parent().text().trim() + " feature/s selected : " + user_select.join(",") +" ( " + tbRows + " stocks )" ;
+
+				features_user_selection = JSON.stringify(user_select);
+
+				//enable paypal
+				if(features_user_selection.length > 3){
+					$("#paypal-button").css("visibility","visible");
+					$("#payment").css("visibility","visible");
+				}
+
+	});
+
+
+
+// hidden button processing puchase
+$("#purchaseItemsBtn").click(function(event){
+
+	var idx;
+
+	event.preventDefault;
+	$("#myModal").modal();
+	$('.modal-body').empty().html($ftr_options);
+
+
+	// reset table
+	$("#priceTB tbody td:nth-child(1) input[type='checkbox']").prop("checked", false).removeAttr('disabled');
+	$("#priceTB tbody td:nth-child(4)").text("");
+	$("#priceTB tfoot td:nth-child(4)").text("");
+
+	// mark selected item purchase
+	idx = $("#priceTB tbody tr:contains('" + global + "')").index();
+	$("#myModal #priceTB tbody tr:nth-child(" + (idx + 1) + ") input[type='checkbox']").trigger('click');
+
+	// mark current purchase
+	if(purchase.length > 0 ){
+			// if "ALL" selected mark all commercial
+			if(purchase.indexOf("ALL") > -1){
+						$("#priceTB tbody td:nth-child(1) input[type='checkbox']").prop("checked", true).attr("disabled","disabled");
+			}
+			else{ // only some purchase
+					$.each(purchase,function(idx,el){
+						$("#priceTB tbody").find("[data-name='" + el +"']").each(function(){
+						$(this).attr("disabled","disabled");
+					})
+				})
+			} // end else
+	}
+});
+
+////////////////////////////  STRIPE ////////////////////////////////
+
+    $("#payment").on('click', function (e) {
+
+	var amount = stripe_amount * 100;
+	var displayAmount = parseFloat(Math.floor(stripe_amount * 100) / 100).toFixed(2);
+
+	if(features_user_selection.length < 3 && global !== "Suggest Portfolio"){
+		dialog("Selection","No feature was select from the list",BootstrapDialog.TYPE_INFO);
+		return false;
+	}
+    // Open Checkout with further options
+    handler.open({
+        name: 'Cashizada',
+        description: 'Total amount: ($' + displayAmount + ')',
+        amount: amount
+    });
+    e.preventDefault();
+    });
+
+
+// Close Checkout on page navigation
+$(window).on('popstate', function () {
+    handler.close();
+});
+
+
+//$(".glyphicon-shopping-cart").click(function(event){
+//
+//	event.preventDefault;
+//	//validate portfolio before purchase
+//	var valid = false;
+//
+//	valid = validate_before_purchase();
+//
+//	if(!valid){
+//		dialog(message_h,message_b,BootstrapDialog.TYPE_INFO);
+//		return;
+//	}
+//
+//	if($(this).hasClass('glyphicon-ok'))return;
+//
+//
+////	$('#purchaseItemsBtn').trigger( "click" );
+//
+//});
+
+// deselect markets
+
+$("#market_select").on('shown.bs.select', function (e) {
+
+	$.each(purchase_market, function(ix, el){
+		$("." + el).removeClass('glyphicon glyphicon-ok').addClass('glyphicon glyphicon-ok');
+	})
+});
+
+////////////////////////////  STRIPE ////////////////////////////////
+
+    $("#paypal-button").on('click', function (e) {
+
+		alert("paypal selected");
+
+		if(features_user_selection.length < 3 && global !== "Suggest Portfolio"){
+			dialog("Buy Features","No feature was select from the list. \nPlease select feature/s.",BootstrapDialog.TYPE_INFO);
+			return false;
+		}
+
+	});
+
+//////////////////////   paypal payment ////////////////////////
+<!--    paypal.Button.render({-->
+
+<!--        env: 'sandbox', // Or 'sandbox'-->
+
+<!--		style: { size: 'small', shape : 'pill' },-->
+
+<!--        client: {-->
+<!--            sandbox:    'AZ7jCnVZ0LsDzvA-kQvTk_f3Z9CMPL0P3owtsJsMlaUJeytmdBgGNCRE9-k91rFuGt0duSnMVXN3n1Jm',-->
+<!--            production: 'xxxxxxxxx'-->
+<!--        },-->
+
+<!--        commit: true, // Show a 'Pay Now' button-->
+
+<!--        payment: function(data, actions) {-->
+<!--            return actions.payment.create({-->
+<!--                transactions: [-->
+<!--                    {-->
+<!--                        amount: { total: stripe_amount, currency: 'USD' },-->
+<!--						description: stripe_description-->
+<!--                    }-->
+<!--                ]-->
+<!--            });-->
+<!--        },-->
+
+<!--        onAuthorize: function(data, actions) {-->
+<!--            return actions.payment.execute().then(function(payment) {-->
+
+<!--                // The payment is complete!-->
+<!--                // You can now show a confirmation message to the customer-->
+
+<!--				dialog("Payment Successful", "Thank you for your purchase.\nPress OK to go back and wait few minutes to see changes reflected." ,BootstrapDialog.SUCCESS);-->
+
+<!--				var paypalPaymentObj = JSON.stringify(payment);-->
+
+<!--				$("#stripeToken").val("PAYPAL");-->
+<!--				$("#stripeEmail").val();-->
+<!--				$("#formAmount").val(stripe_amount * 100);-->
+<!--				$("#ftrUserSelection").val(features_user_selection);-->
+<!--				$("#portfolioInd").val($(".form-group").find("input[type='radio']:checked").val());-->
+<!--				$("#countTickers").val(tbRows);-->
+<!--				$("#tickerList").val(JSON.stringify(get_table_column(tb1,1)));-->
+<!--				$("#description").val(stripe_description);-->
+<!--				$("#paypalObj").val(paypalPaymentObj);-->
+<!--				$("#myForm").submit();-->
+
+<!--				console.log("paypal charge completed successfully");-->
+
+
+<!--            });-->
+<!--        },-->
+
+<!--		onError: function(err) {-->
+<!--            dialog("Payment un-successful", "Could not process payment \ndue to following error: \n\n" + err ,BootstrapDialog.TYPE_DANGER);-->
+
+<!--        }-->
+
+<!--    }, '#paypal-button');-->
+
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AutoComplete</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js">
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
+    </script>
+
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
+        rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Select symbol</h1>
+    <input type="text" id="tags">
+
+    <script>
+$( "#tags" ).autocomplete({
+						  source: function(request, response) {
+								$.ajax({
+								//type: 'get',
+								  datatype:'json',
+								  url: 'http://127.0.0.1:5000/autocomp',
+								  data: {
+										q: request.term
+										},
+								  success: function(data){
+
+									   // alert(data);
+									   response($.map($.parseJSON(data).ResultSet.Result, function(item) {
+										 return {
+													label: item.name + ' , ' + item.typeDisp + " , " + item.exchDisp,
+													value: item.symbol
+										 }
+									   }));
+								 }// end function(data)
+							   });//ajax
+							 },//source
+						  minLength: 2,
+						});
+  </script>
+
+</body>
+</html>

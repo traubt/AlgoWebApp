@@ -1,0 +1,1270 @@
+
+<!doctype html>
+<html lang="en">
+    <head>
+    <!-- Required meta tags -->
+<!--    <meta charset="utf-8">-->
+        <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Algo Trading</title>
+         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+
+<!--		included js scripts-->
+		<script type="text/javascript" src="../static/get_historic_data2.js"></script>
+        <script type="text/javascript" src="../static/bot.js"></script>
+        <script type="text/javascript" src="../static/math.min.js"></script>
+        <script type="text/javascript" src="../static/lwCandleChart.js" defer></script>
+        <script type="text/javascript" src="../static/HighChart.js" defer></script>
+        <script type="text/javascript" src="../static/tv.js" defer></script>
+        <script type="text/javascript" src="../static/indicators.js" defer></script>
+
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+        <script type="text/javascript" http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'" src="https://s3.tradingview.com/tv.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+        <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css"/>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+
+		<!-- JQuery links  -->
+		    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+		    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"  rel="stylesheet" type="text/css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/js/bootstrap-dialog.min.js"></script>
+<!--        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>-->
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<!--    	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>-->
+		<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+            <link href="../static/algo.css" rel="stylesheet" type="text/css"/>
+
+<!--        highcharts-->
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/highcharts-more.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+    </head>
+
+<body data-spy="scroll" data-target=".nav" data-offset="30">
+
+<nav class="navbar navbar-default navbar-static-top ">
+    <div class="container">
+        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#algoParams" aria-expanded="false" aria-controls="collapseExample">
+          Parameters
+        </button>
+        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#algoStrategy" aria-expanded="false" aria-controls="collapseExample" >
+          Strategy
+        </button>
+        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
+          Backtest
+        </button>
+        <button class="btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
+          Alerts
+        </button>
+        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
+          API's
+        </button>
+    </div>
+</nav>
+        <div class="collapse" id="algoParams">
+          <div class="well">
+                    <div class="row" style="margin-top : 5px">
+
+                        <label><u>System mode:</u></label><br>
+                        <label class="radio-inline">
+                            <input type="radio" name="AlgoMode" id="RadioDemo" value="TEST" checked> Demo (Paper money)
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="AlgoMode" id="RadioLive" value="LIVE" disabled data-toggle="tooltip" data-placement="bottom" title="Please send message to admin@cashizada.co.za to activate account"> Live (Real money)
+                        </label><br><br>
+
+                        <label><u>Strategy method:</u></label>
+                      <form>
+                        <label class="radio-inline">
+                          <input type="radio" name="optradio" checked>Autopilot
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="optradio" disabled>Create Strategy
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="optradio" >Manual Trading (disable algo trading)
+                        </label>
+                      </form>
+                        <br><br>
+
+                        <label><u>Choose market:</u></label><br>
+                        <form>
+                        <label class="radio-inline">
+                            <input type="radio" name="TradingPlatformOption" id="Binance" value="3" checked> Crypto
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="TradingPlatformOption" id="Stocks" value="1" > Equity
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="TradingPlatformOption" id="Direxion" value="2" > Direxions
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="TradingPlatformOption" id="Forex" value="4" > Forex
+                        </label>
+                        </form>
+                        <br>
+
+                            <div class="flex-row">
+                            <!--   <div class="col-md-2">-->
+                                  <label for="sel-options" class="fles-item">Wallet Initial Amount:</label>
+                                  <select id="sel-options" class="flex-item">
+                                                                    <option value=100>$100</option>
+                                                                    <option value=1000 >$1,000</option>
+                                                                    <option value=10000>$10,000</option>
+                                                                    <option value=100000 selected>$100,000</option>
+                                  </select>
+                                   <button id="resetWallet" type="button" class="btn btn-primary flex-item">Reset Wallet</button>
+                            <!--   </div>-->
+                            </div>
+                        <br>
+                        <label><u>Transaction Notification Allerts:</u></label>
+                        <div class="row">
+                            <div class="col-sm-10">
+                                <form class="form-inline">
+                                    <div class="form-group">
+                                        <!--                <div class="checkbox" id="whatsappCB" name="wcb">-->
+                                        <label>
+                                            <input type="checkbox" name="wacb" class="wa_checked">&nbspWhatsapp:&nbsp
+                                        </label>
+                                        <!--          </div>-->
+                                    </div>
+                                    <label class="sr-only" for="cellNo"></label>
+                                    <input type="number" class="form-control" id="cellNo" placeholder="Cell No." value="27741988890" disabled>
+                                    <label class="sr-only" for="twilioPass">Twilio Key</label>
+                                    <input type="password" class="form-control" id="twilioKey" placeholder="Enter Twilio Key" value="ACaa6d3a0629279c6f5aa185857a1fff99" disabled>
+                                    <!--          <div class="form-group">-->
+                                    <label class="sr-only" for="twilioPass">Password</label>
+                                    <input type="password" class="form-control" id="twilioPass" placeholder="Enter Twilio Password" value="bd80d0fb93f57aea98c600e4c5f86c32" disabled>
+                                    <!--          </div>-->
+                                    <button id="testWA" type="button" class="btn btn-primary" disabled>Test Whatsapp message</button>
+                                </form>
+                            </div>
+                        </div><!-- /.row -->
+                        <br>
+
+                        <label><u>Chart Preference:</u></label><br>
+                        <div class="flex-row">
+                              <label id="ticker_type" class="flex-item" for="tickers"></label>
+                              <select class="flex-item" id="tickers" title="Select Symbol"></select>
+                              <button id="crytpoInfo" type="button" class="btn btn-primary flex-item">View symbol</button>
+
+                        </div>
+                        <div class="flex-row">
+                            <label for="tf" class="flex-item">Default Interval:</label>
+                            <select class="flex-item" id="tf">
+                                <option value="5">5m</option>
+                                <option value="15" selected>15m</option>
+                                <option value="30">30m</option>
+                                <option value="60">1h</option>
+                                <option value="120">2h</option>
+                                <option value="240">4h</option>
+                                <option value="D">1d</option>
+                                <option value="W">1w</option>
+                            </select>
+                        </div>
+                            <div class="flex-row">
+                                    <label for="tf" class="flex-item">Color Theme:</label>
+                                    <select class="flex-item" id="color">
+                                        <option value="light" selected>light</option>
+                                        <option value="dark">dark</option>
+                                    </select>
+                            </div>
+                    </div>
+          </div>
+        </div>
+
+        <div class="collapse" id="algoStrategy">
+          <div class="well">
+              <h3>Algotrading Strategy</h3><br><br>
+              <div class="strategy_wrapper">
+                  <div class="strategy strategy_params">
+                      <div class="title"><label>Strategy parameters</label> </div>
+                      <form class="form-inline" style="margin-left:10px">
+                          <div class="form-group">
+                              <label >Select strategy method :</label>
+                                <label class="radio-inline">
+                                  <input type="radio" name="strategy" value="rcmd" checked>System recommended
+                                </label>
+                                <label class="radio-inline">
+                                  <input type="radio" name="strategy" value="scratch" >Start From Scratch
+                                </label>
+                                <label class="radio-inline">
+                                  <input type="radio" name="strategy" value="template" >Start From Template
+                                </label>
+                                <label class="radio-inline">
+                                  <input type="radio" name="strategy" value="manual" >Manual Trading (disable algo trading)
+                                </label>
+                              </div>
+                      </form>
+
+                      <form id ="strategy_template" class="form-inline" style="margin-left:10px" hidden="true">
+                            <div class="form-group">
+                              <label >Template Strategies:</label>
+                                <label class="radio-inline">
+                                  <input type="radio" name="template" checked>Momentum
+                                </label>
+                                <label class="radio-inline">
+                                  <input type="radio" name="template" >Buy/Volume Pressure
+                                </label>
+                                <label class="radio-inline">
+                                  <input type="radio" name="template" >Breakout After Sleep
+                                </label>
+                                <label class="radio-inline">
+                                  <input type="radio" name="template" >Recovery From Deep
+                                </label>
+                              </div>
+                      </form>
+
+                        <form class="form-inline" style="margin-left:10px">
+                              <div class="form-group">
+                                <label for="strtegy_inteval">Select interval timeframe ('candle') :</label>
+                                    <select class="form-control" id="strtegy_inteval" title="Timeframe">
+                                        <option value="1">1m</option>
+                                        <option value="5">5m</option>
+                                        <option value="15" selected>15m</option>
+                                        <option value="30">30m</option>
+                                    </select>
+                                </div>
+                        </form>
+                      <form class="form-inline" style="margin-left:10px">
+                              <div class="form-group">
+                                <label for="sleep_between_cycles">Select sleep time between cycles (seconds) :</label>
+                                    <select class="form-control" id="sleep_between_cycles" title="Timeframe">
+                                        <option value="1" selected>5sec</option>
+                                        <option value="5">10sec</option>
+                                        <option value="30" >30sec</option>
+                                        <option value="60">60sec</option>
+                                    </select>
+                                </div>
+                        </form>
+                      <form class="form-inline" style="margin-left:10px">
+                              <div class="form-group">
+                                <label for="sleep_between_candidates">Select sleep time between "No Candidates Found" :</label>
+                                    <select class="form-control" id="sleep_between_candidates" title="Timeframe">
+                                        <option value="1" selected>5sec</option>
+                                        <option value="5">10sec</option>
+                                        <option value="30" >30sec</option>
+                                        <option value="60">60sec</option>
+                                    </select>
+                                </div>
+                        </form>
+
+
+                  </div>
+                  <div class="strategy strategy_candidates">
+                      <div class="title"><label>Find candidates criteria</label></div>
+                             <form class="form-inline" style="margin-left:10px">
+                              <div class="form-group">
+                                <label for="candidate_filter">Narrow the list of symbols with attribute :</label>
+                                  <select class="selectpicker"  id="candidate_filter" data-width="fit" name="showHide"  multiple data-container="body" title="Attribute:">
+                                      <option selected>Top Volume</option>
+                                      <option>Top Gainers</option>
+                                      <option>Top Efficient</option>
+                                </select>
+                              </div>
+                              <div class="form-group">
+                                <label for="Total">to maximum of :</label>
+<!--                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">-->
+                                  <select class="form-control" id="Total" title="Count">
+                                      <option>20</option>
+                                      <option>50</option>
+                                      <option>100</option>
+                                      <option>All</option>
+                                </select>
+                              </div>
+                              <div class="form-group">
+                                <label for="timeFrame">in a timeframe ('Candle') of :</label>
+<!--                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">-->
+                                    <select class="form-control" id="timeFrame" title="Timeframe">
+                                        <option value="1">1m</option>
+                                        <option value="5">5m</option>
+                                        <option value="15" selected>15m</option>
+                                        <option value="30">30m</option>
+                                    </select>
+                              </div>
+                              <div class="form-group">
+                                <label for="periods">for the last :</label>
+<!--                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">-->
+                                    <select class="form-control" id="periods" title="Periods">
+                                        <option value="1">1 period</option>
+                                        <option value="2">2 periods</option>
+                                        <option value="3" selected>3 periods</option>
+                                        <option value="4">4 periods</option>
+                                    </select>
+                              </div>
+                          </form>
+
+                  </div>
+                  <div id="buy_conditions" class="strategy strategy_buy">
+                      <div class="title">
+                          <label>Buy Asset criteria</label>
+                      </div>
+                      <div class="condition_wrapper" id="condition_1">
+                      <form class="form-inline">
+                          <div class="form-group">
+                            <label for="strategy_attr_lh_1">Buy asset if :</label>
+                              <select class="selectpicker"  id="strategy_attr_lh_1" data-width="fit" name="showHide"   data-container="body" title="Indicator:">
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="strategy_condition_1">is :</label>
+                              <select class="condition"  id="strategy_condition_1" data-width="fit" name="showHide"   data-container="body" title="Condition:" >
+                                    <option>greater than:</option>
+                                    <option>lower than:</option>
+                              </select>
+                          </div>
+                          <div class="form-group">
+                              <select class="selectpicker"  id="strategy_attr_rh_1" data-width="fit" name="showHide"   data-container="body" title="Value Of:" disabled>
+                              </select>
+                          </div>
+                          <button type="button" class="and btn btn-info">And</button>
+                          <button type="button" class="or btn btn-warning">Or</button>
+                      </form>
+                    </div>
+
+                  </div>
+                  <div class="strategy_sell strategy">
+                      <div class="title"><label>Sell Asset criteria</label></div>
+
+                      <div class="condition_wrapper" id="s_condition_1">
+                          <form class="form-inline">
+                              <div class="form-group">
+                                <label for="sell_attr_lh_1">Sell asset if :</label>
+                                  <select class="selectpicker"  id="sell_attr_lh_1" data-width="fit" name="showHide"   data-container="body" title="Indicator:">
+                                  </select>
+                              </div>
+                              <div class="form-group">
+                                <label for="sell_condition_1">is :</label>
+                                  <select class="condition"  id="sell_condition_1" data-width="fit" name="showHide"   data-container="body" title="Condition:" >
+                                        <option>greater than:</option>
+                                        <option>lower than:</option>
+                                  </select>
+                              </div>
+                              <div class="form-group">
+                                  <select class="selectpicker"  id="sell_attr_rh_1" data-width="fit" name="showHide"   data-container="body" title="Value Of:" disabled>
+                                  </select>
+                              </div>
+                              <button type="button" class="and btn btn-info">And</button>
+                              <button type="button" class="or btn btn-warning">Or</button>
+                          </form>
+                        </div>
+
+                  </div>
+              </div>
+
+              <form class="form-inline">
+                      <label for="rule_name">Give rule a name :</label>
+                       <input type="text" id="rule_name" maxlength="20"></input>
+                    <button id='save_rule_btn' type="button" class="btn btn-warning">Save</button>
+              </form>
+        </div>
+
+</div>
+
+    <div id="engineButtons">
+        <button id="runAlgo" type="button" class="btn btn-primary">Start BOT</button>
+        <button id="stopAlgo" type="button" class="btn btn-primary">Stop BOT</button>
+        <i class="fas fa-circle"></i>
+    </div>
+
+
+      <div class="rowOne">
+        <div class="row chartBlock">
+                <div class="well" id="stockInfo">
+                <div class="icon">
+                    <a href="#" data-toggle="tooltip" data-html="true" data-placement="left" title="Chart information <br>1.This is the first line of a tooltip. Very flexible<br>2.This is the second line">
+                      <span class="glyphicon glyphicon-info-sign"></span>
+                    </a>
+                </div>
+                    <!--Well Stock Information -->
+                    <label for="tr_div" id="chart_symbol">BTCUSDT</label>
+                            <div id='tr_div' class="btn-group ts_btn_grp" data-toggle="buttons">
+                              <label class="btn" data-value="4">
+                                <input type="radio" name="options" id="option1" autocomplete="off" > 4m
+                              </label>
+                              <label class="btn active" data-value="15">
+                                <input type="radio" name="options" id="option2" autocomplete="off" > 15m
+                              </label>
+                              <label class="btn" data-value="30">
+                                <input type="radio" name="options" id="option3" autocomplete="off" > 30m
+                              </label>
+                            </div>
+                        <div id = "chartContainer">
+                            <div id="chart">
+                                    <div id="Legend" class="chartjsLegend">
+                                        <div id="firstRow"></div>
+                                    </div>
+                            </div>
+                    </div> <!--End stock-chart -->
+                    <div id="chartbutton" >
+                        <button id="buyOrder" type="button"  class="btn btn-primary ">Buy Market</button>
+                        <button id="sellOrder" type="button"  class="btn btn-primary">Sell Market</button>
+
+                    </div>
+                </div> <!-- End Well Stock Information -->
+            </div>
+
+            <div class="row progressBlock">
+                <div class="well" id="wallet">
+                    <div class="icon">
+                        <a href="#" data-toggle="tooltip" data-placement="left" title="Wallet balance">
+                          <span class="glyphicon glyphicon-info-sign"></span>
+                        </a>
+                    </div>
+                    <div id = "algoProgress">
+                        <div id="progress">
+                            <li><i class="fas fa-cloud-download-alt"></i><br>Download Quotes</li>
+                            <li><i class="fas fa-filter"></i><br>Find Candidates</li>
+                            <li><i class="far fa-flag"></i><br>Buy Asset</li>
+                            <li><i class="fa fa-coffee"></i><br>Monitor Asset</li>
+                            <li><i class="far fa-money-bill-alt"></i><br>Sell Asset</li>
+                        </div>
+                        <div class="waletClass" id="wallet_container"></div>
+                    </div>
+                    <div id="balance" ></div><h4>Balance:&nbsp</h4>
+                </div>
+            </div>
+
+<!--          HIGHCHART meter-->
+          <div class="row progressBlock">
+            <div class="well" id="hcGuages">
+                <div class="icon">
+                    <a href="#" data-toggle="tooltip" data-placement="left" title="This is a tooltip!">
+                      <span class="glyphicon glyphicon-info-sign"></span>
+                    </a>
+                </div>
+                <h5><u>Ticker/Benchmark Performance</u></h5>
+                    <figure class="highcharts-figure">
+                        <div id="tickerHC"></div>
+                        <div id="benchmarkHC"></div>
+                    </figure>
+            </div>
+          </div>
+
+      </div>
+
+
+</div>
+
+
+    <div class="row trxBlock">
+        <div class="well" id="transactions">
+            <table id="trxTbl" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Datetime</th>
+                        <th>Mode</th>
+                        <th>Market</th>
+                        <th>Action</th>
+                        <th>Method</th>
+                        <th>Symbol</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Amount($)</th>
+                        <th>Duration(sec)</th>
+                        <th>Fee</th>
+                        <th>Profit($)</th>
+                        <th>Profit(%)</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+        <div class="row logBlock">
+            <div class="well" id="divLog">
+            <h3>Server Log:</h3>
+            <div id="log" class="scroll"></div>
+
+
+            </div>
+        </div>
+
+        <div class="row statsBlock">
+            <div class="well" id="divStats">
+                <h3>Statistics:</h3>
+                <div id="stats">
+                    <table id="statTbl" class="display" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Measure</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+
+<!--<div id ="lwchart"></div>-->
+<!-- toast alert   -->
+<div id="orderAlert" class="alert alert-success" role="alert">
+        <span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
+        <strong id="o_type"></strong><br>
+        <small id="order_content"></small>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+</div>
+
+
+<script>
+
+    var user = 'Tomer';
+
+	var _algo_chart = {};
+	var _klinedata = {};
+	var _binanceSocket = {};
+	var _candleseries; // Websocket candle sticks
+	var _sma_series;
+	var _rsi_series;
+	var _volumeSeries;
+	var _message = {};  // latest price object
+    var _candlestick ; // latest price candlestick
+    var _interval = 0; // holds the "websocket" interval of yfinance
+    var _interval_highchart = 0;
+	var _inPosition = false;
+	var _wallet = []; // user wallet
+	var _init_wallet_amount; // initial wallet amount
+	var _token = {} // wallet content
+	var _coin = 'USDT' // default coin
+	var _mode = $('input[name="AlgoMode"]:checked').val();  // LIVE OR DEMO
+	var _base_coin_qty = 0; // hold wallet amount of base coin
+	var _order_type = ""; // BUY/SELL
+	var _time_res = "15";
+	var _theme = "light";
+	var _symbol = "BTCUSDT";
+	var _binanceSocket = {};
+	var _b_time_res = {"1":"1m","15":"15m","30":"30m","60":"1h","120":"2h","240":"4h","D":"1d","W":"1w"};  // map td timeframe to binance timeframe
+    var _asset = 'crypto'; // user selection of platform
+    var _asset_list = [];
+    var _quote = {} ; // holds latest quote data
+    var price = 0 ; //latest price of asset
+    var _walletChart;
+    var _highChart_val_a=18; //sharpe value of main symbol factor to 0-100
+    var _highChart_val_b=0;  ////sharpe value of benchmark symbol factor to 0-100
+    var _trx_table;
+    var _wallet_chart_time_interval = 2000; //refresh wallet chart
+    var _current_algo_symbol_price;
+    var _is_algo_mode = 0;
+    var _trx_time;
+    var _log_no;
+    var _market_open_ind;
+    var _lwchart;
+    var _lineSeries;
+    var _buysell_array = [];
+    var _buysell_element = {};
+    var _monitor; // wallet chart interval
+    var _manual_sell = true; // interupts algo buy user selling manual
+    var _condition_no = 1;
+    var _condition_div;
+    var _indicators = []; // list of indicators required by the algo engine
+    var _condition;
+    var _value_or_indicator;
+
+
+
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
+function get_current_date(){
+    return new Date().toLocaleString();
+    }
+
+function get_last_log_no(){
+            return $('#log').text().split("#")[$('#log').text().split("#").length-1].substring(0,$('#log').text().split("#")[$('#log').text().split("#").length-1].indexOf(":"))
+            }
+
+// client manual logs
+function add_to_log(msg){
+    if (!_is_algo_mode){
+        _log_no = parseInt(get_last_log_no()) + 1;
+        $('#log').append('<br>' + $('<div/>').text('#' + _log_no +': --Client-- ' + msg).html());
+        $('#log').scrollTop($('#log').prop("scrollHeight"));
+    }
+}
+
+// convert miliseconds to time format
+function msToHMS( ms ) {
+    // 1- Convert to seconds:
+    let seconds = ms / 1000;
+    // 2- Extract hours:
+    const hours = parseInt( seconds / 3600 ); // 3,600 seconds in 1 hour
+    seconds = seconds % 3600; // seconds remaining after extracting hours
+    // 3- Extract minutes:
+    const minutes = parseInt( seconds / 60 ); // 60 seconds in 1 minute
+    // 4- Keep only seconds not extracted to minutes:
+    seconds = seconds % 60;
+     return ( hours+":"+minutes+":"+seconds);
+}
+
+// use later with chart
+function generateData() {
+	const res = [];
+	const time = new Date(Date.UTC(2018, 0, 1, 0, 0, 0, 0));
+	for (let i = 0; i < 500; ++i) {
+		res.push({
+			time: time.getTime() / 1000,
+			value: i,
+		});
+
+		time.setUTCDate(time.getUTCDate() + 1);
+	}
+	return res;
+}
+
+// monitor wallet balance
+function monitor_wallet_chart() {
+     setInterval(() => {
+      var prev_amount;
+      // update line series if in algo mode
+      if(!_inPosition ){
+            if (_wallet[user][0].free != 0){ //fix glitch
+                _lineSeries.update({
+                    time: Math.round((Date.now()/1000),0),
+                    value: _wallet[user][0].free,
+                });
+            };
+            $("#balance").html("$"+_wallet[user][0].free);
+            _wallet[user][0].free >= _init_wallet_amount ? $("#balance").css("color","#52e152"):$("#balance").css("color","#ff0000");
+          }
+     },2000);  };
+
+
+function update_stats_table(){
+    _stat_table.clear().draw();
+    _stat_table.row.add(['Initial Balance:',_init_wallet_amount]);
+    _stat_table.row.add(['Current Balance:',_wallet[user][0].free]);
+    _stat_table.row.add(['Profit:',(_wallet[user][0].free - _init_wallet_amount).toFixed(2)]);
+    _stat_table.row.add(['Profit(%):',(((_wallet[user][0].free - _init_wallet_amount)/_init_wallet_amount)*100).toFixed(2)+'%']);
+    _stat_table.row.add(['No. Transactions:',_trx_table.column(0).data().length]);
+    _stat_table.row.add(['Avg. Profit:',(_trx_table.column( 11 ).data().reduce(function (a, b) { return a + b; })/_trx_table.column(0).data().length).toFixed(2)]);
+    _stat_table.row.add(['Holding Duration:',msToHMS(_trx_table.column( 9 ).data().reduce(function (a, b) { return a + b; })*1000)]);
+    _stat_table.row.add(['Biggest Winner:',_trx_table.cell(_trx_table.column(11).data().indexOf(Math.max.apply(Math,_trx_table.column(11).data())), 5).data()]);
+    _stat_table.row.add(['Max gain:',Math.max.apply(Math,_trx_table.column(11).data())]);
+    _stat_table.row.add(['Biggest Loser:',_trx_table.cell(_trx_table.column(11).data().indexOf(Math.min.apply(Math,_trx_table.column(11).data())), 5).data()]);
+    _stat_table.row.add(['Max Loss:',Math.min.apply(Math,_trx_table.column(11).data())]);
+    _stat_table.row.add(['Peak Balance:',Math.max.apply(Math,_trx_table.column(13).data())]);
+    _stat_table.row.add(['Lowest Balance:',Math.min.apply(Math,_trx_table.column(13).data())]);
+    _stat_table.row.add(['Success Trades:',_trx_table.column( 11 ).data().filter(function(num) { return num > 0}).length]);
+    _stat_table.row.add(['Failure Trades:',_trx_table.column( 11 ).data().filter(function(num) { return num < 0}).length]);
+    _stat_table.draw();
+}
+
+async function is_market_open(){
+            await fetch('https://finance.yahoo.com/quote/AAPL?p=AAPL&.tsrc=fin-srch')
+              .then(response => response.text())
+            .then(html => {
+                  var open_ind;
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(html, 'text/html');
+                  const div = doc.querySelector(`div#${'quote-market-notice'}`);
+                  console.log(div.textContent);
+                  if(div.textContent.indexOf('open') >= 0){
+                    console.log("market is open");
+                     _market_open_ind = 1 ;
+                  }else{
+                    console.log("market is closed");
+                    _market_open_ind = 0;
+                  }
+                  return open_ind;
+            })
+            .catch((err) => console.log("Can’t access " + url + " response. Blocked by browser?" + err));
+}
+
+function populate_strategy_condition(div_id){
+<!--        alert( _tech_indicators[_indicator].condition );-->
+        //enable condition selection
+        $(div_id).prop("disabled", false);
+        $(div_id).selectpicker('val', 'Condition:');
+        $(div_id).empty();
+        $(div_id).selectpicker('refresh');
+            //populate condition for that indicator
+        $.each(_tech_indicators[_indicator].condition[0], function(index, value) {
+            $(div_id).append("<option>"+value+"</option>")
+            $(div_id).selectpicker('refresh');
+        });
+}
+
+function populate_strategy_rh(div_id){
+         //enable  selection
+        $(div_id).prop("disabled", false);
+        $(div_id).selectpicker('val', 'Indicator:');
+        $(div_id).empty();
+        $(div_id).selectpicker('refresh');
+        //populate righthand
+        try{
+          $.each(_tech_indicators[_indicator].condition[1], function(index, value) {
+            //Check the type of condition
+            if(_tech_indicators[_indicator].condition_tp == "I"){
+                $(div_id).append("<option value="+value+">"+_tech_indicators[value].name+"</option>")
+                $(div_id).selectpicker('refresh');
+            }else{
+                $(div_id).append("<option>"+value+"</option>")
+                $(div_id).selectpicker('refresh');
+                }
+            })
+        }
+        catch(e){
+            dialog("Error","Error populated right hand condition "+e,BootstrapDialog.TYPE_INFO);
+        }
+}
+
+	//initialize
+	$(document).ready(function(){
+
+	//populate strategy left hand side - attirube 1
+      $.each(_tech_indicators, function(index, value) {
+        $("#strategy_attr_lh_1.selectpicker").append("<option value="+index+">"+value.name+"</option>");
+        $("#strategy_attr_lh_1.selectpicker").selectpicker('refresh');
+    });
+
+    //populate right hand condition
+    $('#strategy_attr_lh_1.selectpicker').on('change', function() {
+            _indicator = this.value;
+             populate_strategy_rh("#strategy_attr_rh_1")
+    });
+
+
+
+	// render default chart
+	renderChart(_asset,_symbol,_time_res,_theme);
+	renderHighChart(_symbol,"tickerHC");
+    renderHighChart(_symbol,"benchmarkHC");
+
+	// initial wallet amount
+	_init_wallet_amount =  Number($("#sel-options").val());
+
+	// initialize bot indicator
+	$('.fa-circle').css({ "color": "red","font-size":"35","font-weight": "bold"});
+    $('.fa-circle').text('BOT - OFF');
+
+	// initialize transactional table
+	_trx_table = $('#trxTbl').DataTable();
+	_stat_table = $('#statTbl').DataTable({searching: false, paging: false, info: false, ordering:false,
+        columnDefs: [{
+            width: '20%',
+            targets: 0
+        }],
+        fixedColumns: true
+	});
+
+	// initialize wallet balance chart
+	_lwchart = LightweightCharts.createChart(document.getElementById('wallet_container'), {
+            timeScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+            timeVisible: true,
+            secondsVisible: true,
+            lineType: 'Curved',
+        },
+    });
+    _lineSeries = _lwchart.addLineSeries();
+
+function icon_set(icon){
+        let myArray = ['.fa-cloud-download-alt','.fa-cloud-download-alt','.fa-filter','.fa-flag','.fa-coffee','.fa-money-bill-alt'];
+        myArray.forEach(function(element) {
+          $(element).css({ "color": "","font-size":""});
+        });
+    $(icon).css({ "color": "red","font-size":"35px","font-weight": "bold"});
+}
+
+
+///////   socket /////////////////
+            var socket = io();
+
+            // Event handler for new connections.
+            // The callback function is invoked when a connection with the
+            // server is established.
+            socket.on('connect', function() {
+                socket.emit('my_event', {data: 'I\'m connected!'});
+                console.log("I'm connected")
+            });
+
+            // socket RECEIVE handler
+            socket.on('my_response', function(msg) {
+                if(!_manual_sell){
+                        $('#log').append('<br>' + $('<div/>').text('#' + msg.count +': ' + msg.data).html());
+                };
+                $('#log').scrollTop($('#log').prop("scrollHeight"));
+                //console.log(msg.date, msg.price, msg.grow,msg.type,msg.symbol,msg.qty,msg.amt,msg.sell_rsn,msg.time_lapse,msg.fee);
+                _order_type = msg.type;
+                _symbol = msg.symbol;
+
+                // execute transaction
+                if (_order_type == 'BUY'){
+                    _inPosition = 1;
+                    icon_set('.fa-flag');
+                    $("#chart").empty();
+                    $("#chart_symbol").text(msg.symbol);
+                    $("#chart").empty();
+                    renderChart(_asset,msg.symbol,_time_res,_theme);
+                    Highcharts.charts[0].setTitle({ text: msg.symbol });
+                    //set market in wallet chart
+                    _buysell_element = { time: Math.round((Date.now()/1000),0),
+                                        position: 'belowBar',
+                                        color: 'green',
+                                        shape: 'arrowUp',
+                                        text: 'Buy: '+msg.symbol
+                                    };
+                    _buysell_array.push(_buysell_element);
+                    _lineSeries.setMarkers(_buysell_array);
+                    }
+                if (_order_type == 'BUY' || _order_type == 'SELL' ){
+                    if(!_manual_sell){
+                       // console.log("Executing "+_order_type+" transaction.");
+                        $('#orderAlert').show().delay(8000).fadeOut('fast');
+                        _transaction_order_demo(msg.symbol, msg.price, msg.qty,"AUTO");
+                        _current_algo_symbol_price = msg.price; // update chart price
+                    }
+                }
+
+                if (_order_type == 'SELL'){
+                    _inPosition = 0;
+                    icon_set('.fa-money-bill-alt');
+                    if(!_manual_sell){
+                        _buysell_element ={
+                                            time: Math.round((Date.now()/1000),0),
+                                            position: 'aboveBar',
+                                            color: 'red',
+                                            shape: 'arrowDown',
+                                            text: 'Sell: '+msg.symbol
+                                        };
+                        _buysell_array.push(_buysell_element);
+                        _lineSeries.setMarkers(_buysell_array);
+                    };
+                }
+
+                if(_order_type == 'MONITOR'){
+                    _symbol = msg.symbol;
+                    icon_set('.fa-coffee');
+                    //console.log('symbol: '+msg.symbol+' price: '+msg.price+' amount: '+msg.amount+' qty: '+msg.qty);
+                    if (msg.price > 0){ // avoiding binary messages _|--|__
+                        _current_algo_symbol_price = msg.price;
+                       }
+
+                }
+                // update charts progress
+                if (msg.data.indexOf("Download market quotes") >= 0){icon_set('.fa-cloud-download-alt')};
+                if (msg.data.indexOf("cycle") >= 0){icon_set('.fa-cloud-download-alt')};
+                if (msg.data.indexOf("matches") > 0){icon_set('.fa-filter')};
+                if (msg.data.indexOf("Exiting") > 0){
+                        $('.fa-money-bill-alt').css({ "color": "","font-size":""});
+                    _buysell_element = { time: Math.round((Date.now()/1000),0),
+                        position: 'belowBar',
+                        color: 'black',
+                        shape: 'arrowUp',
+                        text: 'Algo-Engine is idle',
+                    };
+                    _buysell_array.push(_buysell_element);
+                    _lineSeries.setMarkers(_buysell_array);
+                };
+            });
+
+            // Stop Algo engine
+            socket.on('stop_algo_engine', function(msg) {
+                socket.emit('stop_algo_engine', {data: 'broadcast triggered'});
+                $('#log').append('<br>' + $('<div/>').text(msg.data).html());
+            })
+
+
+/////////////////////////////  end  socket messages //////////////////////
+
+    // initialize user
+    _init_user_wallet_test();
+    monitor_wallet_chart();
+
+    // hide alert
+    $('#orderAlert').hide()
+
+    //get list of stocks/cryptos
+<!--    get_assets()-->
+    $("#ticker_type").text("Select default symbol (S&P 500):")
+    populate_tickers_dropdown()
+
+    //get all selected item from select picker
+    var selectedItems = $(".select_tickers").find("option:selected").map(function() {
+        return this.value;
+    }).get();
+
+    // user select select strategy method
+    $('input[type=radio][name="strategy"]').change(function() {
+        if (this.value == 'template'){
+             $("#strategy_template").show();
+        }else{
+            $("#strategy_template").hide();
+        };
+    });
+
+    // user select platform
+    $('input[type=radio][name="TradingPlatformOption"]').change(function() {
+    if (this.value == '3'){
+        _asset = 'crypto';
+        _symbol = 'BTCUSDT';
+        $("#ticker_type").text("Select Crypto USDT token:")
+    }else{
+        _asset = 'stocks';
+        _symbol = 'AAPL'
+        $("#ticker_type").text("Select default symbol (S&P 500)")
+    }
+
+    populate_tickers_dropdown()
+    $("#chart").empty();
+    renderChart(_asset,_symbol,_time_res,_theme);
+    Highcharts.charts[0].setTitle({ text: _symbol });
+    })
+
+    //user selection of strategy symbols
+    $('input[type=radio][name="groupStrtSymbols"]').change(function() {
+        if (this.value == 'single'){ //single symbol
+            $("#algo_tickers").prop("disabled", false);
+            $("#algo_group").prop("disabled", true);
+            $('#algo_group.selectpicker').selectpicker('val', '-1');
+        }else{
+            $("#algo_tickers").prop("disabled", true);
+            $("#algo_group").prop("disabled", false);
+            $('#algo_tickers.selectpicker').selectpicker('val', '-1');
+        }
+    })
+
+    // load select symbol dropdown to Strategy menu
+    $("#select_symbols").clone().appendTo("#algoSymbolSelect");
+
+
+	///////////////////////////////////// CONTROLS //////////////////////////////////////
+
+// Save user configuration
+	    $("#saveConfig").click(function(){
+            alert("TODO: save configuration");
+		});
+
+	// time scale button clicked
+     $(".ts_btn_grp label").on("click", function() {
+        var button_ts = $(this).data('value');
+       // console.log(button_ts);
+        _time_res = button_ts;
+        $("#chart").empty();
+        renderChart(_asset,$("#chart_symbol").text(),_time_res,_theme);
+        //Highcharts.charts[0].setTitle({ text: _symbol });
+
+    });
+
+ // Display token chart
+		$("#crytpoInfo").click(function(){
+            if (_is_algo_mode == 1){
+                alert("Can't view symbols when Algo engine is running.");
+                return 0;
+            }
+            if ($("#tickers").val() !== ''){
+                _symbol = $("#tickers").val();
+                _time_res = $("#tf").val();
+                _theme =  $("#color").val();
+                $("#chart").empty();
+                $('#symbol').html(_symbol+" "+_time_res);
+                if($("#select_symbols").find("option:selected").val() !== '')
+                $("#chart_symbol").html('<h3>'+$("#select_symbols").find("option:selected").text()+'</h3>')
+                renderChart(_asset,_symbol,_time_res,_theme);
+                Highcharts.charts[0].setTitle({ text: _symbol });
+            }else{
+                  alert("Plesae select symbol from the list");
+                  return 0;
+                  }
+// display butthon
+			$("#buyOrder").css("visibility","visible");
+			$("#sellOrder").css("visibility","visible");
+			$("#resetWallet").css("visibility","visible");
+		});
+
+// Manual BUY order
+        $("#buyOrder").click(async function(){
+            // check if market is open
+            if(_asset == 'stocks'){
+                await is_market_open();
+                console.log("market open: " + _market_open_ind);
+                if(!(_market_open_ind)){
+                    alert("US market is closed");
+                    return 0;
+                }
+            }
+            if(!_inPosition ){
+                _is_algo_mode = 0; // manual transaction indicator
+                _inPosition = 1;
+                var token = _symbol;
+                price =  _candlestick.close ;
+                var qty =  _wallet[user][0].free / price;
+                _order_type = "BUY";
+                let diffTime = -1; // if -1 then manual calculation else Algo calculation
+                _transaction_order_demo(token, price, qty,"Manual");
+                add_to_log(get_current_date() + ': Buy manualy: '+token+ ' Quantity: '+qty+' at Price: '+price);
+                 _buysell_element = { time: Math.round((Date.now()/1000),0),
+                        position: 'belowBar',
+                        color: 'green',
+                        shape: 'arrowUp',
+                        text: 'Buy(m): '+token,
+                    };
+                    _buysell_array.push(_buysell_element);
+                    _lineSeries.setMarkers(_buysell_array);
+                // update transaction table
+                $('#orderAlert').show().delay(8000).fadeOut('fast');
+                }else{
+                    dialog("In-Market",_message.s + " is currently processed by Algo engine.",BootstrapDialog.TYPE_INFO);
+            }
+		});
+
+// Manual SELL order
+        $("#sellOrder").click(function(){
+            if( _inPosition ){
+                var token = _symbol;
+                _manual_sell = true;
+                $("#stopAlgo").click();
+                _is_algo_mode = 0;
+                price =  _candlestick.close ;
+                var qty = _wallet[user].find(x => x.asset === token).free;
+                _order_type = "SELL";
+                _transaction_order_demo(token, price, qty,"Manual");
+                add_to_log(get_current_date() + ': Sell manually: '+token+ ' Quantity: '+qty+' at Price: '+price);
+                add_to_log(get_current_date() + ': Stopping Algo-Engine');
+                _buysell_element = { time: Math.round((Date.now()/1000),0),
+                        position: 'aboveBar',
+                        color: 'red',
+                        shape: 'arrowDown',
+                        text: 'Sell(manually): '+token,
+                    };
+                    _buysell_array.push(_buysell_element);
+                    _lineSeries.setMarkers(_buysell_array);
+                if(!_is_algo_mode){
+                 _buysell_element = { time: Math.round((Date.now()/1000),0),
+                        position: 'belowBar',
+                        color: 'black',
+                        shape: 'arrowUp',
+                        text: 'Stop Algo Engine',
+                    };
+                    _buysell_array.push(_buysell_element);
+                    _lineSeries.setMarkers(_buysell_array);
+                }
+                // update transaction table
+                $('#orderAlert').show().delay(8000).fadeOut('fast');
+                _inPosition = 0;
+
+            }else{
+                dialog("Out-Market","You have no position in market",BootstrapDialog.TYPE_INFO);
+            }
+		});
+
+//reset wallet
+        $("#resetWallet").click(function(){
+            if (!_inPosition){
+                _init_wallet_amount = Number($("#sel-options").val());
+                _init_user_wallet_test();
+                monitor_wallet_chart();
+                dialog("Reset Wallet","Wallet was reset successfully to "+$("#sel-options").find("option:selected").text(),BootstrapDialog.TYPE_INFO);
+            }else{
+                dialog("Reset Wallet","Can't reset wallet while in-market",BootstrapDialog.TYPE_INFO);
+            }
+		});
+
+//enable whatsapp
+        $(".wa_checked").click(function(){
+            if ($('input.wa_checked').is(':checked')) {
+                $("#cellNo").prop('disabled', false);
+                $("#twilioKey").prop('disabled', false);
+                $("#twilioPass").prop('disabled', false);
+                $("#testWA").prop('disabled', false);
+            }
+        });
+
+// test whatsapp
+          $("#testWA").click(function() {
+          try{
+            if( $("#cellNo").val().length===0 || $("#twilioKey").val().length===0 || $("#twilioPass").val().length===0 ) {throw "Please enter all required fields"}
+            test_twilio($("#cellNo").val(),$("#twilioKey").val(), $("#twilioPass").val())
+          }
+          catch (e){
+            dialog("Test Whatsapp",e,BootstrapDialog.TYPE_INFO);
+          }
+          })
+
+// run crypto bot
+    $("#runAlgo").click(async function(){
+    // check if market is open
+           if(_asset == 'stocks'){
+                await is_market_open();
+                console.log("market open: " + _market_open_ind);
+                if(!(_market_open_ind)){
+                    alert(_asset + " market is closed");
+                    return 0;
+                }
+            }
+                     // update progress in chart
+             _buysell_element = { time: Math.round((Date.now()/1000),0),
+                position: 'belowBar',
+                color: 'black',
+                shape: 'arrowUp',
+                text: 'Algo-Engine has started',
+            };
+            _buysell_array.push(_buysell_element);
+            _lineSeries.setMarkers(_buysell_array);
+        _is_algo_mode = 1;
+        //update the color of wallet seris
+<!--       _lineSeries.applyOptions({-->
+<!--            color :''-->
+<!--       })-->
+        $('.fa-circle').css({ "color": "green","font-size":"35","font-weight": "bold"});
+        $('.fa-circle').text('BOT - ON');
+        // disable controls
+        _manual_sell = false;
+        // disable manual controls
+        $("#crytpoInfo").prop("disabled", true);
+        $("#buyOrder").prop("disabled", true);
+        $("#resetWallet").prop("disabled", true);
+        $("#runAlgo").prop("disabled", true);
+        run_bot()
+    })
+
+// stop crypto bot
+    $("#stopAlgo").click(function(){
+            if (_is_algo_mode != 1){
+                alert("Algo engine is not running.");
+                return 0;
+            }
+            // Stop websocket
+                if(_interval > 0){
+        //        console.log("closing interval "+_interval);
+                clearInterval(_interval);
+             }
+            $('.fa-circle').css({ "color": "red","font-size":"35","font-weight": "bold"});
+            $('.fa-circle').text('BOT - OFF');
+            _is_algo_mode = 0;
+            // set marker in line chart
+            if(!_manual_sell){
+              _buysell_element = { time: Math.round((Date.now()/1000),0),
+                                    position: 'belowBar',
+                                    color: 'black',
+                                    shape: 'arrowUp',
+                                    text: 'Stop-Algo requested',
+                                };
+                _buysell_array.push(_buysell_element);
+                _lineSeries.setMarkers(_buysell_array);
+            };
+            // send request to the server to stop the engine
+            stop_crypto_bot();
+            // enable manual controls
+             $("#crytpoInfo").prop("disabled", false);
+            $("#buyOrder").prop("disabled", false);
+            $("#resetWallet").prop("disabled", false);
+            $("#runAlgo").prop("disabled", false);
+    })
+
+    // rules management
+function strategy_validation(){
+    let valid = 1;
+    // Validate all options were selected
+       $("#buy_conditions select").each(function() {
+            if ($(this)[0].selectedIndex <= 0) {
+                valid = 0;
+            };
+       });
+      return valid;
+};
+
+    $(".and, .or").click(function(){
+<!--        let valid = strategy_validation();-->
+        let valid = 1;
+        if(!valid){
+            dialog('Select Options', "Condition is not complete. Please select all options" ,BootstrapDialog.TYPE_DANGER);
+            return "fail";
+        }
+        if($("#buy_conditions").find($(".condition_wrapper")).length < 4){
+            _condition_no = _condition_no + 1;
+            add_condition($(this).text());
+        }else{
+            dialog('Condition Limit', "Number of conditions are limited to 4" ,BootstrapDialog.TYPE_DANGER);
+        }
+        });
+
+
+// remove rules
+    $("#buy_conditions").on("click", "button", function() {
+            if ($(this).text()== 'Delete Condition'){
+                let condition_Id = $(this).data("id") - 1;
+                //remove indicators from list
+                let lh_indicator = $("#condition_"+$(this).attr("data-id")+" select:eq(0)").val();
+                let rh_indicator = $("#condition_"+$(this).attr("data-id")+" select:eq(2)").val();
+                // remove indicators from array
+                if (_indicators.indexOf(lh_indicator) >= 0) {
+                    _indicators.splice(_indicators.indexOf(lh_indicator),1);
+                };
+                if (_indicators.indexOf(rh_indicator) >= 0) {
+                    _indicators.splice(_indicators.indexOf(rh_indicator),1);
+                };
+                $("#condition_"+$(this).attr("data-id")).remove();
+            }
+        });
+
+// save rule
+    $("#save_rule_btn").click(function(){
+<!--            try{-->
+                // check input has data
+                if($("#rule_name").val()==""){
+                  dialog("Empty Rule Name","Please enter rule name before saving",BootstrapDialog.TYPE_DANGER);
+                  return 0;
+                };
+                let conditions = $("#buy_conditions .condition_wrapper form").length;
+                let and_or = "";
+                let rule = "";
+                for (let i = 0; i < conditions; i++)  {
+                      let compare =   $("#buy_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(1)").val() == "greater than:" ?  ">" :  "<";
+                      if(i != 0){
+                             and_or = $("#buy_conditions .condition_wrapper .form-inline:eq("+i+") label:eq(0)").text().substring(0, 3).toLowerCase().trim()
+                            }
+                        let lh_indicator = $("#buy_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(0)").val();
+                        let rh_indicator = $("#buy_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(2)").val();
+                        rule += " " + and_or + " ( " + lh_indicator +" "+compare+" " +  rh_indicator   +" )";
+                        // Check if rules are empty
+                        if ((lh_indicator == '') || (rh_indicator =='')){
+                            dialog('Error Saving rule', "Rule: #"+(i+1)+" is incomplete.<br><br> please select both sides of condition." ,BootstrapDialog.TYPE_DANGER);
+                            return 0;
+                        };
+                        // add new element to indicator array
+                        if (_indicators.indexOf(lh_indicator) < 0) {
+                            _indicators.push(lh_indicator);
+                        };
+                        // add new element to indicator array
+                        if (_indicators.indexOf(rh_indicator) < 0) {
+                            _indicators.push(rh_indicator);
+                        };
+                };
+                 dialog("Rule '"+ $("#rule_name").val() +"' saved to the Algo Engine","Rule: "+rule+"<br>Indicators: "+_indicators,BootstrapDialog.TYPE_INFO);
+<!--            catch (e){-->
+<!--                dialog('Error Saving rule', e ,BootstrapDialog.TYPE_DANGER);-->
+<!--            }-->
+        });
+
+
+
+}); // end document ready
+
+
+
+</script>
+
+	</body>
+</html>

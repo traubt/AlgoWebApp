@@ -1,0 +1,625 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 29 Mar 2017, 5:31:41 PM
+    Author     : tomert
+*/
+
+body{
+	font-size: 12px;
+}
+
+/*#container {
+	height: 600px;
+	min-width: 310px;
+	max-width: 800px;
+}*/
+
+#chartContainer {
+    position: inherit;
+    width: 50vw;
+    height: 50vh;
+}
+
+#chart {
+    position: absolute;
+    width: 50vw;
+    height: 50vh;
+}
+
+#Legend {
+ position: absolute;
+ left: 12px; top: 12px;
+ z-index: 1;
+ font-size: 14px;
+ font-family: sans-serif;
+ line-height: 18px;
+ font-weight: 300;
+}
+
+h4 {
+  margin-top: 25px;
+}
+.row {
+  margin-bottom: 20px;
+}
+.row .row {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.indicator{
+    width: 33%;
+    text-align: left;
+    /* border-bottom: 0.1px solid blue; */
+    border-collapse: collapse;
+}
+
+.value{
+    float: right;
+    /* font-size: larger; */
+    width: 20%;
+    /* text-align: right; */
+    /* padding-right: 20px; */
+    /* border-bottom: 0.1px solid blue; */
+    /* font-weight: bold; */
+    /* border-collapse: collapse; */
+}
+
+#single_quote_table{
+	border-style: solid;
+	border-color: blue;
+    border-width: 1px;
+}
+/*
+[class*="col-"] {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #eee;
+  background-color: rgba(86,61,124,.15);
+  border: 1px solid #ddd;
+  border: 1px solid rgba(86,61,124,.2);
+}
+
+hr {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+
+#container {
+    min-width: 300px;
+    max-width: 800px;
+    height: 300px;
+    margin: 1em auto;
+}
+*/
+
+.ui-combobox {
+    position: relative;
+    display: inline-block;
+}
+.ui-combobox-button {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+    /* adjust styles for IE 6/7 */
+    *height: 1.7em;
+    *top: 0.1em;
+}
+
+.ui-autocomplete-input {
+    margin: 0;
+    padding: 0.3em;
+}
+
+td.highlight {
+    background-color: whitesmoke !important;
+}
+
+/*modify currency combobox */
+#combobox {
+    display: block;
+    width: auto;
+    height: 23px;
+    float: right;
+    padding: 2px 5px;
+    font-size: 12px;
+}
+
+table#quote_tbl tr {
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+	line-height: 1.8;
+}
+
+/* Hiding the checkbox, but allowing it to be focused */
+.badgebox
+{
+    opacity: 0;
+}
+
+.badgebox + .badge
+{
+    /* Move the check mark away when unchecked */
+    text-indent: -999999px;
+    /* Makes the badge's width stay the same checked and unchecked */
+	width: 27px;
+}
+
+.badgebox:focus + .badge
+{
+    /* Set something to make the badge looks focused */
+    /* This really depends on the application, in my case it was: */
+    
+    /* Adding a light border */
+    box-shadow: inset 0px 0px 5px;
+    /* Taking the difference out of the padding */
+}
+
+.badgebox:checked + .badge
+{
+    /* Move the check mark back when checked */
+	text-indent: 0;
+}
+	
+
+input[type=checkbox]
+{
+  /* Double-sized Checkboxes */
+  -ms-transform: scale(5); /* IE */
+  -moz-transform: scale(5); /* FF */
+  -webkit-transform: scale(1.2); /* Safari and Chrome */
+  -o-transform: scale(5); /* Opera */
+  padding: 3px;
+  background-color: white;
+}
+
+
+@keyframes gree2white {
+    from {background-color: #c1fbae;}
+    to {background-color: white;}
+}
+
+
+@-webkit-keyframes red2white {
+    from {background-color: #fbaeae;}
+    to {background-color: white;}
+}
+    
+#flashRed{
+    background-color: white;
+    -webkit-animation-name: red2white; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: 1s; /* Safari 4.0 - 8.0 */
+    animation-name: red2white;
+    animation-duration: 1s;
+}
+
+#flashGreen{
+    background-color: white;
+    -webkit-animation-name: gree2white; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: 1s; /* Safari 4.0 - 8.0 */
+    animation-name: gree2white;
+    animation-duration: 1s;
+}
+
+.showHideColumn{
+		cursor : pointer;
+}
+
+/* Add a right margin to each icon */
+.fa {
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+//slider
+#ex1Slider .slider-selection {
+	background: #BABABA;
+}
+
+.slider {
+    padding: 16px;
+}
+
+.popup{
+position:absolute;
+width:1000px;
+height:450px;
+background:grey;
+overflow: hidden;
+z-index:10000;
+}
+
+div#pop-up {
+  display: none;
+  position: absolute;
+  width: 280px;
+  padding: 10px;
+  background: #eeeeee;
+  color: #000000;
+  border: 1px solid #1a1a1a;
+  font-size: 90%;
+}
+
+.well h1 {
+    margin-top: -15px;
+	margin-bottom: 2px;
+}
+
+.inWell{
+	background: #a6695b;
+    font-size: 13px;
+    color: white;
+    padding: 10px;
+}
+
+.dataTable{
+	float:left;
+}
+
+#paypal-button{
+	background: white;
+    border: 0px;
+}
+
+p{
+	font-size: 10px;	
+}
+
+.highcharts-container{
+	border :solid 0.5px;
+	padding : 2px;
+}
+
+.modal-header{	
+	padding:35px 50px;
+	background: green;text-align: center;
+	color: white;
+	
+}
+
+#rxChart{
+	    height: 500px;
+}
+
+#titleRX{
+        padding-bottom: 30px;
+}
+
+.modal-header h4{
+	font-size: x-large;
+}
+
+.modal-header button{
+	font-size: xx-large;
+}
+
+table{
+	width: 98%;
+}
+
+.highcharts-credits{
+	visibility: hidden;
+}
+
+  .affix {
+      top: 50;
+      width: 100%;
+	  z-index: 9999 !important;
+  }
+
+  .affix ~ .container {
+     position: relative;
+     top: 150px;
+  }
+  
+
+@media screen and (min-width: 700px) {
+	.nav-tabs li { 
+			width:10%;
+	}
+}
+
+/*correlation Table*/
+
+#correlationTB tbody tr td:nth-child(1){
+	font-weight: bold;
+    background: whitesmoke;
+    border-right: solid 0.5px;
+}
+
+#covarianceTB tbody tr td:nth-child(1){
+	font-weight: bold;
+    background: whitesmoke;
+    border-right: solid 0.5px;
+}
+
+.stockTab{
+    font-size: 16px;
+    margin-top: 23px;
+}
+
+
+.stockTab li:hover {
+	color:blue;
+	cursor: pointer;
+	font-size: 105%;
+	text-decoration: underline;
+}
+
+.stockTB {
+    border-collapse: collapse;
+    width: 50%;
+}
+
+
+.stockTB td {
+    font-size: 12px;
+    line-height: 2;
+    border-bottom: 0.5px solid #ddd;
+	padding-left: 9px;
+    padding-right: 30px;
+}
+
+
+#payment{
+	position: relative;
+	top: -19px;
+}
+
+#MonteChart, #predictChart {
+    margin-top: 10px;
+}
+
+#monte_prd_table, #monte_sim_table{
+    margin-top: 10px;
+}
+
+#monte_sim_table td ,#monte_sim_table th, #monte_prd_table td ,#monte_prd_table th , #suggest_table td ,#suggest_table th{
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+#monte_sim_table th, 
+#monte_prd_table th ,
+#suggest_table th ,
+#monte_prd_table tr:last-child td, 
+#monte_sim_table tr:last-child td 
+#suggest_table tr:last-child td {
+    fontWeight: bolder;
+}
+
+#monte_prd_table tr:nth-child(even),
+#monte_sim_table tr:nth-child(even),
+#suggest_table tr:nth-child(even)  
+{
+    background-color: #dddddd;
+}
+
+#monte_prd_table tr:nth-child(odd), 
+#monte_sim_table tr:nth-child(odd), 
+#suggest_table tr:nth-child(odd){
+    background-color: white;
+}
+
+/* high charts */
+.perfDiv{
+	display:flex;
+	width: 900px;
+	height:180px;
+	margin-bottom: 40px;
+}
+
+#perfItem{
+	width: 300px;
+	height: 180px;
+	padding-right: 4px;
+}
+
+.perfCompany{
+    background-color: #1f8383;
+    color: white;
+	padding-left: 27%;
+}
+
+.perfReading{
+	text-align: center;
+}
+
+.perfSubTitle{
+	font-size:11px;
+	color:#cd6f6f;
+}
+
+/*tblPortfolioM*/
+table#tblPortfolioM td {
+    padding: 4px 2px;
+}
+
+.dataTables_wrapper {
+    margin-bottom: -15px;
+}
+
+#exchange_info {
+    line-height: 14px;
+}
+
+/*           SPINNER LOADING
+	Start by setting display:none to make this hidden.
+   Then we position it in relation to the viewport window
+   with position:fixed. Width, height, top and left speak
+   for themselves. Background we set to 80% white with
+   our animation centered, and no-repeating */
+.modali {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('http://i.stack.imgur.com/FhHRx.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;   
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modali {
+    display: block;
+}
+
+.wellInfo{
+	margin: 5px 0px 5px 1px;
+	block-size: 19px;
+}
+
+.glyphicon-info-sign{
+	    position: relative;
+    top: -5px;
+}
+
+#checkButton{
+	display:none;
+}
+
+.ui-menu {
+        list-style:none;
+        padding: 10px;
+        margin: 0;
+        display:block;
+        width:400px;
+}
+.ui-menu .ui-menu {
+        margin-top: -3px;
+}
+.ui-menu .ui-menu-item {
+        margin:0;
+        padding: 0;
+        width: 400px;
+}
+.ui-menu .ui-menu-item a {
+        text-decoration:none;
+        display:block;
+        padding:.2em .4em;
+        line-height:1.5;
+        zoom:1;
+}
+.ui-menu .ui-menu-item a.ui-state-hover,
+.ui-menu .ui-menu-item a.ui-state-active {
+        margin: -1px;
+}
+
+  .chartjsLegend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .legendItem {
+    margin: 10px;
+    display: flex;
+    align-items: center;
+  }
+  .legendColor {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+
+.alert-success {
+    width : 300px;
+    height : 130px;
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    background: white;
+}
+
+/*sliders*/
+.slidecontainer {
+  width: 30%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 100%; /* Full-width */
+  height: 25px; /* Specified height */
+  background: #d3d3d3; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #04AA6D; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #04AA6D; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+#tvchart{
+    margin-top : -70px
+}
+
+div.scroll {
+  background-color: white;
+  width: 1200px;
+  height: 400px;
+  overflow: scroll;
+}
+
+#balance{
+    width: 200px;
+    height: 30px;
+    border: solid;
+    background: "yellow";
+    font-size: 20px;
+}
+
+#progress ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+#progress li {
+  display: inline-block;
+  text-align: center;
+  margin-right: 60px;
+}
+#progress i {
+  font-size: 24px;
+}
+
