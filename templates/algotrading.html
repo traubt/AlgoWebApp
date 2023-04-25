@@ -336,7 +336,7 @@
                     </div>
 
                   </div>
-                  <div class="strategy_sell strategy">
+                  <div id="sell_conditions" class="strategy_sell strategy">
                       <div class="title"><label>Sell Asset criteria</label></div>
 
                       <div class="condition_wrapper" id="s_condition_1">
@@ -735,13 +735,21 @@ function populate_strategy_rh(div_id){
 	//populate strategy left hand side - attirube 1
       $.each(_tech_indicators, function(index, value) {
         $("#strategy_attr_lh_1.selectpicker").append("<option value="+index+">"+value.name+"</option>");
+        $("#sell_attr_lh_1.selectpicker").append("<option value="+index+">"+value.name+"</option>");
         $("#strategy_attr_lh_1.selectpicker").selectpicker('refresh');
+        $("#sell_attr_lh_1.selectpicker").selectpicker('refresh');
     });
 
     //populate right hand condition
     $('#strategy_attr_lh_1.selectpicker').on('change', function() {
             _indicator = this.value;
              populate_strategy_rh("#strategy_attr_rh_1")
+    });
+
+        //populate right hand sell condition
+    $('#sell_attr_lh_1.selectpicker').on('change', function() {
+            _indicator = this.value;
+             populate_strategy_rh("#sell_attr_rh_1")
     });
 
 
@@ -1192,7 +1200,7 @@ function strategy_validation(){
             dialog('Select Options', "Condition is not complete. Please select all options" ,BootstrapDialog.TYPE_DANGER);
             return "fail";
         }
-        if($("#buy_conditions").find($(".condition_wrapper")).length < 4){
+        if($("#buy_conditions, #sell_condition").find($(".condition_wrapper")).length < 4){
             _condition_no = _condition_no + 1;
             add_condition($(this).text());
         }else{
