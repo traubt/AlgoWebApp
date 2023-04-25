@@ -312,22 +312,22 @@
                       <div class="title">
                           <label>Buy Asset criteria</label>
                       </div>
-                      <div class="condition_wrapper" id="condition_1">
+                      <div class="condition_wrapper" id="buy_condition_1">
                       <form class="form-inline">
                           <div class="form-group">
-                            <label for="strategy_attr_lh_1">Buy asset if :</label>
-                              <select class="selectpicker"  id="strategy_attr_lh_1" data-width="fit" name="showHide"   data-container="body" title="Indicator:">
+                            <label for="buy_strategy_attr_lh_1">Buy asset if :</label>
+                              <select class="selectpicker"  id="buy_strategy_attr_lh_1" data-width="fit" name="showHide"   data-container="body" title="Indicator:">
                               </select>
                           </div>
                           <div class="form-group">
-                            <label for="strategy_condition_1">is :</label>
-                              <select class="condition"  id="strategy_condition_1" data-width="fit" name="showHide"   data-container="body" title="Condition:" >
+                            <label for="buy_strategy_condition_1">is :</label>
+                              <select class="condition"  id="buy_strategy_condition_1" data-width="fit" name="showHide"   data-container="body" title="Condition:" >
                                     <option>greater than:</option>
                                     <option>lower than:</option>
                               </select>
                           </div>
                           <div class="form-group">
-                              <select class="selectpicker"  id="strategy_attr_rh_1" data-width="fit" name="showHide"   data-container="body" title="Value Of:" disabled>
+                              <select class="selectpicker"  id="buy_strategy_attr_rh_1" data-width="fit" name="showHide"   data-container="body" title="Value Of:" disabled>
                               </select>
                           </div>
                           <button type="button" class="and btn btn-info">And</button>
@@ -339,22 +339,22 @@
                   <div id="sell_conditions" class="strategy_sell strategy">
                       <div class="title"><label>Sell Asset criteria</label></div>
 
-                      <div class="condition_wrapper" id="s_condition_1">
+                      <div class="condition_wrapper" id="sell_condition_1">
                           <form class="form-inline">
                               <div class="form-group">
-                                <label for="sell_attr_lh_1">Sell asset if :</label>
-                                  <select class="selectpicker"  id="sell_attr_lh_1" data-width="fit" name="showHide"   data-container="body" title="Indicator:">
+                                <label for="sell_strategy_attr_lh_1">Sell asset if :</label>
+                                  <select class="selectpicker"  id="sell_strategy_attr_lh_1" data-width="fit" name="showHide"   data-container="body" title="Indicator:">
                                   </select>
                               </div>
                               <div class="form-group">
-                                <label for="sell_condition_1">is :</label>
-                                  <select class="condition"  id="sell_condition_1" data-width="fit" name="showHide"   data-container="body" title="Condition:" >
+                                <label for="sell_strategy_condition_1">is :</label>
+                                  <select class="condition"  id="sell_strategy_condition_1" data-width="fit" name="showHide"   data-container="body" title="Condition:" >
                                         <option>greater than:</option>
                                         <option>lower than:</option>
                                   </select>
                               </div>
                               <div class="form-group">
-                                  <select class="selectpicker"  id="sell_attr_rh_1" data-width="fit" name="showHide"   data-container="body" title="Value Of:" disabled>
+                                  <select class="selectpicker"  id="sell_strategy_attr_rh_1" data-width="fit" name="showHide"   data-container="body" title="Value Of:" disabled>
                                   </select>
                               </div>
                               <button type="button" class="and btn btn-info">And</button>
@@ -579,6 +579,8 @@
     var _indicators = []; // list of indicators required by the algo engine
     var _condition;
     var _value_or_indicator;
+    var _buy_rule = "";
+    var _sell_rule = "";
 
 
 
@@ -734,22 +736,22 @@ function populate_strategy_rh(div_id){
 
 	//populate strategy left hand side - attirube 1
       $.each(_tech_indicators, function(index, value) {
-        $("#strategy_attr_lh_1.selectpicker").append("<option value="+index+">"+value.name+"</option>");
-        $("#sell_attr_lh_1.selectpicker").append("<option value="+index+">"+value.name+"</option>");
-        $("#strategy_attr_lh_1.selectpicker").selectpicker('refresh');
-        $("#sell_attr_lh_1.selectpicker").selectpicker('refresh');
+        $("#buy_strategy_attr_lh_1.selectpicker").append("<option value="+index+">"+value.name+"</option>");
+        $("#sell_strategy_attr_lh_1.selectpicker").append("<option value="+index+">"+value.name+"</option>");
+        $("#buy_strategy_attr_lh_1.selectpicker").selectpicker('refresh');
+        $("#sell_strategy_attr_lh_1.selectpicker").selectpicker('refresh');
     });
 
     //populate right hand condition
-    $('#strategy_attr_lh_1.selectpicker').on('change', function() {
+    $('#buy_strategy_attr_lh_1.selectpicker').on('change', function() {
             _indicator = this.value;
-             populate_strategy_rh("#strategy_attr_rh_1")
+             populate_strategy_rh("#buy_strategy_attr_rh_1")
     });
 
         //populate right hand sell condition
-    $('#sell_attr_lh_1.selectpicker').on('change', function() {
+    $('#sell_strategy_attr_lh_1.selectpicker').on('change', function() {
             _indicator = this.value;
-             populate_strategy_rh("#sell_attr_rh_1")
+             populate_strategy_rh("#sell_strategy_attr_rh_1")
     });
 
 
@@ -1193,77 +1195,80 @@ function strategy_validation(){
       return valid;
 };
 
+// add and/or condition
     $(".and, .or").click(function(){
-<!--        let valid = strategy_validation();-->
-        let valid = 1;
-        if(!valid){
-            dialog('Select Options', "Condition is not complete. Please select all options" ,BootstrapDialog.TYPE_DANGER);
-            return "fail";
-        }
-        if($("#buy_conditions, #sell_condition").find($(".condition_wrapper")).length < 4){
+        let buy_sell = "buy"
+        $(this).closest('div').attr('id') == "buy_condition_1" ? buy_sell = "buy" : buy_sell = "sell"
+        if( ($("#"+buy_sell+"_conditions").find($(".condition_wrapper")).length < 4)   ){
             _condition_no = _condition_no + 1;
-            add_condition($(this).text());
+            add_condition($(this).text(),buy_sell);
         }else{
-            dialog('Condition Limit', "Number of conditions are limited to 4" ,BootstrapDialog.TYPE_DANGER);
+            dialog('Condition Limit', "Number of conditions are limited to 4 " ,BootstrapDialog.TYPE_DANGER);
         }
-        });
+   });
 
 
 // remove rules
-    $("#buy_conditions").on("click", "button", function() {
+    $("#buy_conditions, #sell_conditions").on("click", "button", function() {
             if ($(this).text()== 'Delete Condition'){
+                let buy_sell = "buy";
+                ($(this).attr('name') == 'delete_sell_cond') ? buy_sell = "sell" : buy_sell = "buy";
                 let condition_Id = $(this).data("id") - 1;
                 //remove indicators from list
-                let lh_indicator = $("#condition_"+$(this).attr("data-id")+" select:eq(0)").val();
-                let rh_indicator = $("#condition_"+$(this).attr("data-id")+" select:eq(2)").val();
-                // remove indicators from array
+                let lh_indicator = $("#"+buy_sell+"_condition_"+$(this).attr("data-id")+" select:eq(0)").val();
+                let rh_indicator = $("#"+buy_sell+"_condition_"+$(this).attr("data-id")+" select:eq(2)").val();
+                // remove indicators from array of indicators
                 if (_indicators.indexOf(lh_indicator) >= 0) {
                     _indicators.splice(_indicators.indexOf(lh_indicator),1);
                 };
                 if (_indicators.indexOf(rh_indicator) >= 0) {
                     _indicators.splice(_indicators.indexOf(rh_indicator),1);
                 };
-                $("#condition_"+$(this).attr("data-id")).remove();
+                $("#"+buy_sell+"_condition_"+$(this).attr("data-id")).remove();
             }
         });
 
 // save rule
     $("#save_rule_btn").click(function(){
-<!--            try{-->
+            try{
+                _buy_rule = "";
+                _sell_rule = "";
                 // check input has data
                 if($("#rule_name").val()==""){
-                  dialog("Empty Rule Name","Please enter rule name before saving",BootstrapDialog.TYPE_DANGER);
-                  return 0;
+                      throw "Empty rule name.";
                 };
-                let conditions = $("#buy_conditions .condition_wrapper form").length;
-                let and_or = "";
-                let rule = "";
-                for (let i = 0; i < conditions; i++)  {
-                      let compare =   $("#buy_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(1)").val() == "greater than:" ?  ">" :  "<";
-                      if(i != 0){
-                             and_or = $("#buy_conditions .condition_wrapper .form-inline:eq("+i+") label:eq(0)").text().substring(0, 3).toLowerCase().trim()
-                            }
-                        let lh_indicator = $("#buy_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(0)").val();
-                        let rh_indicator = $("#buy_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(2)").val();
-                        rule += " " + and_or + " ( " + lh_indicator +" "+compare+" " +  rh_indicator   +" )";
-                        // Check if rules are empty
-                        if ((lh_indicator == '') || (rh_indicator =='')){
-                            dialog('Error Saving rule', "Rule: #"+(i+1)+" is incomplete.<br><br> please select both sides of condition." ,BootstrapDialog.TYPE_DANGER);
-                            return 0;
-                        };
-                        // add new element to indicator array
-                        if (_indicators.indexOf(lh_indicator) < 0) {
-                            _indicators.push(lh_indicator);
-                        };
-                        // add new element to indicator array
-                        if (_indicators.indexOf(rh_indicator) < 0) {
-                            _indicators.push(rh_indicator);
-                        };
-                };
-                 dialog("Rule '"+ $("#rule_name").val() +"' saved to the Algo Engine","Rule: "+rule+"<br>Indicators: "+_indicators,BootstrapDialog.TYPE_INFO);
-<!--            catch (e){-->
-<!--                dialog('Error Saving rule', e ,BootstrapDialog.TYPE_DANGER);-->
-<!--            }-->
+                $.each(['buy','sell'],function(index,value){
+                            let conditions = $("#"+value+"_conditions .condition_wrapper form").length;
+                            let and_or = "";
+                            for (let i = 0; i < conditions; i++)  {
+                                  let compare =   $("#"+value+"_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(1)").val() == "greater than:" ?  ">" :  "<";
+                                  if(i != 0){
+                                         and_or = $("#"+value+"_conditions .condition_wrapper .form-inline:eq("+i+") label:eq(0)").text().substring(0, 3).toLowerCase().trim()
+                                        }
+                                    let lh_indicator = $("#"+value+"_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(0)").val();
+                                    let rh_indicator = $("#"+value+"_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(2)").val();
+                                    let rule = " " + and_or + " ( " + lh_indicator +" "+compare+" " +  rh_indicator   +" )";
+                                    value == "buy" ? _buy_rule += rule : _sell_rule += rule;
+
+                                    // Check if rules are empty
+                                    if ((lh_indicator == '') || (rh_indicator =='')){
+                                        throw "missing value in "+value+" Rule: #"+(i+1);
+                                    };
+                                    // add new element to indicator array
+                                    if ( _indicators.indexOf(lh_indicator) < 0  ) {
+                                        _indicators.push(lh_indicator);
+                                    };
+                                    // add new element to indicator array (ingore values comparison)
+                                    if ( (_indicators.indexOf(rh_indicator) < 0 )   && (_tech_indicators[lh_indicator].condition_tp == 'I') ) {
+                                        _indicators.push(rh_indicator);
+                                    };
+                            };
+                });
+                dialog("Rule '"+ $("#rule_name").val() +"' saved to the Algo Engine"," Buy asset if: "+_buy_rule+"<br><br> Sell asset if : "+_sell_rule+"<br><br> Indicators: "+_indicators,BootstrapDialog.TYPE_INFO);
+            }
+            catch (err){
+                dialog('Error Saving rule', err ,BootstrapDialog.TYPE_DANGER);
+            }
         });
 
 

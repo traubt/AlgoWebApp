@@ -1,41 +1,42 @@
-function add_condition(and_or){
-    _condition_div = `<div class="condition_wrapper" id="condition_`+_condition_no+`" data-id=`+_condition_no+` style="margin-left:55px;") >
+function add_condition(and_or,BuySell){
+    _condition_div = `<div class="condition_wrapper" id="`+BuySell+`_condition_`+_condition_no+`" data-id=`+_condition_no+` style="margin-left:55px;") >
     <form class="form-inline">
       <div class="form-group">
-        <label for="strategy_attr_lh_`+_condition_no+`">`+and_or+` :</label>
-          <select class="selectpicker"  id="strategy_attr_lh_`+_condition_no+`" data-width="fit" name="showHide"   data-container="body" title="Indicator:">
+        <label for="`+BuySell+`_strategy_attr_lh_`+_condition_no+`">`+and_or+` :</label>
+          <select class="selectpicker"  id="`+BuySell+`_strategy_attr_lh_`+_condition_no+`" data-width="fit" name="showHide"   data-container="body" title="Indicator:">
           </select>
       </div>
       <div class="form-group">
-        <label for="strategy_condition_`+_condition_no+`">is :</label>
-          <select class="condition"  id="strategy_condition_`+_condition_no+`" data-width="fit" name="showHide"   data-container="body" title="Condition:">
+        <label for="`+BuySell+`_strategy_condition_`+_condition_no+`">is :</label>
+          <select class="condition"  id="`+BuySell+`_strategy_condition_`+_condition_no+`" data-width="fit" name="showHide"   data-container="body" title="Condition:">
                      <option>greater than:</option>
                      <option>lower than:</option>
           </select>
       </div>
       <div class="form-group">
-          <select class="selectpicker"  id="strategy_attr_rh_`+_condition_no+`" data-width="fit" name="showHide"   data-container="body" title="Value Of:">
+          <select class="selectpicker"  id="`+BuySell+`_strategy_attr_rh_`+_condition_no+`" data-width="fit" name="showHide"   data-container="body" title="Value Of:">
           </select>
       </div>
-      <button type="button" id="delete_condition_`+_condition_no+`" name="delete_buy_cond" class="del btn btn-danger" data-id=`+_condition_no+`>Delete Condition</button>
+      <button type="button" id="`+BuySell+`_delete_condition_`+_condition_no+`" name="delete_`+BuySell+`_cond" class="del btn btn-danger" data-id=`+_condition_no+`>Delete Condition</button>
     </form>
     </div>`
-
-    $("#buy_conditions").append(_condition_div);
+    // Apend to strategy conditions
+    let strategy_div = "#"+BuySell+"_conditions";
+    $(strategy_div).append(_condition_div);
 
 
     /////////
 
     	//populate strategy left hand side - indicator 1
       $.each(_tech_indicators, function(index, value) {
-        $("#strategy_attr_lh_"+_condition_no+".selectpicker").append("<option value="+index+">"+value.name+"</option>")
-        $("#strategy_attr_lh_"+_condition_no+".selectpicker").selectpicker('refresh');
+        $("#"+BuySell+"_strategy_attr_lh_"+_condition_no+".selectpicker").append("<option value="+index+">"+value.name+"</option>")
+        $("#"+BuySell+"_strategy_attr_lh_"+_condition_no+".selectpicker").selectpicker('refresh');
         });
 
     //populate right hand condition
-    $("#strategy_attr_lh_"+_condition_no+".selectpicker").on('change', function() {
+    $("#"+BuySell+"_strategy_attr_lh_"+_condition_no+".selectpicker").on('change', function() {
             _indicator = this.value;
-            populate_strategy_rh("#strategy_attr_rh_"+_condition_no)
+            populate_strategy_rh("#"+BuySell+"_strategy_attr_rh_"+_condition_no)
     });
 }
 
@@ -43,13 +44,13 @@ function add_condition(and_or){
 var _tech_indicators = {
 'MACD':{
         name:'MACD',
-        condition_tp:'V',
+        condition_tp:'I',
         condition:[['greater than','lower than'],['signal','zero']],
         tech: 'btalib.macd(quotes[pair].Close, pfast=12, psLow=26, psignal=9)'
     },
  'P_MACD':{
         name:'Previous MACD',
-        condition_tp:'V',
+        condition_tp:'I',
         condition:[['greater than','lower than'],['signal','zero']],
         tech: 'btalib.macd(quotes[pair].Close, pfast=12, psLow=26, psignal=9)'
     },
