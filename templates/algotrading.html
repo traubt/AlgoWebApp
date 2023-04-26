@@ -92,7 +92,7 @@
                           <input type="radio" name="optradio" checked>Autopilot
                         </label>
                         <label class="radio-inline">
-                          <input type="radio" name="optradio" disabled>Create Strategy
+                          <input type="radio" name="optradio" >Create Strategy
                         </label>
                         <label class="radio-inline">
                           <input type="radio" name="optradio" >Manual Trading (disable algo trading)
@@ -211,30 +211,24 @@
                       </form>
 
                       <form id ="strategy_template" class="form-inline" style="margin-left:10px" hidden="true">
-                            <div class="form-group">
-                              <label >Template Strategies:</label>
-                                <label class="radio-inline">
-                                  <input type="radio" name="template" checked>Momentum
-                                </label>
-                                <label class="radio-inline">
-                                  <input type="radio" name="template" >Buy/Volume Pressure
-                                </label>
-                                <label class="radio-inline">
-                                  <input type="radio" name="template" >Breakout After Sleep
-                                </label>
-                                <label class="radio-inline">
-                                  <input type="radio" name="template" >Recovery From Deep
-                                </label>
-                              </div>
-                      </form>
+                              <div class="form-group">
+                                <label for="template_strategy">Select Startup Strategy :</label>
+                                    <select class="form-control" id="template_strategy" title="Timeframe">
+                                        <option value="mom" selected>Momentum</option>
+                                        <option value="prs">Buy/Volume Pressure</option>
+                                        <option value="bo" >Breakout After Sleep</option>
+                                        <option value="rcvry">Recovery From Deep</option>
+                                    </select>
+                                </div>
+                        </form>
 
                         <form class="form-inline" style="margin-left:10px">
                               <div class="form-group">
-                                <label for="strtegy_inteval">Select interval timeframe ('candle') :</label>
+                                <label for="strtegy_inteval">Select default interval timeframe ('candle') :</label>
                                     <select class="form-control" id="strtegy_inteval" title="Timeframe">
-                                        <option value="1">1m</option>
-                                        <option value="5">5m</option>
-                                        <option value="15" selected>15m</option>
+                                        <option value="1" >1m</option>
+                                        <option value="5" selected>5m</option>
+                                        <option value="15" >15m</option>
                                         <option value="30">30m</option>
                                     </select>
                                 </div>
@@ -265,7 +259,7 @@
 
                   </div>
                   <div class="strategy strategy_candidates">
-                      <div class="title"><label>Find candidates criteria</label></div>
+                      <div class="title"><label>Find Candidates criteria</label></div>
                              <form class="form-inline" style="margin-left:10px">
                               <div class="form-group">
                                 <label for="candidate_filter">Narrow the list of symbols with attribute :</label>
@@ -290,8 +284,8 @@
 <!--                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">-->
                                     <select class="form-control" id="timeFrame" title="Timeframe">
                                         <option value="1">1m</option>
-                                        <option value="5">5m</option>
-                                        <option value="15" selected>15m</option>
+                                        <option value="5" selected>5m</option>
+                                        <option value="15" >15m</option>
                                         <option value="30">30m</option>
                                     </select>
                               </div>
@@ -361,6 +355,49 @@
                               <button type="button" class="or btn btn-warning">Or</button>
                           </form>
                         </div>
+                      <hr>
+                      <p><b><u>Immediate Sell:</u></b> </p>
+                      <form class="form-inline" style="margin-left:10px">
+                              <div class="form-group">
+                                <label for="no_movement">Sell position if price does not change within :</label>
+                                    <select class="form-control" id="no_movement" title="Price Idle in secs">
+                                        <option value="30">30sec</option>
+                                        <option value="60" selected >60sec</option>
+                                        <option value="90">90sec</option>
+                                         <option value="120">120sec</option>
+                                    </select>
+                                </div>
+                        </form>
+                        <form class="form-inline" style="margin-left:10px">
+                              <div class="form-group">
+                                <label for="stop_loss">Sell position if lose more than :</label>
+                                    <select class="form-control" id="stop_loss" title="Stop Loss">
+                                        <option value="0.5">0.5%</option>
+                                        <option value="1"  >1%</option>
+                                        <option value="1.5">1.5%</option>
+                                         <option value="2" selected>2%</option>
+                                        <option value="3"  >3%</option>
+                                         <option value="4">4%</option>
+                                         <option value="5">5%</option>
+                                    </select>
+                                </div>
+                        </form>
+                        <form class="form-inline" style="margin-left:10px">
+                              <div class="form-group">
+                                <label for="secure_profit">Secure profit if profit more than :</label>
+                                    <select class="form-control" id="secure_profit" title="Stop Loss">
+                                        <option value="0.2">0.2%</option>
+                                        <option value="0.5"  >0.5%</option>
+                                        <option value="0.7">0.7%</option>
+                                         <option value="1" selected>1%</option>
+                                        <option value="2"  >2%</option>
+                                         <option value="3">3%</option>
+                                    </select>
+                                </div>
+                        </form>
+
+
+
 
                   </div>
               </div>
@@ -1056,7 +1093,7 @@ function icon_set(icon){
                         position: 'aboveBar',
                         color: 'red',
                         shape: 'arrowDown',
-                        text: 'Sell(manually): '+token,
+                        text: 'Sell(m): '+token,
                     };
                     _buysell_array.push(_buysell_element);
                     _lineSeries.setMarkers(_buysell_array);
@@ -1146,6 +1183,7 @@ function icon_set(icon){
         $("#buyOrder").prop("disabled", true);
         $("#resetWallet").prop("disabled", true);
         $("#runAlgo").prop("disabled", true);
+        $("nav").hide();
         run_bot()
     })
 
@@ -1181,6 +1219,7 @@ function icon_set(icon){
             $("#buyOrder").prop("disabled", false);
             $("#resetWallet").prop("disabled", false);
             $("#runAlgo").prop("disabled", false);
+            $("nav").show();
     })
 
     // rules management

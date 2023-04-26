@@ -44,13 +44,13 @@ function add_condition(and_or,BuySell){
 var _tech_indicators = {
 'MACD':{
         name:'MACD',
-        condition_tp:'I',
+        condition_tp:'V',
         condition:[['greater than','lower than'],['signal','zero']],
         tech: 'btalib.macd(quotes[pair].Close, pfast=12, psLow=26, psignal=9)'
     },
  'P_MACD':{
         name:'Previous MACD',
-        condition_tp:'I',
+        condition_tp:'V',
         condition:[['greater than','lower than'],['signal','zero']],
         tech: 'btalib.macd(quotes[pair].Close, pfast=12, psLow=26, psignal=9)'
     },

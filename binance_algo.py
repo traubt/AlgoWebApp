@@ -430,11 +430,8 @@ class crypto_bot:
               max_ret = g
               secure_ret = round(g * 0.7, 2)
               max_date = self._now()
-          # Alont Secure profit start when > 0.5%
-          # elif (g > max_ret) and (g > 1):
           elif (g > max_ret) and (g > 0.2):
               max_ret = g
-              # Alont
               secure_ret = round(g * 0.7, 2)
               max_date = self._now()
 
@@ -470,7 +467,7 @@ class crypto_bot:
           elif price < stop_loss:
               print(f"{self._now()}:Trigger cross over stop loss {stop_loss}% for {pair}, ")
               sell = True
-              rsn = "CROSS OVER Stop-Loss"
+              rsn = "CROSS UNDER Stop-Loss"
               return sell, rsn, max_ret, max_date
           ###################################################################################
 

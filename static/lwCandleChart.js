@@ -21,18 +21,18 @@ const chartOptions = {
     var chart = LightweightCharts.createChart(document.getElementById('chart'), {
 //        width: 1000,
 //        height: 400,
-        layout: {
-            backgroundColor: '#000000',
-            textColor: 'rgba(255, 255, 255, 0.9)',
-        },
-        grid: {
-            vertLines: {
-                color: 'rgba(197, 203, 206, 0.5)',
-            },
-            horzLines: {
-                color: 'rgba(197, 203, 206, 0.5)',
-            },
-        },
+//        layout: {
+//            backgroundColor: '#000000',
+//            textColor: 'rgba(255, 255, 255, 0.9)',
+//        },
+//        grid: {
+//            vertLines: {
+//                color: 'rgba(197, 203, 206, 0.5)',
+//            },
+//            horzLines: {
+//                color: 'rgba(197, 203, 206, 0.5)',
+//            },
+//        },
         crosshair: {
             mode: LightweightCharts.CrosshairMode.Normal,
         },
