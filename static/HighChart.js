@@ -11,7 +11,7 @@ function update_chart(chart_id,value){
 
 renderHighChart = async (symbol,hc_div) => {
 
- Highcharts.chart(hc_div, {
+  Highcharts.chart(hc_div, {
 
     chart: {
         type: 'gauge',

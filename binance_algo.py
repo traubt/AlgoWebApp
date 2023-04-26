@@ -145,14 +145,11 @@ def _add_indicators(quotes):
     return None
 
 class crypto_bot:
-  def __init__(self, market,  time_frame, balance):
-
+  def __init__(self, payload):
     self.pairs = []
-    self.market = market
     # self.client = client
     self.min_dl = (datetime.utcnow() + relativedelta(minutes=-5)).strftime("%Y-%m-%d %H:%M:%S")
     self.max_dl = (datetime.utcnow() + relativedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
-    self.time_scale = '15m'
     self.quote_df = pd.DataFrame() # holds downloaded quote
     self.market_prices = {}
     self.filter_top_traders = []
@@ -160,10 +157,13 @@ class crypto_bot:
     self.top_gainers = [] # list of top gainers that pass find asset criteria
     self.found = False
     self._base_coin = 'USDT'
-    self._default_amount = balance
-    self._wallet = wallet(self._base_coin, self._default_amount)
     self._mode = 'TEST'
     self._cycle = 0
+    #-- Payload
+    self.time_scale = payload["interval"] + "m"
+    self._default_amount = float(payload["walletInitBalance"])
+    self.market = payload["market"]
+    self._wallet = wallet(self._base_coin, self._default_amount)
 
   def _now(self):
       return datetime.now().strftime("%Y-%m-%d %H:%M:%S")

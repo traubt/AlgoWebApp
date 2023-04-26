@@ -543,13 +543,11 @@ def get_assets():
             _assets[row['Security']] = row['Symbol']
     return json.dumps(_assets)
 
-@app.route('/crypto_bot')
+@app.route('/crypto_bot', methods=['GET', 'POST'])
 def crypto_bot():
     os.environ["algo_engine"] = 'Running'
-    chart_time_frame = request.args.get('timeFrame')
-    wallet_balance = request.args.get('balance')
-    market = request.args.get('market')
-    runalgo = bot(market,chart_time_frame,wallet_balance)
+    payload =  request.json
+    runalgo = bot(payload)
     runalgo._run_algo()
     return "OK"
 

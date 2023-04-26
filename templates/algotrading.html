@@ -45,11 +45,11 @@
             <link href="../static/algo.css" rel="stylesheet" type="text/css"/>
 
 <!--        highcharts-->
-        <script src="https://code.highcharts.com/highcharts.js"></script>
-        <script src="https://code.highcharts.com/highcharts-more.js"></script>
-        <script src="https://code.highcharts.com/modules/exporting.js"></script>
-        <script src="https://code.highcharts.com/modules/export-data.js"></script>
-        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+            <script src="https://code.highcharts.com/highcharts.js"></script>
+            <script src="https://code.highcharts.com/highcharts-more.js"></script>
+            <script src="https://code.highcharts.com/modules/exporting.js"></script>
+            <script src="https://code.highcharts.com/modules/export-data.js"></script>
+            <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
     </head>
 
@@ -264,19 +264,19 @@
                               <div class="form-group">
                                 <label for="candidate_filter">Narrow the list of symbols with attribute :</label>
                                   <select class="selectpicker"  id="candidate_filter" data-width="fit" name="showHide"  multiple data-container="body" title="Attribute:">
-                                      <option selected>Top Volume</option>
-                                      <option>Top Gainers</option>
-                                      <option>Top Efficient</option>
+                                      <option value="top_vol"selected>Top Volume</option>
+                                      <option value="top_gain">Top Gainers</option>
+                                      <option value="top_eff">Top Efficient</option>
                                 </select>
                               </div>
                               <div class="form-group">
                                 <label for="Total">to maximum of :</label>
 <!--                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">-->
                                   <select class="form-control" id="Total" title="Count">
-                                      <option>20</option>
-                                      <option>50</option>
-                                      <option>100</option>
-                                      <option>All</option>
+                                      <option value="20">20</option>
+                                      <option value="50">50</option>
+                                      <option value="100">100</option>
+                                      <option value="1000">All</option>
                                 </select>
                               </div>
                               <div class="form-group">
@@ -618,12 +618,26 @@
     var _value_or_indicator;
     var _buy_rule = "";
     var _sell_rule = "";
-
+    var _algo_params;
 
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
+
+function build_algo_parameters(rule_name){
+     _algo_params = {
+        ruleName:rule_name,
+        interval:$("#strtegy_inteval").val(),
+        candidate:$('#candidate_filter').val(),
+        maxCandidate:$('#Total').val(),
+        buyRule:_buy_rule,
+        sellRule:_sell_rule,
+        stopLoss:$('#stop_loss').val(),
+        indicators:_indicators,
+        sellNoMovement:$('#no_movement').val()
+    }
+}
 
 function get_current_date(){
     return new Date().toLocaleString();
@@ -768,8 +782,27 @@ function populate_strategy_rh(div_id){
         }
 }
 
+function init_algo_payload(strategy){
+	//default algo parameter
+	_algo_params = {
+	    ruleName:strategy,
+        walletInitBalance:$('#sel-options').val(),
+        interval:$("#strtegy_inteval").val(),
+        candidate:$('#candidate_filter').val(),
+        maxCandidate:$('#Total').val(),
+        buyRule:"NA",
+        sellRule:"NA",
+        stopLoss:$('#stop_loss').val(),
+        indicators:"NA",
+        sellNoMovement:$('#no_movement').val(),
+        market:_asset
+    };
+}
+
 	//initialize
 	$(document).ready(function(){
+
+    init_algo_payload("system");
 
 	//populate strategy left hand side - attirube 1
       $.each(_tech_indicators, function(index, value) {
@@ -1295,15 +1328,22 @@ function strategy_validation(){
                                     };
                                     // add new element to indicator array
                                     if ( _indicators.indexOf(lh_indicator) < 0  ) {
-                                        _indicators.push(lh_indicator);
+                                        _indicators.push(_tech_indicators[lh_indicator]);
                                     };
                                     // add new element to indicator array (ingore values comparison)
                                     if ( (_indicators.indexOf(rh_indicator) < 0 )   && (_tech_indicators[lh_indicator].condition_tp == 'I') ) {
-                                        _indicators.push(rh_indicator);
+                                        _indicators.push(_tech_indicators[rh_indicator]);
                                     };
                             };
                 });
-                dialog("Rule '"+ $("#rule_name").val() +"' saved to the Algo Engine"," Buy asset if: "+_buy_rule+"<br><br> Sell asset if : "+_sell_rule+"<br><br> Indicators: "+_indicators,BootstrapDialog.TYPE_INFO);
+                dialog("Rule '"+ $("#rule_name").val() +"' saved to the Algo Engine",
+                "<b><u>Rules Parameters :</u></b>                 <br><br> Market : "+_asset+
+                "<br><br> Interval (candle timeframe) : "+$("#strtegy_inteval").val()+
+                "<br><br> Buy asset if: "+_buy_rule+
+                "<br><br> Sell asset if : "+_sell_rule
+                ,BootstrapDialog.TYPE_INFO);
+
+                build_algo_parameters($("#rule_name").val());
             }
             catch (err){
                 dialog('Error Saving rule', err ,BootstrapDialog.TYPE_DANGER);

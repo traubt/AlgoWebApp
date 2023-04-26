@@ -117,14 +117,21 @@ function run_bot(){
   {
         dialog("Algo Engine","Starting Algo Engine for market: "+_asset ,BootstrapDialog.TYPE_INFO);
 		$.ajax({
-				  method: "GET",
+		                 type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(_algo_params),
+                dataType: 'json',
 				  url: "http://127.0.0.1:5000/crypto_bot",
-				  data: {
-				            market : _asset,
-                            timeFrame: _time_res,
-                            action: "Start",
-                            balance:  _wallet[user][0].free
-						}
+//				  data: {
+//				            market : _asset,
+//                            timeFrame: _time_res,
+//                            action: "Start",
+//                            balance:  _wallet[user][0].free,
+//                            rules : _algo_params
+//                            contentType: 'application/json',
+//                            data: JSON.stringify(_algo_params),
+//                            dataType: 'json'
+//						}
 				})
 		 .done(function(data) {
 		   console.log("Algo engine run has completed successfully.")
