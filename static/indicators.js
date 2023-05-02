@@ -213,12 +213,12 @@ var _template_pressure = {
     buy_rule_1:{
         left:"RSI",
         comp:"gt",
-        right:'70'
+        right:'50'
     },
     count_sell_rules : 1,
     sell_rule_1:{
         left:"RSI",
         comp:"lt",
-        right:'50'
+        right:'40'
     }
 }

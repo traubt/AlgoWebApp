@@ -148,6 +148,9 @@ class crypto_bot:
       return (float(response.json()['price']))
 
   def get_symbols(self):
+      #send request to client
+      # emit('flask_request_api',
+      #      {'data': "get_US_market_list"}, namespace='/', broadcast=True)
       # Prepare quotes for all coin pairs
       if self.market == 'crypto':
           self.pairs = crypto_list.crypto_pairs

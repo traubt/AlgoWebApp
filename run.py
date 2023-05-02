@@ -558,7 +558,6 @@ def stop_bot():
 
 @socketio.event
 def my_event(message):
-
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
          {'data': message['data'], 'count': session['receive_count']})
@@ -566,8 +565,8 @@ def my_event(message):
 # Receive the test request from client and send back a test response
 @socketio.on('test_message')
 def handle_message(data):
-    print('received message: ' + str(data))
-    emit('test_response', {'data': 'Test response sent'})
+    print(data)
+    emit('flask_response', {'data': 'Receive acknowledge from flask'})
 
 # Broadcast a message to all clients
 

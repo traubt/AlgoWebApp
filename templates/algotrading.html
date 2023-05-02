@@ -18,6 +18,7 @@
         <script type="text/javascript" src="../static/HighChart.js" defer></script>
         <script type="text/javascript" src="../static/tv.js" defer></script>
         <script type="text/javascript" src="../static/indicators.js" defer></script>
+        <script type="text/javascript" src="../static/algoAPI.js" defer></script>
 
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
@@ -418,6 +419,7 @@
     <div id="engineButtons">
         <button id="runAlgo" type="button" class="btn btn-primary">Start BOT</button>
         <button id="stopAlgo" type="button" class="btn btn-primary">Stop BOT</button>
+        <button id="testsoc" type="button" class="btn btn-primary">Test Socket</button>
         <i class="fas fa-circle"></i>
     </div>
 
@@ -1058,6 +1060,11 @@ function icon_set(icon){
                 $('#log').append('<br>' + $('<div/>').text(msg.data).html());
             })
 
+            // Message instruction from flask
+<!--            socket.on('flask_request_api', function(msg) {-->
+<!--                console.log(msg.data);-->
+<!--                get_US_market_list();-->
+<!--            })-->
 
 /////////////////////////////  end  socket messages //////////////////////
 
@@ -1329,6 +1336,11 @@ function icon_set(icon){
             dialog("Test Whatsapp",e,BootstrapDialog.TYPE_INFO);
           }
           })
+
+//test socket
+$("#testsoc").click(async function(){
+    socket.emit('test_message', {data: JSON.stringify(_template_pressure)});
+})
 
 // run crypto bot
     $("#runAlgo").click(async function(){

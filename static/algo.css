@@ -163,10 +163,7 @@ table.tv-lightweight-charts {
 
 .tooltip {
   pointer-events: none;
-}
-
-.tooltip-inner{
-  width:300px important!;
+  width:100px important!;
 }
 
 #balance{
