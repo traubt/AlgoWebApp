@@ -106,18 +106,27 @@ class crypto_bot:
     self._mode = 'TEST'
     self._cycle = 0
     #-- Payload
-    self.time_scale = payload["interval"] + "m"
-    self._default_amount = float(payload["walletInitBalance"])
     self.market = payload["market"]
-    self._indicators = payload["indicators"]
-    self._buy_rule = payload["buyRule"]
-    self._sell_rule = payload["sellRule"]
-    self._stop_loss = float(payload["stopLoss"])
-    self._rull_name = payload["ruleName"]
-    self._strategy = payload["strategy"]  # differentiate between my strategy and user strategy "SYSTEM"/"DIY"
-    self._no_movement = int(payload["sellNoMovement"])
-    self._secure_profit = float(payload["secureProfit"])
+    self._default_amount = float(payload["walletInitBalance"])
     self._wallet = wallet(self._base_coin, self._default_amount)
+    self._strategy = payload["strategy"]
+    if self._strategy == 'DIY':
+        print(f"Strategy: {self._strategy}")
+        self._time_scale = payload["interval"] + "m"
+        self._indicators = payload["indicators"]
+        self._buy_rule = payload["buyRule"]
+        self._sell_rule = payload["sellRule"]
+        self._stop_loss = float(payload["stopLoss"])
+        self._no_movement = int(payload["sellNoMovement"])
+        self._secure_profit = float(payload["secureProfit"])
+    else: #"SYSTEM"
+        print(f"Strategy: {self._strategy}")
+        self._time_scale = "5m"
+        self._buy_rule = "(max_ratio > 1)" #  and (min_ratio < 1) and (max_avg_ratio < 1.04)"
+        self._sell_rule = "(df.Close[-1] < df.Open[-2])"
+        self._stop_loss = 2
+        self._no_movement = 60
+        self._secure_profit = 1
 
   def _now(self):
       return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -191,16 +200,14 @@ class crypto_bot:
   def _add_indicators(self,quotes,pair):
       err = 0
       try:
-          for ind in self._indicators.keys():
-              if ind == "MACD":
-                quotes[["MACD","HISTO","SIGNAL"]] = eval(self._indicators[ind]['tech'])
-              else:
-                quotes[ind] = eval(self._indicators[ind]['tech'])
-          # macd = btalib.macd(quotes[pair].Close, pfast=12, pslow=26, psignal=9)
-          # macd = pd.DataFrame(quotes[pair]['Close']).ta.macd()
+          if self._strategy == "DIY":
+              for ind in self._indicators.keys():
+                  if ind == "MACD":
+                    quotes[["MACD","HISTO","SIGNAL"]] = eval(self._indicators[ind]['tech'])
+                  else:
+                    quotes[ind] = eval(self._indicators[ind]['tech'])
+          else:
           # Update Stochastic MA default parameters
-          # sma_low = btalib.sma(quotes[pair].low, period=3)
-          # sma_high = btalib.sma(quotes[pair].high, period=1)
           # Calculate stochastic with the new parameters
           # stoc = btalib.stochastic(quotes[pair].High,quotes[pair].Low,quotes[pair].Close)
           # Add bolinger bands
@@ -212,13 +219,11 @@ class crypto_bot:
           # quotes[pair]['EMA'] = btalib.ema(quotes[pair].Close, period=emawdw).df
           # quotes[pair]['EMA'] = quotes[pair]['Close'].ewm(span=7, adjust=False).mean()
           # quotes[pair]['P_EMA'] = quotes[pair]['EMA'].shift(1)
-          # quotes[pair]['MA10'] = quotes[pair]['Close'].rolling(10).mean()
+              quotes['MA10'] = quotes['Close'].rolling(10).mean()
           # quotes[pair]['MA5'] = quotes[pair]['Close'].rolling(5).mean()
           # quotes[pair]['EMA_ratio'] = quotes[pair]['EMA'] / quotes[pair]['mid']
           # quotes[pair]['Prev_EMA_ratio'] = quotes[pair]['EMA_ratio'].shift(1)
-          # quotes[pair]['S_RSI'] = btalib.stochrsi(quotes[pair].Close).df
-          # quotes[pair]['RSI'] = btalib.rsi(quotes[pair].Close, period=14).df
-          #quotes[pair]['RSI'] = pd.DataFrame(quotes[pair]['Close']).ta.rsi(length=14)
+              quotes['RSI'] = pd.DataFrame(quotes['Close']).ta.rsi(length=14)
           #quotes[pair]['P_RSI'] = quotes[pair]['RSI'].shift(1)
           #quotes[pair]['CAPVOL'] = quotes[pair]['Volume'] * quotes[pair]['Close']
           # Add daily change
@@ -239,7 +244,7 @@ class crypto_bot:
           # std = quotes[pair].Change.rolling(44).std() * np.sqrt(244)
           # quotes[pair]['Sharpe'] = (ret - 0.02) / std
       except BaseException as e:
-          print(ind, " Add indicators failed.", e)
+          print(" Add indicators failed.", e)
           err += 1
           # continue
       # print(f"{self._now()} Number of errors add indicators: {err}")
@@ -250,7 +255,7 @@ class crypto_bot:
 
       self.quote_df = pd.DataFrame()
       root_url = 'https://api.binance.com/api/v1/klines'
-      url = root_url + '?symbol=' + symbol + '&interval=' + self.time_scale
+      url = root_url + '?symbol=' + symbol + '&interval=' + self._time_scale
       data = json.loads(requests.get(url).text)
       self.quote_df = pd.DataFrame(data ,columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume',
                                                                 'close_time', 'qav', 'num_trades',
@@ -261,7 +266,7 @@ class crypto_bot:
       return None
 
   def downloadHistoryPricesNyse(self,stock):
-      self.quote_df  =   yf.download(tickers=stock, interval=self.time_scale ,period = self.period, show_errors=False,progress=False)
+      self.quote_df  =   yf.download(tickers=stock, interval=self._time_scale ,period = self.period, show_errors=False,progress=False)
       return None
 
   def _get_market_data(self):
@@ -328,7 +333,7 @@ class crypto_bot:
 
   def _top_gainers_last_min(self):
       l = []
-      # self.time_scale = '1m'
+      # self._time_scale = '1m'
       self.period = '2d'
       self._get_market_data()
       for x in self.market_prices.keys():
@@ -351,22 +356,23 @@ class crypto_bot:
       found = False
       try:
           df = self._add_indicators(df, token)
-          # price = df['Close'][-1]
-          # open = df.loc[:]['Open'][-2]
-          # history_max_price = df.loc[:].iloc[120:-2]['Close'].max()
-          # history_avg_price = df.loc[:].iloc[120:-2]['Close'].mean()
-          # max_ratio = price / history_max_price
-          #min_ratio = open / history_max_price
-          # max_avg_ratio = price / history_avg_price
+          # The following paramenters applicable only for strategy "SYSTEM"
+          price = df['Close'][-1]
+          open = df.loc[:]['Open'][-2]
+          history_max_price = df.loc[:].iloc[120:-2]['Close'].max()
+          history_avg_price = df.loc[:].iloc[120:-2]['Close'].mean()
+          max_ratio = price / history_max_price
+          min_ratio = open / history_max_price
+          max_avg_ratio = price / history_avg_price
           # if (max_ratio > 1) and (min_ratio < 1) and (max_avg_ratio < 1.04):
           #if max_avg_ratio > 1:
-          print("RSI:",df["RSI"][-1])
+          #print("RSI:",df["RSI"][-1])
           if eval(self._buy_rule):
+            found = True
               # idx = df.loc[:].loc[(df['Close'] > open) & (df['Close'] < price)].index[-1]
               # last = len(df) - df[:].index.get_loc(idx)
               # print(f"{self.now} Breakout: {token} , Current price: {price}, Open: {open}, Break history at: {idx}, {last} minutes ago")
               # printf(f"{self.now} Breakout: {token} , Current price: {price}, Open: {open}, Break history at: {idx}, {last} minutes ago",{self.now},{price},"NA"  ,"NA","NA","NA","NA","NA","NA","NA")
-              found = True
       except BaseException as e:
           print(f"Error find asset: {e}")
           printf(f"{self._now()}: Error in find asset module. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
@@ -377,7 +383,7 @@ class crypto_bot:
         try:
               quote = {}
               self.period = '2d'
-              # self.time_scale = '1m'
+              # self._time_scale = '1m'
               self.pairs = [pair]
               self._get_market_data()
               quote[pair] = self.quote_df
@@ -400,6 +406,7 @@ class crypto_bot:
 
       try:
           while not sell:
+              txt = ""
               monitor_indicators = ""
               count_sec += 1
               df = self._download_1min_quotes(pair)
@@ -408,14 +415,14 @@ class crypto_bot:
               g = df.Close[-1] / enter_df.Close[-1] * 100 - 100
 
               #prepare monitor text
-              for ind in self._indicators.keys():
-                  monitor_indicators += " "+ind+ ":  "+ str(round(eval(self._indicators[ind]['eval']),6))
-
-              txt = "Token: " + pair + " Price: " + str(round(df.Close[-1], 2)) +  ", Current Return: " + str(round(g, 3)) + "%, Max Return: "\
-                     + str( round(max_ret, 3)) + "%, Secure Return: " + str(secure_ret) + "%." + monitor_indicators
+              if self._strategy == "DIY":
+                  for ind in self._indicators.keys():
+                      monitor_indicators += " "+ind+ ":  "+ str(round(eval(self._indicators[ind]['eval']),6))
+                  txt = "Token: " + pair + " Price: " + str(round(df.Close[-1], 2)) +  ", Current Return: " + str(round(g, 3)) + "%, Max Return: "\
+                         + str( round(max_ret, 3)) + "%, Secure Return: " + str(secure_ret) + "%." + monitor_indicators
               # logging.info(txt)
-              print(txt)
-              printi(f"{self._now()}  Token: {pair}  Price:  {str(round(df.Close[-1], 10))} ,  Stop-Loss:  {str(stop_loss)}, Profit: {str(round(g, 3))} %. {monitor_indicators}", #, Max Return: { str(round(max_ret, 3)) } %, Secure Return:  { str(secure_ret)} %.",
+                  print(txt)
+              printi(f"{self._now()}  Token: {pair}  Price:  {str(round(df.Close[-1], 10))} ,  Previous Open: {str(round(df.Open[-2],6))}, Stop-Loss:  {str(stop_loss)}, Profit: {str(round(g, 3))} %, Max Return:{str(round(max_ret,6))}, Secure Profit:{str(round(secure_ret,6))} ,{monitor_indicators}",
                      {self._now()},
                      {str(round(df.Close[-1], 10))},
                      {str(round(g, 3))},
@@ -495,7 +502,7 @@ class crypto_bot:
       printf(f"{self._now()}: Found {len(self.pairs)} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
       print(f"{self._now()}: Get {self.market} market quotes...")
       printf(f"{self._now()}: Download market quotes for all symbols. This may take couple of minutes.", {self._now()}, "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA", "NA")
-      # self.time_scale = '15m'
+      # self._time_scale = '15m'
       self.period = '2d'
       self._get_market_data()
       self.remove_non_active_tokens()
@@ -528,7 +535,7 @@ class crypto_bot:
               #examine the top gainers
               printf(f"{self._now()}: Get ENTRY STRATEGY matches.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
               self.pair = self.top_last_min_gain
-              # self.time_scale = '1m'
+              # self._time_scale = '1m'
               self.period = '2d'
               self._get_market_data() # new market_price quotes dictionary
               print(f"{self._now()}: Filter entry strategy.")
@@ -582,7 +589,7 @@ class crypto_bot:
               # Working on single symblol
               self.pairs = [pair]
               self.period = '2d'
-              # self.time_scale = '1m'
+              # self._time_scale = '1m'
               self._get_market_data()
               print(f"{self._now()}: Monitor symbol: {pair}. Add indicators...")
               printf(f"{self._now()}: Monitor symbol: {pair}. Add indicators...",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
