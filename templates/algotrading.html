@@ -76,49 +76,62 @@
 </nav>
         <div class="collapse" id="algoParams">
           <div class="well">
-                    <div class="row" style="margin-top : 5px">
 
-                        <label><u>System mode:</u></label><br>
-                        <label class="radio-inline">
-                            <input type="radio" name="AlgoMode" id="RadioDemo" value="TEST" checked> Demo (Paper money)
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="AlgoMode" id="RadioLive" value="LIVE" disabled data-toggle="tooltip" data-placement="bottom" title="Please send message to admin@cashizada.co.za to activate account"> Live (Real money)
-                        </label><br><br>
+               <div class="strategy_p system_mode">
+                  <div class="title"><label>System Mode</label></div>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label class="radio-inline">
+                                <input type="radio" name="AlgoMode" id="RadioDemo" value="TEST" checked> Demo (Paper money)
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="AlgoMode" id="RadioLive" value="LIVE" disabled data-toggle="tooltip" data-placement="bottom" title="Please send message to admin@cashizada.co.za to activate account"> Live (Real money)
+                            </label>
+                        </div>
+                    </form>
 
-                        <label><u>Strategy method:</u></label>
-                      <form>
-                        <label class="radio-inline">
-                          <input type="radio" name="optradio" checked>Autopilot
-                        </label>
-                        <label class="radio-inline">
-                          <input type="radio" name="optradio" >Create Strategy
-                        </label>
-                        <label class="radio-inline">
-                          <input type="radio" name="optradio" >Manual Trading (disable algo trading)
-                        </label>
-                      </form>
-                        <br><br>
+              </div>
+              <div class="strategy_p system_method">
+                  <div class="title"><label>System Method</label></div>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label class="radio-inline">
+                              <input type="radio" name="sys_method" value="system" checked>Autopilot
+                            </label>
+                            <label class="radio-inline">
+                              <input type="radio" name="sys_method" value="diy">Strategy Builder
+                            </label>
+                            <label class="radio-inline">
+                              <input type="radio" name="sys_method" value="manual">Manual Trading (disable algo trading)
+                            </label>
+                        </div>
+                    </form>
 
-                        <label><u>Choose market:</u></label><br>
-                        <form>
-                        <label class="radio-inline">
-                            <input type="radio" name="TradingPlatformOption" id="Binance" value="3" checked> Crypto
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="TradingPlatformOption" id="Stocks" value="1" > Equity
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="TradingPlatformOption" id="Direxion" value="2" > Direxions
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="TradingPlatformOption" id="Forex" value="4" > Forex
-                        </label>
-                        </form>
-                        <br>
+              </div>
+              <div class="strategy_p algo_market">
+                  <div class="title"><label>Select Market</label></div>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label class="radio-inline">
+                                <input type="radio" name="TradingPlatformOption" id="Binance" value="3" checked> Crypto
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="TradingPlatformOption" id="Stocks" value="1" > Equity
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="TradingPlatformOption" id="Direxion" value="2" > Direxions
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="TradingPlatformOption" id="Forex" value="4" > Forex
+                            </label>
+                        </div>
+                    </form>
 
-                            <div class="flex-row">
-                            <!--   <div class="col-md-2">-->
+              </div>
+              <div class="strategy_p wallet">
+                  <div class="title"><label>Wallet</label></div>
+                        <form class="form-inline">
+                            <div class="form-group">
                                   <label for="sel-options" class="fles-item">Wallet Initial Amount:</label>
                                   <select id="sel-options" class="flex-item">
                                                                     <option value=100>$100</option>
@@ -126,13 +139,13 @@
                                                                     <option value=10000>$10,000</option>
                                                                     <option value=100000 selected>$100,000</option>
                                   </select>
-                                   <button id="resetWallet" type="button" class="btn btn-primary flex-item">Reset Wallet</button>
-                            <!--   </div>-->
+                                  <button id="resetWallet" type="button" class="btn btn-primary flex-item">Reset Wallet</button>
                             </div>
-                        <br>
-                        <label><u>Transaction Notification Allerts:</u></label>
-                        <div class="row">
-                            <div class="col-sm-10">
+                        </form>
+
+              </div>
+              <div class="strategy_p notifications">
+                  <div class="title"><label>Notifications</label></div>
                                 <form class="form-inline">
                                     <div class="form-group">
                                         <!--                <div class="checkbox" id="whatsappCB" name="wcb">-->
@@ -151,22 +164,22 @@
                                     <!--          </div>-->
                                     <button id="testWA" type="button" class="btn btn-primary" disabled>Test Whatsapp message</button>
                                 </form>
-                            </div>
-                        </div><!-- /.row -->
-                        <br>
-
-                        <label><u>Chart Preference:</u></label><br>
+              </div>
+              <div class="strategy_p chart_pref">
+                  <div class="title"><label>Chart Preference</label></div>
+                     <form class="form-inline">
+                      <div class="form-group">
                         <div class="flex-row">
                               <label id="ticker_type" class="flex-item" for="tickers"></label>
                               <select class="flex-item" id="tickers" title="Select Symbol"></select>
                               <button id="crytpoInfo" type="button" class="btn btn-primary flex-item">View symbol</button>
-
                         </div>
                         <div class="flex-row">
                             <label for="tf" class="flex-item">Default Interval:</label>
                             <select class="flex-item" id="tf">
-                                <option value="5">5m</option>
-                                <option value="15" selected>15m</option>
+                                <option value="1" selected>1m</option>
+                                <option value="5" selected>5m</option>
+                                <option value="15" >15m</option>
                                 <option value="30">30m</option>
                                 <option value="60">1h</option>
                                 <option value="120">2h</option>
@@ -182,42 +195,44 @@
                                         <option value="dark">dark</option>
                                     </select>
                             </div>
-                    </div>
+                      </div>
+                     </form>
+              </div>
           </div>
         </div>
 
         <div class="collapse" id="algoStrategy">
           <div class="well">
-              <h3>Algotrading Strategy</h3><br><br>
               <div class="strategy_wrapper">
                   <div class="strategy strategy_params">
-                      <div class="title"><label>Strategy parameters</label> </div>
+
+                      <div
+                            class="title"><label>Strategy parameters</label>
+                            <button type="button" id="reset_strategy" class="reset btn btn-danger">Reset Strategy</button>
+                      </div>
                       <form class="form-inline" style="margin-left:10px">
                           <div class="form-group">
                               <label >Select strategy method :</label>
                                 <label class="radio-inline">
-                                  <input type="radio" name="strategy" value="rcmd" checked>System recommended
+                                  <input type="radio" name="strategy" value="rcmd" checked>System built-in (hidden)
                                 </label>
                                 <label class="radio-inline">
-                                  <input type="radio" name="strategy" value="scratch" >Start From Scratch
+                                  <input type="radio" name="strategy" value="scratch"  >Build From Scratch
                                 </label>
                                 <label class="radio-inline">
-                                  <input type="radio" name="strategy" value="template" >Start From Template
-                                </label>
-                                <label class="radio-inline">
-                                  <input type="radio" name="strategy" value="manual" >Manual Trading (disable algo trading)
+                                  <input type="radio" name="strategy" value="template" >Build From Template
                                 </label>
                               </div>
                       </form>
 
                       <form id ="strategy_template" class="form-inline" style="margin-left:10px" hidden="true">
                               <div class="form-group">
-                                <label for="template_strategy">Select Startup Strategy :</label>
+                                <label for="template_strategy">Select Strategy Template :</label>
                                     <select class="form-control" id="template_strategy" title="Timeframe">
-                                        <option value="mom" selected>Momentum</option>
-                                        <option value="prs">Buy/Volume Pressure</option>
-                                        <option value="bo" >Breakout After Sleep</option>
-                                        <option value="rcvry">Recovery From Deep</option>
+                                        <option value="_template_momentum" selected>Momentum</option>
+                                        <option value="_template_pressure">Buy/Volume Pressure</option>
+                                        <option value="_template_breakout" >Breakout After Sleep</option>
+                                        <option value="_template_recovery">Recovery From Deep</option>
                                     </select>
                                 </div>
                         </form>
@@ -256,7 +271,6 @@
                                 </div>
                         </form>
 
-
                   </div>
                   <div class="strategy strategy_candidates">
                       <div class="title"><label>Find Candidates criteria</label></div>
@@ -279,16 +293,7 @@
                                       <option value="1000">All</option>
                                 </select>
                               </div>
-                              <div class="form-group">
-                                <label for="timeFrame">in a timeframe ('Candle') of :</label>
-<!--                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">-->
-                                    <select class="form-control" id="timeFrame" title="Timeframe">
-                                        <option value="1">1m</option>
-                                        <option value="5" selected>5m</option>
-                                        <option value="15" >15m</option>
-                                        <option value="30">30m</option>
-                                    </select>
-                              </div>
+
                               <div class="form-group">
                                 <label for="periods">for the last :</label>
 <!--                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">-->
@@ -316,8 +321,8 @@
                           <div class="form-group">
                             <label for="buy_strategy_condition_1">is :</label>
                               <select class="condition"  id="buy_strategy_condition_1" data-width="fit" name="showHide"   data-container="body" title="Condition:" >
-                                    <option>greater than:</option>
-                                    <option>lower than:</option>
+                                    <option value="gt">greater than:</option>
+                                    <option value="lt">lower than:</option>
                               </select>
                           </div>
                           <div class="form-group">
@@ -343,8 +348,8 @@
                               <div class="form-group">
                                 <label for="sell_strategy_condition_1">is :</label>
                                   <select class="condition"  id="sell_strategy_condition_1" data-width="fit" name="showHide"   data-container="body" title="Condition:" >
-                                        <option>greater than:</option>
-                                        <option>lower than:</option>
+                                        <option value="gt">greater than:</option>
+                                        <option value="lt">lower than:</option>
                                   </select>
                               </div>
                               <div class="form-group">
@@ -355,8 +360,10 @@
                               <button type="button" class="or btn btn-warning">Or</button>
                           </form>
                         </div>
-                      <hr>
-                      <p><b><u>Immediate Sell:</u></b> </p>
+                  </div>
+
+                   <div class="strategy Prioriry">
+                      <div class="title"><label>Other Conditions</label></div>
                       <form class="form-inline" style="margin-left:10px">
                               <div class="form-group">
                                 <label for="no_movement">Sell position if price does not change within :</label>
@@ -395,14 +402,11 @@
                                     </select>
                                 </div>
                         </form>
-
-
-
-
                   </div>
+
               </div>
 
-              <form class="form-inline">
+              <form class="form-inline" id="save_rule">
                       <label for="rule_name">Give rule a name :</label>
                        <input type="text" id="rule_name" maxlength="20"></input>
                     <button id='save_rule_btn' type="button" class="btn btn-warning">Save</button>
@@ -429,14 +433,32 @@
                     <!--Well Stock Information -->
                     <label for="tr_div" id="chart_symbol">BTCUSDT</label>
                             <div id='tr_div' class="btn-group ts_btn_grp" data-toggle="buttons">
-                              <label class="btn" data-value="4">
-                                <input type="radio" name="options" id="option1" autocomplete="off" > 4m
+                                <label class="btn" data-value="1">
+                                <input type="radio" name="options" id="option0" autocomplete="off" > 1m
                               </label>
-                              <label class="btn active" data-value="15">
+                              <label class="btn active" data-value="5">
+                                <input type="radio" name="options" id="option1" autocomplete="off" > 5m
+                              </label>
+                              <label class="btn" data-value="15">
                                 <input type="radio" name="options" id="option2" autocomplete="off" > 15m
                               </label>
                               <label class="btn" data-value="30">
                                 <input type="radio" name="options" id="option3" autocomplete="off" > 30m
+                              </label>
+                                <label class="btn" data-value="60">
+                                <input type="radio" name="options" id="option4" autocomplete="off" > 1h
+                              </label>
+                                <label class="btn" data-value="120">
+                                <input type="radio" name="options" id="option5" autocomplete="off" > 2h
+                              </label>
+                                <label class="btn" data-value="240">
+                                <input type="radio" name="options" id="option6" autocomplete="off" > 4h
+                              </label>
+                                <label class="btn" data-value="D">
+                                <input type="radio" name="options" id="option7" autocomplete="off" > 1D
+                              </label>
+                                <label class="btn" data-value="W">
+                                <input type="radio" name="options" id="option8" autocomplete="off" > 1W
                               </label>
                             </div>
                         <div id = "chartContainer">
@@ -586,11 +608,11 @@
 	var _mode = $('input[name="AlgoMode"]:checked').val();  // LIVE OR DEMO
 	var _base_coin_qty = 0; // hold wallet amount of base coin
 	var _order_type = ""; // BUY/SELL
-	var _time_res = "15";
+	var _time_res = "5";
 	var _theme = "light";
 	var _symbol = "BTCUSDT";
 	var _binanceSocket = {};
-	var _b_time_res = {"1":"1m","15":"15m","30":"30m","60":"1h","120":"2h","240":"4h","D":"1d","W":"1w"};  // map td timeframe to binance timeframe
+	var _b_time_res = {"1":"1m","5":"5m","15":"15m","30":"30m","60":"1h","120":"2h","240":"4h","D":"1d","W":"1w"};  // map td timeframe to binance timeframe
     var _asset = 'crypto'; // user selection of platform
     var _asset_list = [];
     var _quote = {} ; // holds latest quote data
@@ -614,12 +636,16 @@
     var _condition_no = 1;
     var _condition_div;
     var _indicators = []; // list of indicators required by the algo engine
+    var _indicators_info = {}// dictionary of indicators included in the engine and their information
     var _condition;
     var _value_or_indicator;
     var _buy_rule = "";
     var _sell_rule = "";
+    var _buy_rule_eval = ""; // rule for python
+    var _sell_rule_eval = ""; // rule for python
     var _algo_params;
-
+    var _stop_loss_eval = "(g < "+(100 - $("#stop_loss").val())/100+")"
+    var _strategy_method = "SYSTEM" // "DIY" if built by
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
@@ -744,19 +770,18 @@ async function is_market_open(){
             .catch((err) => console.log("Can’t access " + url + " response. Blocked by browser?" + err));
 }
 
-function populate_strategy_condition(div_id){
-<!--        alert( _tech_indicators[_indicator].condition );-->
-        //enable condition selection
-        $(div_id).prop("disabled", false);
-        $(div_id).selectpicker('val', 'Condition:');
-        $(div_id).empty();
-        $(div_id).selectpicker('refresh');
-            //populate condition for that indicator
-        $.each(_tech_indicators[_indicator].condition[0], function(index, value) {
-            $(div_id).append("<option>"+value+"</option>")
-            $(div_id).selectpicker('refresh');
-        });
-}
+<!--function populate_strategy_condition(div_id){-->
+<!--        //enable condition selection-->
+<!--        $(div_id).prop("disabled", false);-->
+<!--        $(div_id).selectpicker('val', 'Condition:');-->
+<!--        $(div_id).empty();-->
+<!--        $(div_id).selectpicker('refresh');-->
+<!--            //populate condition for that indicator-->
+<!--        $.each(_tech_indicators[_indicator].condition[0], function(index, value) {-->
+<!--            $(div_id).append("<option>"+value+"</option>")-->
+<!--            $(div_id).selectpicker('refresh');-->
+<!--        });-->
+<!--}-->
 
 function populate_strategy_rh(div_id){
          //enable  selection
@@ -782,6 +807,7 @@ function populate_strategy_rh(div_id){
         }
 }
 
+
 function init_algo_payload(strategy){
 	//default algo parameter
 	_algo_params = {
@@ -790,20 +816,18 @@ function init_algo_payload(strategy){
         interval:$("#strtegy_inteval").val(),
         candidate:$('#candidate_filter').val(),
         maxCandidate:$('#Total').val(),
-        buyRule:"NA",
-        sellRule:"NA",
-        stopLoss:$('#stop_loss').val(),
-        indicators:"NA",
+        buyRule: strategy == "system" ? "NA" : _buy_rule_eval,
+        sellRule: strategy == "system" ? "NA" : _sell_rule_eval,
+        stopLoss:$("#stop_loss").val(),
+        indicators: strategy == "system" ? "NA" : _indicators_info,
         sellNoMovement:$('#no_movement').val(),
-        market:_asset
+        secureProfit:$('#secure_profit').val(),
+        market:_asset,
+        strategy:_strategy_method
     };
 }
 
-	//initialize
-	$(document).ready(function(){
-
-    init_algo_payload("system");
-
+function init_strategy(){
 	//populate strategy left hand side - attirube 1
       $.each(_tech_indicators, function(index, value) {
         $("#buy_strategy_attr_lh_1.selectpicker").append("<option value="+index+">"+value.name+"</option>");
@@ -811,6 +835,76 @@ function init_algo_payload(strategy){
         $("#buy_strategy_attr_lh_1.selectpicker").selectpicker('refresh');
         $("#sell_strategy_attr_lh_1.selectpicker").selectpicker('refresh');
     });
+}
+
+//populate template condition
+function load_template_condition(template,rule_no, buy_sell){
+    try{
+    //populate  BUY rule
+        if(buy_sell == "buy" || buy_sell == "both"){
+            $("#buy_strategy_attr_lh_"+rule_no).val(template['buy_rule_'+rule_no]['left']).change();
+            _indicator=template['buy_rule_'+rule_no]['left'];
+            populate_strategy_rh("#buy_strategy_attr_rh_"+rule_no);
+            $("#buy_strategy_condition_"+rule_no).val(template['buy_rule_'+rule_no]['comp']).change();
+            $("#buy_strategy_attr_rh_"+rule_no).val(template['buy_rule_'+rule_no]['right']).change();
+        }
+
+        //populate  SELL rule
+        if(buy_sell == "sell" || buy_sell == "both"){
+            $("#sell_strategy_attr_lh_"+rule_no).val(template['sell_rule_'+rule_no]['left']).change();
+            _indicator=template['sell_rule_'+rule_no]['left'];
+            populate_strategy_rh("#sell_strategy_attr_rh_"+rule_no);
+            $("#sell_strategy_condition_"+rule_no).val(template['sell_rule_'+rule_no]['comp']).change();
+            $("#sell_strategy_attr_rh_"+rule_no).val(template['sell_rule_'+rule_no]['right']).change();
+        }
+
+    }catch (e){
+        dialog("Load Template Condition","Could not load condition <br>" + e,BootstrapDialog.TYPE_INFO);
+    }
+}
+
+ // load user saved strategy or system predefine strategy
+function load_strategy(template){
+    try{
+        $('#reset_strategy').trigger('click');
+        load_template_condition(template,1,"both") // does not contain and/or
+
+        // load rest of conditions which contain and/or - BUY
+        if(template["count_buy_rules"] > 1){
+            for (let i = 2; i <=  template["count_buy_rules"]; i++) {
+                    console.log("populating template rule: "+i);
+                    _condition_no = i;
+                    add_condition(template["buy_rule_"+i]["and_or"],"buy"); // create skeleton
+                    load_template_condition(template,i,"buy") // select rules
+                }
+        }
+        // load rest of conditions which contain and/or - SELL
+        if(template["count_sell_rules"] > 1){
+            for (let i = 2; i <=  template["count_sell_rules"]; i++) {
+                    console.log("populating template rule: "+i);
+                    _condition_no = i;
+                    add_condition(template["sell_rule_"+i]["and_or"],"sell");
+                    load_template_condition(template,i,"sell")
+                }
+        }
+    }
+    catch (e){
+            dialog("Upload Strategy","Could not load strategy <br>" + e,BootstrapDialog.TYPE_INFO);
+    }
+
+}
+
+	//initialize
+	$(document).ready(function(){
+
+    init_algo_payload("system");
+
+    //hide strategy - default
+    $(".strategy,#save_rule").hide();
+    $(".strategy_params").show();
+
+	//populate strategy left hand side - attirube 1
+    init_strategy();
 
     //populate right hand condition
     $('#buy_strategy_attr_lh_1.selectpicker').on('change', function() {
@@ -823,7 +917,6 @@ function init_algo_payload(strategy){
             _indicator = this.value;
              populate_strategy_rh("#sell_strategy_attr_rh_1")
     });
-
 
 
 	// render default chart
@@ -976,7 +1069,6 @@ function icon_set(icon){
     $('#orderAlert').hide()
 
     //get list of stocks/cryptos
-<!--    get_assets()-->
     $("#ticker_type").text("Select default symbol (S&P 500):")
     populate_tickers_dropdown()
 
@@ -985,14 +1077,46 @@ function icon_set(icon){
         return this.value;
     }).get();
 
-    // user select select strategy method
+    // user system method selected - autopilot/strategy/manual trading
+    $('input[type=radio][name="sys_method"]').change(function() {
+        if (this.value == 'manual'){
+                $("#runAlgo").prop("disabled", true);
+                $("#stopAlgo").prop("disabled", true);
+        } else {
+                $("#runAlgo").prop("disabled", false);
+                $("#stopAlgo").prop("disabled", false);
+        }
+    });
+
+    // user strategy method selection
     $('input[type=radio][name="strategy"]').change(function() {
         if (this.value == 'template'){
              $("#strategy_template").show();
-        }else{
+             $(".strategy,#save_rule").show();
+                 //test load strategy
+             load_strategy(_template_momentum);
+        }else if (this.value == 'scratch'){
             $("#strategy_template").hide();
-        };
+            $('#reset_strategy').trigger('click');
+            $(".strategy,#save_rule").show();
+        } else {
+                $(".strategy,#save_rule").hide();
+                $(".strategy_params").show();
+        }
+        //enable algo buttons
+        $("#runAlgo").prop("disabled", false);
+        $("#stopAlgo").prop("disabled", false);
     });
+
+    // select strategy template
+    $("#template_strategy").on('change', function() {
+        try{
+            load_strategy(eval($(this).val()));
+        }catch (e){
+            dialog("Loading Strategy","Error loading strategy<br>"+e,BootstrapDialog.TYPE_INFO);
+        }
+    })
+
 
     // user select platform
     $('input[type=radio][name="TradingPlatformOption"]').change(function() {
@@ -1031,9 +1155,28 @@ function icon_set(icon){
 
 	///////////////////////////////////// CONTROLS //////////////////////////////////////
 
+
 // Save user configuration
 	    $("#saveConfig").click(function(){
             alert("TODO: save configuration");
+		});
+
+// Reset Strategy
+	    $("#reset_strategy").click(function(){
+	        _strategy_method = "SYSTEM"
+	        $("#rule_name").val("")
+            $('#buy_condition_1').nextAll('div').remove();
+            $("#buy_strategy_attr_lh_1").empty()
+            $("#buy_strategy_attr_lh_1").selectpicker('refresh')
+            $("#buy_strategy_attr_rh_1").empty()
+            $("#buy_strategy_attr_rh_1").selectpicker('refresh')
+            $('#sell_condition_1').nextAll('div').remove();
+            $("#sell_strategy_attr_lh_1").empty()
+            $("#sell_strategy_attr_lh_1").selectpicker('refresh')
+            $("#sell_strategy_attr_rh_1").empty()
+            $("#sell_strategy_attr_rh_1").selectpicker('refresh')
+            // populate left attribute of first buy/sell rules
+            init_strategy();
 		});
 
 	// time scale button clicked
@@ -1041,6 +1184,8 @@ function icon_set(icon){
         var button_ts = $(this).data('value');
        // console.log(button_ts);
         _time_res = button_ts;
+        // set option default time scale
+        $('#tf option[value='+button_ts+']').prop('selected', true);
         $("#chart").empty();
         renderChart(_asset,$("#chart_symbol").text(),_time_res,_theme);
         //Highcharts.charts[0].setTitle({ text: _symbol });
@@ -1059,6 +1204,9 @@ function icon_set(icon){
                 _theme =  $("#color").val();
                 $("#chart").empty();
                 $('#symbol').html(_symbol+" "+_time_res);
+                // set time scale
+                $('.ts_btn_grp label.active').removeClass("active")
+                $('#tr_div label[data-value='+_time_res+']').addClass('active');
                 if($("#select_symbols").find("option:selected").val() !== '')
                 $("#chart_symbol").html('<h3>'+$("#select_symbols").find("option:selected").text()+'</h3>')
                 renderChart(_asset,_symbol,_time_res,_theme);
@@ -1067,7 +1215,7 @@ function icon_set(icon){
                   alert("Plesae select symbol from the list");
                   return 0;
                   }
-// display butthon
+// display button
 			$("#buyOrder").css("visibility","visible");
 			$("#sellOrder").css("visibility","visible");
 			$("#resetWallet").css("visibility","visible");
@@ -1216,7 +1364,9 @@ function icon_set(icon){
         $("#buyOrder").prop("disabled", true);
         $("#resetWallet").prop("disabled", true);
         $("#runAlgo").prop("disabled", true);
+        $('#algoStrategy').collapse('hide');
         $("nav").hide();
+        $('html, body').animate({ scrollTop: 0 }, 'slow');
         run_bot()
     })
 
@@ -1269,10 +1419,10 @@ function strategy_validation(){
 
 // add and/or condition
     $(".and, .or").click(function(){
-        let buy_sell = "buy"
-        $(this).closest('div').attr('id') == "buy_condition_1" ? buy_sell = "buy" : buy_sell = "sell"
+        let buy_sell = "";
+        $(this).closest('div').attr('id') == "buy_condition_1" ? buy_sell = "buy" : buy_sell = "sell";
         if( ($("#"+buy_sell+"_conditions").find($(".condition_wrapper")).length < 4)   ){
-            _condition_no = _condition_no + 1;
+            _condition_no = Number($("#"+buy_sell+"_conditions .condition_wrapper:last-child").attr("data-id")) + 1;
             add_condition($(this).text(),buy_sell);
         }else{
             dialog('Condition Limit', "Number of conditions are limited to 4 " ,BootstrapDialog.TYPE_DANGER);
@@ -1305,45 +1455,80 @@ function strategy_validation(){
             try{
                 _buy_rule = "";
                 _sell_rule = "";
+                _buy_rule_eval = "";
+                _sell_rule_eval = "";
+                _indicators = []; // list of indicators required by the algo engine
+                _indicators_info = {} // list of indicators information
+
                 // check input has data
                 if($("#rule_name").val()==""){
-                      throw "Empty rule name.";
+                      throw "Empty rule name. Please enter name to the rule";
                 };
+
                 $.each(['buy','sell'],function(index,value){
                             let conditions = $("#"+value+"_conditions .condition_wrapper form").length;
                             let and_or = "";
+
                             for (let i = 0; i < conditions; i++)  {
-                                  let compare =   $("#"+value+"_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(1)").val() == "greater than:" ?  ">" :  "<";
+                                  let compare =   $("#"+value+"_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(1)").val() == "gt" ?  ">" :  "<";
                                   if(i != 0){
                                          and_or = $("#"+value+"_conditions .condition_wrapper .form-inline:eq("+i+") label:eq(0)").text().substring(0, 3).toLowerCase().trim()
                                         }
                                     let lh_indicator = $("#"+value+"_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(0)").val();
                                     let rh_indicator = $("#"+value+"_conditions .condition_wrapper .form-inline:eq("+i+") select:eq(2)").val();
-                                    let rule = " " + and_or + " ( " + lh_indicator +" "+compare+" " +  rh_indicator   +" )";
-                                    value == "buy" ? _buy_rule += rule : _sell_rule += rule;
-
-                                    // Check if rules are empty
+                                    // Check if rules indicators are empty
                                     if ((lh_indicator == '') || (rh_indicator =='')){
-                                        throw "missing value in "+value+" Rule: #"+(i+1);
+                                            throw "missing value in "+value+" Rule: #"+(i+1);
                                     };
+                                    let rule = " " + and_or + " ( " + lh_indicator +" "+compare+" " +  rh_indicator   +" )";
+                                    //populate eval rule for python. keep the indicator in its form value if it is a value and not indicator
+                                    let left_hand =   _tech_indicators[lh_indicator].eval ; // always indicator
+                                    let right_hand = _tech_indicators[lh_indicator].condition_tp == 'I' ?
+                                     _tech_indicators[rh_indicator].eval :
+                                     ///// SPECIAL RIGHT HAND RULES /////////////
+                                     rh_indicator == 'signal'?
+                                     'df["SIGNAL"][-1]':
+                                     ///// BOLLINGER, STOCHASTIC, "0"
+                                     ///////////////////////////////
+                                     rh_indicator; // depends on the left hand
+
+                                    let rule_eval = " " + and_or + " ( " + left_hand +" "+compare+" " +  right_hand  +" )";
+
+                                    if (value == "buy"){
+                                        _buy_rule += rule;
+                                        _buy_rule_eval += rule_eval;
+                                    }else{
+                                         _sell_rule += rule;
+                                         _sell_rule_eval += rule_eval;
+                                    }
+
                                     // add new element to indicator array
                                     if ( _indicators.indexOf(lh_indicator) < 0  ) {
-                                        _indicators.push(_tech_indicators[lh_indicator]);
+                                        _indicators.push(lh_indicator);
+                                        _indicators_info[lh_indicator] = _tech_indicators[lh_indicator];
                                     };
-                                    // add new element to indicator array (ingore values comparison)
+                                    // add new element to indicator array (ignore values )
                                     if ( (_indicators.indexOf(rh_indicator) < 0 )   && (_tech_indicators[lh_indicator].condition_tp == 'I') ) {
-                                        _indicators.push(_tech_indicators[rh_indicator]);
+                                        _indicators.push[rh_indicator];
+                                        _indicators_info[rh_indicator] = _tech_indicators[rh_indicator];
                                     };
                             };
                 });
                 dialog("Rule '"+ $("#rule_name").val() +"' saved to the Algo Engine",
-                "<b><u>Rules Parameters :</u></b>                 <br><br> Market : "+_asset+
-                "<br><br> Interval (candle timeframe) : "+$("#strtegy_inteval").val()+
-                "<br><br> Buy asset if: "+_buy_rule+
-                "<br><br> Sell asset if : "+_sell_rule
+                "<b><u>Algo-BOT Parameters :</u></b>                 <br><br> Market : "+_asset+
+                "<br><br> Interval (candle timeframe) : "+$("#strtegy_inteval").val()+" minutes"+
+                "<br><br> Buy asset if: "+_buy_rule+ // add _eval for python debug
+                "<br><br> Sell asset if : "+_sell_rule+ // add _eval for python debug
+                "<br><br><b><u> Other Conditions : </u></b>"+
+                "<br> Sell position if price dropped more than "+$("#stop_loss").val()+"%."+
+                "<br> SECURE PROFIT if price increases above "+$("#secure_profit").val()+"%."+
+                "<br> Sell position if price has not reached SECURE PROFIT within "+$("#no_movement").val()+" seconds."+
+                "<br><hr> You may close the strategy window by clicking <button>Strategy</button> at the top menu and then click <button>Start BOT</button> in order to start the BOT. "
                 ,BootstrapDialog.TYPE_INFO);
-
-                build_algo_parameters($("#rule_name").val());
+                // set strategy method
+                _strategy_method = "DIY";
+                // populate algo parameters
+                init_algo_payload($("#rule_name").val());
             }
             catch (err){
                 dialog('Error Saving rule', err ,BootstrapDialog.TYPE_DANGER);

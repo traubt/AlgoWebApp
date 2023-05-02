@@ -129,7 +129,7 @@ const chartOptions = {
 
     market == 'stocks' ?  end_point = 'yfStockHistory' :  end_point = 'binancePairHistory';
     add_to_log(get_current_date()+' Fetch symbol '+symbol+' quotes');
-    fetch('http://localhost:5000/'+end_point+'?symbol='+symbol+'&interval='+rs+'&period=10d')
+    fetch('http://localhost:5000/'+end_point+'?symbol='+symbol+'&interval='+rs)//+'&period=10d')
         .then((r) => r.json())
         .then((response) => {
 //            console.log(response)
@@ -184,7 +184,7 @@ const chartOptions = {
 //                 		if (Object(_binanceSocket).toString() !== '[object Object]'){
 //		                _binanceSocket.close();
 //		                };
-                        fetch('http://localhost:5000/'+end_point+'?symbol='+symbol+'&interval='+rs+'&period=1d')
+                        fetch('http://localhost:5000/'+end_point+'?symbol='+symbol+'&interval='+rs)//+'&period=1d')
                         .then((r) => r.json())
                         .then((response) => {
 //                            console.log("yahoo web socket is running...");

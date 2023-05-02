@@ -112,32 +112,29 @@ renderHighChart = async (symbol,hc_div) => {
                     update_chart(chart_id,value)
                 }else{
                     try{
-                    var chart_id = 1;
-                   // var value = _highChart_val_b;
-                    let myHeaders = new Headers();
-                    myHeaders.append('Content-Type', 'application/json');
-                    fetch('https://api.binance.com/api/v1/klines?symbol=BTCUSDT&interval=15m', {
+                        var chart_id = 1;
+                        var rs;
+                        _asset == 'crypto' ?  rs = _b_time_res[_time_res] :  rs = _time_res;
+                        var sharpe_15,sharpe_5;
+                        let myHeaders = new Headers();
+                        myHeaders.append('Content-Type', 'application/json');
+                        fetch('https://api.binance.com/api/v1/klines?symbol=BTCUSDT&interval='+rs, {
                               mode: 'cors',
                               headers: {
                                 'Access-Control-Allow-Origin':'*'
                               }
                             })
-                          .then(response => response.json())
-//                          .then(data => console.log(data))
-//                            try{
-                              .then(data => fetch('http://localhost:5000/calc_sharpe' ,{
+                         .then(response => response.json())
+                          .then(data => fetch('http://localhost:5000/calc_sharpe' ,{
                                                                                         method : 'POST',
                                                                                         body: JSON.stringify(data),
                                                                                         headers : myHeaders,
-//                                                                                        mode: 'cors',
-    //                                                                                    headers: {'Access-Control-Allow-Origin':'*'}
                                                                                         }))
-//                            }catch(e){} // stop printing error to console
-                           .then(response => response.text())
-//                           .then(text => console.log("benchmark: "+text))
-                           .then(text =>  update_chart(chart_id,text))
+                          .then(response => response.text())
+                          //.then(text =>  update_chart(chart_id,text))
+                          .then(sharpe =>  update_chart(chart_id,sharpe))
                           .catch(error => console.log(error));
-                }catch(e){console.log("error in calc_sharpe")}
+                    }catch(e){console.log("error in calc_sharpe "+e)}
                 };
-        }, 30000);
+        }, 2000);
 };

@@ -308,13 +308,18 @@ height: 34px;
     background: white;
 }
 
-.strategy{
+.strategy,.strategy_p{
     width: 90vw;
-    min-height: 100px;
+    min-height: 80px;
     background: white;
     border: solid 0.5px grey;
     border-radius: 10px;
     margin: 5px;
+}
+
+#reset_strategy{
+    float:right;
+    margin-right: 20px;
 }
 
 
@@ -337,7 +342,7 @@ height: 34px;
     margin-bottom:12px;
 }
 
-.form-inline{
+.form-inline {
     margin: 10px ;
 }
 

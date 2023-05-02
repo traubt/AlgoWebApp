@@ -5,7 +5,7 @@ from tqdm import tqdm
 from wallet import wallet
 from order import order
 import math
-# import btalib
+# import talib
 import time as t
 import pandas_ta as ta
 import random
@@ -60,7 +60,7 @@ def printf(msg, msg_date,msg_price,msg_grow,order_type,msg_symbol,msg_qty,msg_am
     return None
 
 #print information to client
-def printi(msg, msg_date,msg_price,msg_grow,order_type,msg_symbol,msg_qty,msg_amt,msg_sellRsn,msg_timeLapse,msg_fee):
+def printi(msg, msg_date, msg_price, msg_grow, order_type, msg_symbol, msg_qty, msg_amt, msg_sellRsn, msg_timeLapse, msg_fee):
     try:
         global count_msg
         count_msg = count_msg + 1
@@ -90,60 +90,6 @@ def printi(msg, msg_date,msg_price,msg_grow,order_type,msg_symbol,msg_qty,msg_am
         print(f"error: {e} \n when trying to send messages: {msg}")
     return None
 
-
-def _add_indicators(quotes):
-    err = 0
-    for pair in tqdm(quotes.keys()):
-        try:
-            # macd = btalib.macd(quotes[pair].Close, pfast=12, pslow=26, psignal=9)
-            # Update Stochastic MA default parameters
-            # sma_low = btalib.sma(quotes[pair].low, period=3)
-            # sma_high = btalib.sma(quotes[pair].high, period=1)
-            # Calculate stochastic with the new parameters
-            # stoc = btalib.stochastic(quotes[pair].High,quotes[pair].Low,quotes[pair].Close)
-            # Add bolinger bands
-            # bbands = btalib.bbands(quotes[pair]['Close'])
-            # Join the indicator to the main df
-            # quotes[pair] = quotes[pair].join([macd.df, bbands.df])
-            # quotes[pair] = quotes[pair].join([macd.df])
-            # Add EMW
-            # quotes[pair]['EMA'] = btalib.ema(quotes[pair].Close, period=emawdw).df
-            quotes[pair]['EMA'] = quotes[pair]['Close'].ewm(span=7, adjust=False).mean()
-            quotes[pair]['P_EMA'] = quotes[pair]['EMA'].shift(1)
-            quotes[pair]['MA10']= quotes[pair]['Close'].rolling(10).mean()
-            quotes[pair]['MA5'] = quotes[pair]['Close'].rolling(5).mean()
-            # quotes[pair]['EMA_ratio'] = quotes[pair]['EMA'] / quotes[pair]['mid']
-            # quotes[pair]['Prev_EMA_ratio'] = quotes[pair]['EMA_ratio'].shift(1)
-            # quotes[pair]['S_RSI'] = btalib.stochrsi(quotes[pair].Close).df
-            # quotes[pair]['RSI'] = btalib.rsi(quotes[pair].Close, period=7).df
-            quotes[pair]['RSI'] = quotes[pair].ta.rsi(length=14)
-            quotes[pair]['P_RSI'] = quotes[pair]['RSI'].shift(1)
-            quotes[pair]['CAPVOL'] = quotes[pair]['Volume'] * quotes[pair]['Close']
-            # Add daily change
-            # quotes[pair]['Change'] = quotes[pair].Close.pct_change()
-            # quotes[pair]['min100'] = quotes[pair].Change.rolling(100).min()
-            # quotes[pair]['min30'] = quotes[pair].Close.rolling(30).min()
-            # ATR
-            # quotes[pair]['ATR'] = btalib.atr(quotes[pair].High, quotes[pair].Low,
-            #                                         quotes[pair].Close).df
-            # quotes[pair]['max_ATR'] = quotes[pair]['ATR'].rolling(100).max()
-            # quotes[pair]['Stop_Loss'] = quotes[pair]['Close'].shift(1) - quotes[pair]['ATR'].shift(1)
-            # Max daily change
-            # quotes[pair]['Prev_High'] = quotes[pair].High.shift(1)
-            # quotes[pair]['Prev_Low'] = quotes[pair].Low.shift(1)
-            # quotes[pair]['Max_Change'] = (quotes[pair][["High", "Prev_High"]].max(axis=1) - quotes[pair][["Low", "Prev_Low"]].min(axis=1)) / quotes[pair][["Low", "Prev_Low"]].min(axis=1)
-            # Sharpe
-            # ret = np.exp(quotes[pair].Change.rolling(44).mean() * 244) - 1
-            # std = quotes[pair].Change.rolling(44).std() * np.sqrt(244)
-            # quotes[pair]['Sharpe'] = (ret - 0.02) / std
-        except BaseException as e:
-            print(pair, " Add indicators failed.", e)
-            err += 1
-            continue
-    # print(f"{self._now()} Number of errors add indicators: {err}")
-        return quotes
-    return None
-
 class crypto_bot:
   def __init__(self, payload):
     self.pairs = []
@@ -163,6 +109,14 @@ class crypto_bot:
     self.time_scale = payload["interval"] + "m"
     self._default_amount = float(payload["walletInitBalance"])
     self.market = payload["market"]
+    self._indicators = payload["indicators"]
+    self._buy_rule = payload["buyRule"]
+    self._sell_rule = payload["sellRule"]
+    self._stop_loss = float(payload["stopLoss"])
+    self._rull_name = payload["ruleName"]
+    self._strategy = payload["strategy"]  # differentiate between my strategy and user strategy "SYSTEM"/"DIY"
+    self._no_movement = int(payload["sellNoMovement"])
+    self._secure_profit = float(payload["secureProfit"])
     self._wallet = wallet(self._base_coin, self._default_amount)
 
   def _now(self):
@@ -226,13 +180,70 @@ class crypto_bot:
           max_dateTime = max([self.market_prices[i].index[-1] for i in self.pairs])
           for token in self.pairs:
               if self.market_prices[token].index[-1] != max_dateTime:
-                  print("removing symbol:",token)
+                  print("removing symbol not recently traded:",token)
                   self.market_prices.pop(token)
                   self.pairs.remove(token)
       except BaseException as e:
           printf(f"{self._now()}: Error in remove not active tokens: {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
                  "NA", "NA", "NA", "NA")
       return None
+
+  def _add_indicators(self,quotes,pair):
+      err = 0
+      try:
+          for ind in self._indicators.keys():
+              if ind == "MACD":
+                quotes[["MACD","HISTO","SIGNAL"]] = eval(self._indicators[ind]['tech'])
+              else:
+                quotes[ind] = eval(self._indicators[ind]['tech'])
+          # macd = btalib.macd(quotes[pair].Close, pfast=12, pslow=26, psignal=9)
+          # macd = pd.DataFrame(quotes[pair]['Close']).ta.macd()
+          # Update Stochastic MA default parameters
+          # sma_low = btalib.sma(quotes[pair].low, period=3)
+          # sma_high = btalib.sma(quotes[pair].high, period=1)
+          # Calculate stochastic with the new parameters
+          # stoc = btalib.stochastic(quotes[pair].High,quotes[pair].Low,quotes[pair].Close)
+          # Add bolinger bands
+          # bbands = btalib.bbands(quotes[pair]['Close'])
+          # Join the indicator to the main df
+          # quotes[pair] = quotes[pair].join([macd.df, bbands.df])
+          # quotes[pair] = quotes[pair].join([macd.df])
+          # Add EMW
+          # quotes[pair]['EMA'] = btalib.ema(quotes[pair].Close, period=emawdw).df
+          # quotes[pair]['EMA'] = quotes[pair]['Close'].ewm(span=7, adjust=False).mean()
+          # quotes[pair]['P_EMA'] = quotes[pair]['EMA'].shift(1)
+          # quotes[pair]['MA10'] = quotes[pair]['Close'].rolling(10).mean()
+          # quotes[pair]['MA5'] = quotes[pair]['Close'].rolling(5).mean()
+          # quotes[pair]['EMA_ratio'] = quotes[pair]['EMA'] / quotes[pair]['mid']
+          # quotes[pair]['Prev_EMA_ratio'] = quotes[pair]['EMA_ratio'].shift(1)
+          # quotes[pair]['S_RSI'] = btalib.stochrsi(quotes[pair].Close).df
+          # quotes[pair]['RSI'] = btalib.rsi(quotes[pair].Close, period=14).df
+          #quotes[pair]['RSI'] = pd.DataFrame(quotes[pair]['Close']).ta.rsi(length=14)
+          #quotes[pair]['P_RSI'] = quotes[pair]['RSI'].shift(1)
+          #quotes[pair]['CAPVOL'] = quotes[pair]['Volume'] * quotes[pair]['Close']
+          # Add daily change
+          # quotes[pair]['Change'] = quotes[pair].Close.pct_change()
+          # quotes[pair]['min100'] = quotes[pair].Change.rolling(100).min()
+          # quotes[pair]['min30'] = quotes[pair].Close.rolling(30).min()
+          # ATR
+          # quotes[pair]['ATR'] = btalib.atr(quotes[pair].High, quotes[pair].Low,
+          #                                         quotes[pair].Close).df
+          # quotes[pair]['max_ATR'] =
+          # quotes[pair]['Stop_Loss'] = quotes[pair]['Close'].shift(1) - quotes[pair]['ATR'].shift(1)
+          # Max daily change
+          # quotes[pair]['Prev_High'] = quotes[pair].High.shift(1)
+          # quotes[pair]['Prev_Low'] = quotes[pair].Low.shift(1)
+          # quotes[pair]['Max_Change'] = (quotes[pair][["High", "Prev_High"]].max(axis=1) - quotes[pair][["Low", "Prev_Low"]].min(axis=1)) / quotes[pair][["Low", "Prev_Low"]].min(axis=1)
+          # Sharpe
+          # ret = np.exp(quotes[pair].Change.rolling(44).mean() * 244) - 1
+          # std = quotes[pair].Change.rolling(44).std() * np.sqrt(244)
+          # quotes[pair]['Sharpe'] = (ret - 0.02) / std
+      except BaseException as e:
+          print(ind, " Add indicators failed.", e)
+          err += 1
+          # continue
+      # print(f"{self._now()} Number of errors add indicators: {err}")
+      return quotes
 
 
   def downloadHistoryPrices(self, symbol):
@@ -252,7 +263,6 @@ class crypto_bot:
   def downloadHistoryPricesNyse(self,stock):
       self.quote_df  =   yf.download(tickers=stock, interval=self.time_scale ,period = self.period, show_errors=False,progress=False)
       return None
-
 
   def _get_market_data(self):
 
@@ -318,7 +328,7 @@ class crypto_bot:
 
   def _top_gainers_last_min(self):
       l = []
-      self.time_scale = '1m'
+      # self.time_scale = '1m'
       self.period = '2d'
       self._get_market_data()
       for x in self.market_prices.keys():
@@ -340,22 +350,26 @@ class crypto_bot:
   def _find_asset(self,df, token):
       found = False
       try:
-          price = df['Close'][-1]
-          open = df.loc[:]['Open'][-2]
-          history_max_price = df.loc[:].iloc[120:-2]['Close'].max()
-          history_avg_price = df.loc[:].iloc[120:-2]['Close'].mean()
-          max_ratio = price / history_max_price
-          min_ratio = open / history_max_price
-          max_avg_ratio = price / history_avg_price
+          df = self._add_indicators(df, token)
+          # price = df['Close'][-1]
+          # open = df.loc[:]['Open'][-2]
+          # history_max_price = df.loc[:].iloc[120:-2]['Close'].max()
+          # history_avg_price = df.loc[:].iloc[120:-2]['Close'].mean()
+          # max_ratio = price / history_max_price
+          #min_ratio = open / history_max_price
+          # max_avg_ratio = price / history_avg_price
           # if (max_ratio > 1) and (min_ratio < 1) and (max_avg_ratio < 1.04):
-          if max_avg_ratio > 1:
+          #if max_avg_ratio > 1:
+          print("RSI:",df["RSI"][-1])
+          if eval(self._buy_rule):
               # idx = df.loc[:].loc[(df['Close'] > open) & (df['Close'] < price)].index[-1]
               # last = len(df) - df[:].index.get_loc(idx)
               # print(f"{self.now} Breakout: {token} , Current price: {price}, Open: {open}, Break history at: {idx}, {last} minutes ago")
               # printf(f"{self.now} Breakout: {token} , Current price: {price}, Open: {open}, Break history at: {idx}, {last} minutes ago",{self.now},{price},"NA"  ,"NA","NA","NA","NA","NA","NA","NA")
               found = True
       except BaseException as e:
-          # print(f"error calculating rsi: {e}")
+          print(f"Error find asset: {e}")
+          printf(f"{self._now()}: Error in find asset module. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
           None
       return found
 
@@ -363,134 +377,107 @@ class crypto_bot:
         try:
               quote = {}
               self.period = '2d'
-              self.time_scale = '1m'
+              # self.time_scale = '1m'
               self.pairs = [pair]
               self._get_market_data()
               quote[pair] = self.quote_df
-              quote = _add_indicators(quote)
+              quote[pair] = self._add_indicators(quote[pair],pair)
         except BaseException as e:
             print(f" Could not download 1 min quote: {e}")
             printf(f"{self._now()}: Could not download 1 min quote. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
                    "NA", "NA", "NA", "NA")
         return quote[pair]
 
-  def _check_exit(self,pair, df, st_price):
+  def _check_exit(self,pair, enter_df, st_price):
       sell = False
       rsn = "IN"
       max_ret = 0
-      max_ema = 0
       max_date = self._now()
       secure_ret = 0
-      secure_ema = 0
-      count_low_ema = 0
       print(f"\n{self._now()} {pair} Check exit: check price action every second.")
       t_interval = 1 # sleep time every 1 sec
       count_sec = 0
 
-      while not sell:
-          count_sec += 1
-          d = self._download_1min_quotes(pair)
-          price = d.Close[-1]
-          stop_loss = d.Open[-2]
-          ema = d['Close'].ewm(span=7, adjust=False).mean()
-          # ratio = d.Close[-1] / last_price
-          ratio = (ema[-1] / ema[-2] * 100) - 100
-          rsi = round(d['RSI'][-1], 2)
-          ma5 = round(d['MA5'][-1], 10)
-          ma10 = round(d['MA10'][-1], 10)
-          g = d.Close[-1] / df.Close[-1] * 100 - 100
+      try:
+          while not sell:
+              monitor_indicators = ""
+              count_sec += 1
+              df = self._download_1min_quotes(pair)
+              price = df.Close[-1]
+              stop_loss = round(enter_df.Close[-1] - enter_df.Close[-1] * self._stop_loss/100,6)
+              g = df.Close[-1] / enter_df.Close[-1] * 100 - 100
 
-          # print(f"{_now()} base grow: {round(dg,5)} time span: {round(dt,5)} sec, pace: {round(pace,5)} p/sec, stop_loss: {round(stop_loss,5)}, inter_sec ret: {round(ratio,5)}, Gain: {round(g,3)}%")
-          # print(f"Token: {pair} EMA growth: {round(ratio, 2)}%, RSI: {rsi},Portfolio Growth: {round(g, 3)}%, Secure EMA: {secure_ema}%, Secure Return: {secure_ret}%.")
-          txt = "Token: " + pair + " Price: " + str(round(d.Close[-1], 2)) + ", RSI: " + str(
-              rsi) + ", Current Return: " + str(round(g, 3)) + "%, Max Return: " + str(
-              round(max_ret, 3)) + "%, Secure Return: " + str(secure_ret) + "%."
-          # logging.info(txt)
-          print(txt)
-          printi(f"{self._now()}  Token: {pair}  Price:  {str(round(d.Close[-1], 10))} , RSI:  {str(rsi)} , MA5:  {str(ma5)} , MA10:  {str(ma10)}, Stop-Loss:  {str(stop_loss)}, Profit: {str(round(g, 3))} %.", #, Max Return: { str(round(max_ret, 3)) } %, Secure Return:  { str(secure_ret)} %.",
-                 {self._now()},
-                 {str(round(d.Close[-1], 10))},
-                 {str(round(g, 3))},
-                 "MONITOR",
-                 pair,"NA","NA","NA","NA","NA")
-          # save max return and date
-          if (g > max_ret) :
-              max_ret = g
-              max_date = self._now()
-          # Secure max return in stages
-          if (g > max_ret) and (g > 15):
-              max_ret = g
-              secure_ret = round(g * 0.9, 2)
-              max_date = self._now()
-          elif (g > max_ret) and (g > 10):
-              max_ret = g
-              secure_ret = round(g * 0.8, 2)
-              max_date = self._now()
-          elif (g > max_ret) and (g > 2):
-              max_ret = g
-              secure_ret = round(g * 0.7, 2)
-              max_date = self._now()
-          elif (g > max_ret) and (g > 0.2):
-              max_ret = g
-              secure_ret = round(g * 0.7, 2)
-              max_date = self._now()
+              #prepare monitor text
+              for ind in self._indicators.keys():
+                  monitor_indicators += " "+ind+ ":  "+ str(round(eval(self._indicators[ind]['eval']),6))
 
-          if ratio < 0.5:
-              count_low_ema += 1
+              txt = "Token: " + pair + " Price: " + str(round(df.Close[-1], 2)) +  ", Current Return: " + str(round(g, 3)) + "%, Max Return: "\
+                     + str( round(max_ret, 3)) + "%, Secure Return: " + str(secure_ret) + "%." + monitor_indicators
+              # logging.info(txt)
+              print(txt)
+              printi(f"{self._now()}  Token: {pair}  Price:  {str(round(df.Close[-1], 10))} ,  Stop-Loss:  {str(stop_loss)}, Profit: {str(round(g, 3))} %. {monitor_indicators}", #, Max Return: { str(round(max_ret, 3)) } %, Secure Return:  { str(secure_ret)} %.",
+                     {self._now()},
+                     {str(round(df.Close[-1], 10))},
+                     {str(round(g, 3))},
+                     "MONITOR",
+                     pair,"NA","NA","NA","NA","NA")
+              # save max return and date
+              if (g > max_ret) :
+                  max_ret = g
+                  max_date = self._now()
+              # Secure max return in stages
+              elif (g > max_ret) and (g > self._secure_profit*8):
+                  max_ret = g
+                  secure_ret = round(g * (1 + self._secure_profit)*8, 2)
+                  max_date = self._now()
+              elif (g > max_ret) and (g > self._secure_profit*4):
+                  max_ret = g
+                  secure_ret = round(g * (1 + self._secure_profit)*4, 2)
+                  max_date = self._now()
+              elif (g > max_ret) and (g > self._secure_profit*2):
+                  max_ret = g
+                  secure_ret = round(g * (1 + self._secure_profit)*2, 2)
+                  max_date = self._now()
+              elif (g > max_ret) and (g > self._secure_profit):
+                  max_ret = g
+                  secure_ret = round(g * (1 + self._secure_profit), 2)
+                  max_date = self._now()
 
-          ######### EXIT FROM POSITION #########
-
-          # Droping down first seconds immediately after buy
-          if (ratio < 0 or g < -0.2) and (rsi < 75) and (secure_ret == 0):
-              print(f"{self._now()}:Trigger BED Entry for {pair}")
-              # printf(f"{self._now()}:Trigger BED START {pair}")
-              sell = True
-              # rsn = "EMA REVERSE OR DOWNFALL"
-              rsn = "BED Entry"
-              return sell, rsn, max_ret, max_date
-
-          # No movement
-          elif (count_sec > 60) and (secure_ret == 0):
-              print(f"{self._now()}:Trigger 60 sec no movement for {pair}")
-              # printf(f"{self._now()}:Trigger 30 sec no movement for {pair}")
-              sell = True
-              rsn = "NO MOVEMENT"
-              return sell, rsn, max_ret, max_date
-
-          ###########################  main exit strategy ##################################
-          # elif price < ma10:
-          #     print(f"{self._now()}:Trigger cross over down MA10 {ma10}% for {pair}, ")
-          #     sell = True
-          #     rsn = "CROSS OVER MA10"
-          #     return sell, rsn, max_ret, max_date
-
-          elif price < stop_loss:
-              print(f"{self._now()}:Trigger cross over stop loss {stop_loss}% for {pair}, ")
-              sell = True
-              rsn = "CROSS UNDER Stop-Loss"
-              return sell, rsn, max_ret, max_date
-          ###################################################################################
-
-          # Secure profit
-
-          # elif (max_ret > 0) and (g < secure_ret) and (rsi < 80):
-          #     print(f"{self._now()}:Trigger SECURE PROFIT {secure_ret}% for {pair}, ")
-          #     sell = True
-          #     rsn = "SECURE PROFIT"
-          #     return sell, rsn, max_ret, max_date
-
-          # Tomer: Lamborgini - Fast breakout
-          # elif (enter_buy_type == 'LAMBO') and (g > 0.4):
-          #     print(f"{_now()}:Fast break out Lamborgini {pair}")
-          #     sell = True
-          #     rsn = "LAMBORGINI"
-          #
-          #     return sell, rsn, max_ret, max_date
-
-          else:
-              # last_price = d.Close[-1]
-              # last_ema = ema[-1]
-              t.sleep(t_interval)
+              ######### EXIT FROM POSITION #########
+              # No movement
+              if (count_sec > self._no_movement) and (secure_ret == 0):
+                  print(f"{self._now()}:Trigger {self._no_movement} seconds no growth for {pair}")
+                  sell = True
+                  rsn = "No_Growth"
+                  return sell, rsn, max_ret, max_date
+              # Exit Secure return
+              elif (secure_ret > 0 ) and (g < secure_ret):
+                  print(f"{self._now()}:Trigger sell  for {pair}. ")
+                  printf(f"{self._now()}: Trigger sell Secure Return for {pair}", {self._now()}, "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA")
+                  sell = True
+                  rsn = "Secure_Return"
+                  return sell, rsn, max_ret, max_date
+              # Exit Strategy Rule
+              elif eval(self._sell_rule):
+                  print(f"{self._now()}:Trigger sell rule: {self._sell_rule} for {pair}. ")
+                  printf(f"{self._now()}: Trigger sell rule: {self._sell_rule} for {pair}", {self._now()}, "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA")
+                  sell = True
+                  rsn = "Exit_Strategy"
+                  return sell, rsn, max_ret, max_date
+              # Stop Loss
+              elif price < stop_loss:
+                  print(f"{self._now()}:Trigger reach stop-loss {stop_loss}% for {pair} ")
+                  printf(f"{self._now()}: Trigger reach stop-loss {stop_loss}% for {pair} ", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+                  sell = True
+                  rsn = "Stop_Loss"
+                  return sell, rsn, max_ret, max_date
+              ###################################################################################
+              else:
+                  t.sleep(t_interval)
+      except BaseException as e:
+          print(f" Error monitoring token: {e}")
+          printf(f"{self._now()}: Error in monitoring token. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
+                 "NA", "NA", "NA", "NA")
 
       return sell, rsn
 
@@ -508,7 +495,7 @@ class crypto_bot:
       printf(f"{self._now()}: Found {len(self.pairs)} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
       print(f"{self._now()}: Get {self.market} market quotes...")
       printf(f"{self._now()}: Download market quotes for all symbols. This may take couple of minutes.", {self._now()}, "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA", "NA")
-      self.time_scale = '15m'
+      # self.time_scale = '15m'
       self.period = '2d'
       self._get_market_data()
       self.remove_non_active_tokens()
@@ -541,7 +528,7 @@ class crypto_bot:
               #examine the top gainers
               printf(f"{self._now()}: Get ENTRY STRATEGY matches.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
               self.pair = self.top_last_min_gain
-              self.time_scale = '1m'
+              # self.time_scale = '1m'
               self.period = '2d'
               self._get_market_data() # new market_price quotes dictionary
               print(f"{self._now()}: Filter entry strategy.")
@@ -595,11 +582,11 @@ class crypto_bot:
               # Working on single symblol
               self.pairs = [pair]
               self.period = '2d'
-              self.time_scale = '1m'
+              # self.time_scale = '1m'
               self._get_market_data()
               print(f"{self._now()}: Monitor symbol: {pair}. Add indicators...")
               printf(f"{self._now()}: Monitor symbol: {pair}. Add indicators...",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
-              self.market_prices = _add_indicators(self.market_prices)
+              self.market_prices = self._add_indicators(self.market_prices,pair)
 
               # Get symbol buying quotes
               st_price = self._wallet._get_token_st_price(pair)
