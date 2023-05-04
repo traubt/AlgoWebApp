@@ -284,7 +284,7 @@ class crypto_bot:
       # print(f"{self._now()} Number of errors add indicators: {err}")
       return quotes
 
-
+#this is a test of github
   def downloadHistoryPrices(self, symbol,i, total):
 
       # self.quote_df = pd.DataFrame()
