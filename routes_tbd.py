@@ -26,7 +26,7 @@ import pandas as pd
 from wallet import wallet
 from order import order
 from binance_algo import crypto_bot as bot
-from equity_algo import equity_bot as eq_bot
+from equity_algo_tbd import equity_bot as eq_bot
 
 async_mode = None
 socketio = SocketIO(app, async_mode=async_mode, cors_allowed_origins=['*'])

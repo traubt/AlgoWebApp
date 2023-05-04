@@ -18,7 +18,6 @@
         <script type="text/javascript" src="../static/HighChart.js" defer></script>
         <script type="text/javascript" src="../static/tv.js" defer></script>
         <script type="text/javascript" src="../static/indicators.js" defer></script>
-        <script type="text/javascript" src="../static/algoAPI.js" defer></script>
 
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
@@ -419,7 +418,6 @@
     <div id="engineButtons">
         <button id="runAlgo" type="button" class="btn btn-primary">Start BOT</button>
         <button id="stopAlgo" type="button" class="btn btn-primary">Stop BOT</button>
-        <button id="testsoc" type="button" class="btn btn-primary">Test Socket</button>
         <i class="fas fa-circle"></i>
     </div>
 
@@ -492,6 +490,11 @@
                             <li><i class="far fa-flag"></i><br>Buy Asset</li>
                             <li><i class="fa fa-coffee"></i><br>Monitor Asset</li>
                             <li><i class="far fa-money-bill-alt"></i><br>Sell Asset</li>
+                        </div>
+                        <div class="progress">
+                          <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">
+                            0%
+                          </div>
                         </div>
                         <div class="waletClass" id="wallet_container"></div>
                     </div>
@@ -813,6 +816,7 @@ function populate_strategy_rh(div_id){
 function init_algo_payload(strategy){
 	//default algo parameter
 	_algo_params = {
+	    user_name : user,
 	    ruleName:strategy,
         walletInitBalance:$('#sel-options').val(),
         interval:$("#strtegy_inteval").val(),
@@ -962,6 +966,20 @@ function icon_set(icon){
     $(icon).css({ "color": "red","font-size":"35px","font-weight": "bold"});
 }
 
+//
+async function fetch_api(url,index,total,symbol){
+    let myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    fetch(url, {
+    method: 'GET',
+    headers: {
+        'Origin': url
+    }
+    })
+ .then(response => response.json())
+ .then(json => socket.emit(user, {"data": JSON.stringify(json), "symbol":symbol, "count": total}))
+//.then(data => console.log(JSON.stringify(data)))
+}
 
 ///////   socket /////////////////
             var socket = io();
@@ -1060,11 +1078,15 @@ function icon_set(icon){
                 $('#log').append('<br>' + $('<div/>').text(msg.data).html());
             })
 
-            // Message instruction from flask
-<!--            socket.on('flask_request_api', function(msg) {-->
-<!--                console.log(msg.data);-->
-<!--                get_US_market_list();-->
-<!--            })-->
+            // URL fetch instruction from flask
+            socket.on(user, function(msg) {
+                console.log("Call "+msg.index+"/"+msg.total+"  API : "+msg.data);
+                let progress = Number(Number(msg.index)/Number(msg.total)*100);
+                let s_progress = progress.toString()+"%";
+                $(".progress-bar").css('width', s_progress);
+                $(".progress-bar").html(s_progress);
+                fetch_api(msg.data,msg.index,msg.total,msg.symbol);
+            })
 
 /////////////////////////////  end  socket messages //////////////////////
 
@@ -1337,10 +1359,6 @@ function icon_set(icon){
           }
           })
 
-//test socket
-$("#testsoc").click(async function(){
-    socket.emit('test_message', {data: JSON.stringify(_template_pressure)});
-})
 
 // run crypto bot
     $("#runAlgo").click(async function(){

@@ -31,7 +31,7 @@ import pandas as pd
 from wallet import wallet
 from order import order
 from binance_algo import crypto_bot as bot
-from equity_algo import equity_bot as eq_bot
+from equity_algo_tbd import equity_bot as eq_bot
 import yfinance as yf
 import datetime as dt
 
@@ -547,7 +547,7 @@ def get_assets():
 def crypto_bot():
     os.environ["algo_engine"] = 'Running'
     payload =  request.json
-    runalgo = bot(payload)
+    runalgo = bot(payload,socketio)
     runalgo._run_algo()
     return "OK"
 
@@ -567,6 +567,11 @@ def my_event(message):
 def handle_message(data):
     print(data)
     emit('flask_response', {'data': 'Receive acknowledge from flask'})
+
+# @socketio.on('Tomer')
+# def handle_message(data):
+#     print(data)
+
 
 # Broadcast a message to all clients
 
@@ -683,7 +688,7 @@ def update_user_portfolio():
     return "Completed"
 
 
-'''   ---------------------------    END MOVE of routes.py --------------------------------------'''
+'''   ---------------------------    END MOVE of routes_tbd.py --------------------------------------'''
 
 if __name__ == '__main__':
     # app.run(debug=True, use_reloader=False)

@@ -14,7 +14,6 @@ import os
 import requests
 import json
 import time as tm
-import crypto_list
 from multiprocessing import Pool
 import datetime as dt
 import concurrent.futures
@@ -23,11 +22,11 @@ import bs4 as bs
 import yfinance as yf
 
 from flask_socketio import emit
+
+
 count_msg = 0
 interval = '15m'
 period = '5d'
-
-
 
 def printf(msg, msg_date,msg_price,msg_grow,order_type,msg_symbol,msg_qty,msg_amt,msg_sellRsn,msg_timeLapse,msg_fee):
     try:
@@ -91,13 +90,16 @@ def printi(msg, msg_date, msg_price, msg_grow, order_type, msg_symbol, msg_qty, 
     return None
 
 class crypto_bot:
-  def __init__(self, payload):
+  def __init__(self, payload,socket):
     self.pairs = []
+    self.count_msg_error = 0
+    self.count_msg_processed = 0
     # self.client = client
     self.min_dl = (datetime.utcnow() + relativedelta(minutes=-5)).strftime("%Y-%m-%d %H:%M:%S")
     self.max_dl = (datetime.utcnow() + relativedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
     self.quote_df = pd.DataFrame() # holds downloaded quote
     self.market_prices = {}
+    self.quotes = {}
     self.filter_top_traders = []
     self.top_last_min_gain = [] # list of top last min gainer (0.3%)
     self.top_gainers = [] # list of top gainers that pass find asset criteria
@@ -105,7 +107,10 @@ class crypto_bot:
     self._base_coin = 'USDT'
     self._mode = 'TEST'
     self._cycle = 0
+    self._wait = False #wait for the client to comeback with api information
+    # self.start_time = tm.time()
     #-- Payload
+    self.user = payload["user_name"]
     self.market = payload["market"]
     self._default_amount = float(payload["walletInitBalance"])
     self._wallet = wallet(self._base_coin, self._default_amount)
@@ -128,6 +133,31 @@ class crypto_bot:
         self._no_movement = 60
         self._secure_profit = 1
 
+    # handle user socket messages
+    @socket.on(self.user)
+    def handle_message(msg):
+        cnt_err = 0
+        try:
+            self.quote_df = pd.DataFrame()
+            self.quote_df = pd.DataFrame(json.loads(msg["data"]), columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume',
+                                                'close_time', 'qav', 'num_trades',
+                                                'taker_base_vol', 'taker_quote_vol', 'ignore'
+                                                ]).astype(float)
+            self.quote_df['Date'] = pd.to_datetime(self.quote_df['Date'], unit='ms')
+            self.quote_df.set_index('Date', inplace=True)
+            self.quotes[msg["symbol"]] = self.quote_df
+            self.market_prices = self.quotes
+            self.count_msg_processed +=1
+        except BaseException as e:
+            self.count_msg_error +=1
+        #print("Total handled",self.count_msg_processed + self.count_msg_error ," out of: " ,int(msg["count"]))
+        if (self.count_msg_processed + self.count_msg_error == int(msg["count"])):
+            self._wait = False
+
+
+
+
+
   def _now(self):
       return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -147,10 +177,11 @@ class crypto_bot:
           print(f" Could not get current price of {token} from binance")
       return (float(response.json()['price']))
 
+
   def get_symbols(self):
-      #send request to client
-      # emit('flask_request_api',
-      #      {'data': "get_US_market_list"}, namespace='/', broadcast=True)
+      # #send request to client
+      # emit(self.user,
+      #      {'data': "Please - get_US_market_list"}, namespace='/', broadcast=True)
       # Prepare quotes for all coin pairs
       if self.market == 'crypto':
           self.pairs = crypto_list.crypto_pairs
@@ -254,18 +285,19 @@ class crypto_bot:
       return quotes
 
 
-  def downloadHistoryPrices(self, symbol):
+  def downloadHistoryPrices(self, symbol,i, total):
 
-      self.quote_df = pd.DataFrame()
+      # self.quote_df = pd.DataFrame()
       root_url = 'https://api.binance.com/api/v1/klines'
       url = root_url + '?symbol=' + symbol + '&interval=' + self._time_scale
-      data = json.loads(requests.get(url).text)
-      self.quote_df = pd.DataFrame(data ,columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume',
-                                                                'close_time', 'qav', 'num_trades',
-                                                                'taker_base_vol', 'taker_quote_vol', 'ignore'
-                                                  ]).astype(float)
-      self.quote_df['Date'] = pd.to_datetime(self.quote_df['Date'], unit='ms')
-      self.quote_df.set_index('Date', inplace=True)
+      emit(self.user, {'data': url, 'symbol':symbol, 'index':i, 'total':total}, namespace='/', broadcast=True)
+      # data = json.loads(requests.get(url).text)
+      # self.quote_df = pd.DataFrame(data ,columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume',
+      #                                                           'close_time', 'qav', 'num_trades',
+      #                                                           'taker_base_vol', 'taker_quote_vol', 'ignore'
+      #                                             ]).astype(float)
+      # self.quote_df['Date'] = pd.to_datetime(self.quote_df['Date'], unit='ms')
+      # self.quote_df.set_index('Date', inplace=True)
       return None
 
   def downloadHistoryPricesNyse(self,stock):
@@ -273,27 +305,28 @@ class crypto_bot:
       return None
 
   def _get_market_data(self):
-
-      quotes = {}
+      i = 0
+      symbol_cnt = len(self.pairs)
+      self.quotes = {}
       self.market_prices = {}
       start_time = tm.time()
+      self.count_msg_processed = 0
+      self.count_msg_error = 0
+      #request client for api test one for now
+      # self.pairs =['ALPACAUSDT','BTCUSDT']
       for pair in tqdm(self.pairs):
           try:
+              i = i + 1
               if self.market == 'crypto':
-                  self.downloadHistoryPrices(pair)
+                  self.downloadHistoryPrices(pair,i,symbol_cnt )
               else:
                   self.downloadHistoryPricesNyse(pair)
-              quotes[pair] = self.quote_df
+
           except BaseException as e:
               # print("Error download quotes :",e)
               continue
-      print("---Download completed in %s seconds ---" % (tm.time() - start_time))
-      # printf(f"{self._now()}: Download completed in {(tm.time() - start_time)} seconds ---", {self._now()}, "NA", "NA", "NA", "NA", "NA",
-      #        "NA", "NA", "NA", "NA")
-      self.market_prices = quotes
-
-      print("---Download completed in %s seconds ---" % (tm.time() - start_time))
-
+      # print("---Download completed in %s seconds ---" % (tm.time() - start_time))
+      # self.market_prices = quotes
       return None
 
   def _get_pair_price(self,pair):
@@ -507,7 +540,12 @@ class crypto_bot:
       printf(f"{self._now()}: Download market quotes for all symbols. This may take couple of minutes.", {self._now()}, "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA", "NA")
       # self._time_scale = '15m'
       self.period = '2d'
+      ### GET INFORMATION FROM CLIENT !!!!!!!!!!!!!!
+      self._wait = True
       self._get_market_data()
+      while self._wait:
+          pass
+      #################################################
       self.remove_non_active_tokens()
       # filter top volume/traders:
       self.filter_top_traders = self._top_volume_trades(50)
