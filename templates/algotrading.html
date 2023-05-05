@@ -10,6 +10,10 @@
         <title>Algo Trading</title>
          <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
 
+<!--        input cell number-->
+   <link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+
 <!--		included js scripts-->
 		<script type="text/javascript" src="../static/get_historic_data2.js"></script>
         <script type="text/javascript" src="../static/bot.js"></script>
@@ -141,11 +145,29 @@
                                   </select>
                                   <button id="resetWallet" type="button" class="btn btn-primary flex-item">Reset Wallet</button>
                             </div>
+
+                        </form>
+                        <form class="form-inline">
+                            <div class="form-group">
+                              <label for="trx_fee" class="fles-item">Transaction Fee (%):</label>
+                              <input class = "form-control input_number" id = "trx_fee" type="number" min="0" max="2" step="0.01" value="0">
+                                <div class="invalid-feedback" hidden="true"> Please enter a valid number.  </div>
+
+                            </div>
                         </form>
 
               </div>
               <div class="strategy_p notifications">
                   <div class="title"><label>Notifications</label></div>
+
+ <div class="container">
+ <form id="login" onsubmit="process(event)">
+   <p>Enter your phone number:</p>
+   <input id="phone" type="tel" name="phone" class="form-control cellNo"  />
+   <input type="submit" class="btn btn-primary" value="Verify" />
+ </form>
+  <div class="alert alert-info" style="display: none;"></div>
+</div>
                                 <form class="form-inline">
                                     <div class="form-group">
                                         <!--                <div class="checkbox" id="whatsappCB" name="wcb">-->
@@ -154,16 +176,22 @@
                                         </label>
                                         <!--          </div>-->
                                     </div>
-                                    <label class="sr-only" for="cellNo"></label>
-                                    <input type="number" class="form-control" id="cellNo" placeholder="Cell No." value="27741988890" disabled>
-                                    <label class="sr-only" for="twilioPass">Twilio Key</label>
-                                    <input type="password" class="form-control" id="twilioKey" placeholder="Enter Twilio Key" value="ACaa6d3a0629279c6f5aa185857a1fff99" disabled>
+<!--                                    <label class="sr-only" for="phone"></label>-->
+<!--                                    <input type="number" class="form-control" id="cellNo" placeholder="Cell No." value="27741988890" disabled>-->
+<!--                                    <form id="login" onsubmit="process(event)">-->
+<!--                                    <input id="phone" type="tel" name="phone" /><input type="submit" class="btn" value="Verify" />-->
+<!--                                    <label class="sr-only" for="twilioPass">Twilio Key</label>-->
+<!--                                    </form>-->
+<!--                                    <input type="password" class="form-control" id="twilioKey" placeholder="Enter Twilio Key" value="ACaa6d3a0629279c6f5aa185857a1fff99" disabled>-->
+                                    <input type="password" class="form-control twilio" id="twilioKey" placeholder="Enter Twilio Key"  disabled>
                                     <!--          <div class="form-group">-->
                                     <label class="sr-only" for="twilioPass">Password</label>
-                                    <input type="password" class="form-control" id="twilioPass" placeholder="Enter Twilio Password" value="bd80d0fb93f57aea98c600e4c5f86c32" disabled>
+<!--                                    <input type="password" class="form-control" id="twilioPass" placeholder="Enter Twilio Password" value="bd80d0fb93f57aea98c600e4c5f86c32" disabled>-->
+                                    <input type="password" class="form-control twilio" id="twilioPass" placeholder="Enter Twilio Password"  disabled>
                                     <!--          </div>-->
                                     <button id="testWA" type="button" class="btn btn-primary" disabled>Test Whatsapp message</button>
                                 </form>
+
               </div>
               <div class="strategy_p chart_pref">
                   <div class="title"><label>Chart Preference</label></div>
@@ -377,29 +405,33 @@
                         </form>
                         <form class="form-inline" style="margin-left:10px">
                               <div class="form-group">
-                                <label for="stop_loss">Sell position if lose more than :</label>
-                                    <select class="form-control" id="stop_loss" title="Stop Loss">
-                                        <option value="0.5">0.5%</option>
-                                        <option value="1"  >1%</option>
-                                        <option value="1.5">1.5%</option>
-                                         <option value="2" selected>2%</option>
-                                        <option value="3"  >3%</option>
-                                         <option value="4">4%</option>
-                                         <option value="5">5%</option>
-                                    </select>
+                                <label for="stop_loss">Sell position if lose more than (%) :</label>
+                                  <input class = "form-control input_number" id = "stop_loss" type="number" min=0.1 max=10 step=0.1 value=0.5 >
+                                  <div class="invalid-feedback" hidden="true"> Please enter a valid number.  </div>
+<!--                                    <select class="form-control" id="stop_loss" title="Stop Loss">-->
+<!--                                        <option value="0.5">0.5%</option>-->
+<!--                                        <option value="1"  >1%</option>-->
+<!--                                        <option value="1.5">1.5%</option>-->
+<!--                                         <option value="2" selected>2%</option>-->
+<!--                                        <option value="3"  >3%</option>-->
+<!--                                         <option value="4">4%</option>-->
+<!--                                         <option value="5">5%</option>-->
+<!--                                    </select>-->
                                 </div>
                         </form>
                         <form class="form-inline" style="margin-left:10px">
                               <div class="form-group">
-                                <label for="secure_profit">Secure profit if profit more than :</label>
-                                    <select class="form-control" id="secure_profit" title="Stop Loss">
-                                        <option value="0.2">0.2%</option>
-                                        <option value="0.5"  >0.5%</option>
-                                        <option value="0.7">0.7%</option>
-                                         <option value="1" selected>1%</option>
-                                        <option value="2"  >2%</option>
-                                         <option value="3">3%</option>
-                                    </select>
+                                <label for="secure_profit">Secure profit if profit more than (%):</label>
+                                  <input class = "form-control input_number" id = "secure_profit" type="number" min="0.1" max="20" step="0.1" value="0.2" >
+                                  <div class="invalid-feedback" hidden="true"> Please enter a valid number.  </div>
+<!--                                    <select class="form-control" id="secure_profit" title="Stop Loss">-->
+<!--                                        <option value="0.2">0.2%</option>-->
+<!--                                        <option value="0.5"  >0.5%</option>-->
+<!--                                        <option value="0.7">0.7%</option>-->
+<!--                                         <option value="1" selected>1%</option>-->
+<!--                                        <option value="2"  >2%</option>-->
+<!--                                         <option value="3">3%</option>-->
+<!--                                    </select>-->
                                 </div>
                         </form>
                   </div>
@@ -592,8 +624,22 @@
 
 <script>
 
-    var user = 'Tomer';
+   const phoneInputField = document.querySelector("#phone");
+   const phoneInput = window.intlTelInput(phoneInputField, {
+     preferredCountries: ["us", "il", "za", "de"],
+     utilsScript:
+    "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+   });
 
+const info = document.querySelector(".alert-info");
+function process(event) {
+    event.preventDefault();
+    const phoneNumber = phoneInput.getNumber();
+    info.style.display = "";
+    info.innerHTML = `Phone number in E.164 format: <strong>${phoneNumber}</strong>`;
+}
+
+    var user = 'Tomer';
 	var _algo_chart = {};
 	var _klinedata = {};
 	var _binanceSocket = {};
@@ -1184,6 +1230,16 @@ async function fetch_api(url,index,total,symbol){
 
 	///////////////////////////////////// CONTROLS //////////////////////////////////////
 
+//validate input number
+$(".input_number").on('change foucusout',function(){
+    if( Number($(this).val()) > Number($(this).attr('max')) ||  Number($(this).val()) < Number($(this).attr('min'))  ){
+        $(this).next().show();
+        $(this).next().text("Value must be between: "+$(this).attr('min')+" and: "+$(this).attr('max'))  ;
+        $(this).focus();
+    }else{
+        $(this).next().hide();
+    }
+})
 
 // Save user configuration
 	    $("#saveConfig").click(function(){
@@ -1341,7 +1397,7 @@ async function fetch_api(url,index,total,symbol){
 //enable whatsapp
         $(".wa_checked").click(function(){
             if ($('input.wa_checked').is(':checked')) {
-                $("#cellNo").prop('disabled', false);
+<!--                $("#cellNo").prop('disabled', false);-->
                 $("#twilioKey").prop('disabled', false);
                 $("#twilioPass").prop('disabled', false);
                 $("#testWA").prop('disabled', false);
@@ -1351,8 +1407,9 @@ async function fetch_api(url,index,total,symbol){
 // test whatsapp
           $("#testWA").click(function() {
           try{
-            if( $("#cellNo").val().length===0 || $("#twilioKey").val().length===0 || $("#twilioPass").val().length===0 ) {throw "Please enter all required fields"}
-            test_twilio($("#cellNo").val(),$("#twilioKey").val(), $("#twilioPass").val())
+            let intl_code = $(".iti__selected-flag").attr("title").substring($(".iti__selected-flag").attr("title").indexOf("+")+1);
+            if( $(".cellNo").val().length===0 || $("#twilioKey").val().length===0 || $("#twilioPass").val().length===0 ) {throw "Please enter all required fields"}
+            intl_code+test_twilio($(".cellNo").val(),$("#twilioKey").val(), $("#twilioPass").val())
           }
           catch (e){
             dialog("Test Whatsapp",e,BootstrapDialog.TYPE_INFO);

@@ -290,11 +290,11 @@
 		 .done(function(data) {
 		 	if (data.length == 1){
 		 			$( "#RadioSample" ).prop( "checked" , true).parent().css({  "font-size": "larger", "text-decoration": "underline" });
-		 			$('#tblPortfolioM').append( '<tbody>' + data[0].portfolio_data + '</tbody>' ); // sample portfolio
+		 			$('#tblPortfolioM').append( '<tbody>' + data[0][2] + '</tbody>' ); // sample portfolio
 		 			}
 		 	else {
 		 			$( "#RadioPrimary" ).prop( "checked" , true).parent().css({  "font-size": "larger", "text-decoration": "underline" });
-		 			$('#tblPortfolioM').append( '<tbody>' + data[0].portfolio_data + '</tbody>' ); // user main portfolio
+		 			$('#tblPortfolioM').append( '<tbody>' + data[0][2] + '</tbody>' ); // user main portfolio
 		 			}
 			})
 

@@ -8,7 +8,7 @@ import os
 import secrets
 
 # from PIL import Image
-from flask import  url_for, flash, redirect, flash, redirect, jsonify
+from flask import  url_for, flash,  redirect, jsonify
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm
 from flaskblog.models import User
@@ -18,7 +18,8 @@ from flask import request
 import bs4 as bs
 from datetime import datetime
 import json
-import sqlite3
+# import sqlite3
+import pymysql
 from ast import literal_eval
 # websocket
 from threading import Lock
@@ -34,6 +35,7 @@ from binance_algo import crypto_bot as bot
 from equity_algo_tbd import equity_bot as eq_bot
 import yfinance as yf
 import datetime as dt
+import re
 
 
 
@@ -53,6 +55,13 @@ now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 coin = 'USDT'
 messages = []
 _algo_status = 'stop'
+
+conn = pymysql.connect(
+    host='localhost',
+    user='root',
+    password="",
+    db='algo_tt',
+)
 
 posts = [
     {
@@ -205,9 +214,17 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
+        # user = User.query.filter_by(username=form.email.data).first()
+        #get user name from database
+        # cur = conn.cursor()
+        # cur.execute(f'SELECT * FROM accounts WHERE username = %s AND password = %s')
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
+            session["user"] = user.username
+            #update database with login
+            user.last_login_date = datetime.utcnow()
+            db.session.commit()
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
@@ -284,13 +301,14 @@ def portfolio_manager():
 @app.route('/algotrading')
 def algotrading():
     # binance
-    client = Client('PfBHXvzQ63qxsUmYdeUvlGZHOiiJrXdlhQ7kVsmaQUtjlyhzvkoMPswqnrwS6bok',
-                    'HG4CkUd5tm5wIQcXnDTJUnRnssjLhfZwoTW4LgESzRNjosQvuhqjtSlZSlmcy9uo')
-    account = client.get_account()
-
-    pairs = client.get_all_tickers()
-    #filter USDT
-    pairs = [item['symbol'] for item in pairs if 'USDT' in item['symbol']]
+    # client = Client('PfBHXvzQ63qxsUmYdeUvlGZHOiiJrXdlhQ7kVsmaQUtjlyhzvkoMPswqnrwS6bok',
+    #                 'HG4CkUd5tm5wIQcXnDTJUnRnssjLhfZwoTW4LgESzRNjosQvuhqjtSlZSlmcy9uo')
+    # account = client.get_account()
+    #
+    # pairs = client.get_all_tickers()
+    # #filter USDT
+    # pairs = [item['symbol'] for item in pairs if 'USDT' in item['symbol']]
+    pairs =[]
     payload = {'data': 'message sent from server'}
     return render_template("algotrading.html", pairs=pairs, messages=messages)
 
@@ -498,29 +516,29 @@ def test_twilio():
     status = _send_whatsapp_msg(cellphone,password, password)
     return status
 
-@app.route('/binance_init')
-def binance_init():
-    client = Client('PfBHXvzQ63qxsUmYdeUvlGZHOiiJrXdlhQ7kVsmaQUtjlyhzvkoMPswqnrwS6bok',
-                    'HG4CkUd5tm5wIQcXnDTJUnRnssjLhfZwoTW4LgESzRNjosQvuhqjtSlZSlmcy9uo')
-    # Get list of pair
-    pairs = client.get_all_tickers()
-    headers = {}
-    # if request.method == "GET":
-    query = request.args.get('q')
-    candlesticks = get_historical_klines(query, "15m")
-    candlestick = []
-    processed_candlesticks = []
-    for data in candlesticks:
-        candlestick = {
-            "time": float(data[0])/1000 ,
-            "open": float(data[1]),
-            "high": float(data[2]),
-            "low": float(data[3]),
-            "close": float(data[4])
-        }
-        processed_candlesticks.append(candlestick)
-    return json.dumps(processed_candlesticks)
-
+# @app.route('/binance_init')
+# def binance_init():
+#     client = Client('PfBHXvzQ63qxsUmYdeUvlGZHOiiJrXdlhQ7kVsmaQUtjlyhzvkoMPswqnrwS6bok',
+#                     'HG4CkUd5tm5wIQcXnDTJUnRnssjLhfZwoTW4LgESzRNjosQvuhqjtSlZSlmcy9uo')
+#     # Get list of pair
+#     pairs = client.get_all_tickers()
+#     headers = {}
+#     # if request.method == "GET":
+#     query = request.args.get('q')
+#     candlesticks = get_historical_klines(query, "15m")
+#     candlestick = []
+#     processed_candlesticks = []
+#     for data in candlesticks:
+#         candlestick = {
+#             "time": float(data[0])/1000 ,
+#             "open": float(data[1]),
+#             "high": float(data[2]),
+#             "low": float(data[3]),
+#             "close": float(data[4])
+#         }
+#         processed_candlesticks.append(candlestick)
+#     return json.dumps(processed_candlesticks)
+#
 
 @app.route('/get_assets')
 def get_assets():
@@ -594,19 +612,17 @@ def handle_broadcast(data):
 
 @app.route("/get_user_portfolio", methods=["GET"])
 def get_user_portfolio():
-    session["user"] = "traubt"
-    conn = sqlite3.connect('c:\Sqlite3\DB\portfolio_manager')
-    conn.row_factory = sqlite3.Row
+    # conn = sqlite3.connect('c:\Sqlite3\DB\portfolio_manager')
+    # conn.row_factory = sqlite3.Row
     cur = conn.cursor()
     cur_user =  session["user"]
     cur.execute(f"SELECT user_name ,user_portfolio_ind ,portfolio_data from user_portfolio where (user_portfolio_ind = 1 and user_name = '{cur_user}' and portfolio_data != '') or (user_name = 'sample' and user_portfolio_ind = 3) order by user_portfolio_ind")
     rows = cur.fetchall()
-    return json.loads(json.dumps( [dict(ix) for ix in rows] ))
+    return json.loads(json.dumps( [ix for ix in rows] ))
 
 @app.route("/update_user_portfolio", methods=["GET","POST"])
 def update_user_portfolio():
     try:
-        conn = sqlite3.connect('c:\Sqlite3\DB\portfolio_manager')
         cur = conn.cursor()
         # parameters
         data = request.args.get('portfolioM')
@@ -677,12 +693,12 @@ def update_user_portfolio():
             rows = cur.fetchall()
             return json.loads(json.dumps( rows ))
 
-    except sqlite3.Error as error:
-        print("Failed to insert data into sqlite table", error)
+    except BaseException as e:
+        print("Failed to insert data into  table", e)
     finally:
         if conn:
             conn.close()
-            print("The SQLite connection is closed")
+            print("The DB connection is closed")
 
 
     return "Completed"
