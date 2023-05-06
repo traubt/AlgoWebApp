@@ -98,7 +98,7 @@ def background_thread():
     pass
 
 
-
+#test git
 def _send_whatsapp_msg(c,k,p):
     # for i in wac.keys():
     status = "Not Success"
