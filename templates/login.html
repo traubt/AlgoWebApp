@@ -1,5 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
+    <script>
+        var _ip, _city, _country, _loc, _postal,_region, _timezone, _country_code,_country_calling_code;
+
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+       .then(data => {
+<!--             console.log(data.ip);-->
+             _ip = data.ip;
+             return fetch("https://ipapi.co/"+data.ip+"/json/"); // make a 2nd request and return a promise
+       })
+        .then(response => response.json())
+        .then(data => {
+                _city = data.city;
+                _country = data.country_name;
+                _loc = data.latitude+"/"+data.longitude;
+                _postal = data.postal;
+                _region = data.region;
+                _timezone = data.timezone;
+                _country_code = data.country_code;
+                _country_calling_code = data.country_calling_code;
+                console.log(_ip,_city,_country,_postal,_region,_loc,_timezone,_country_code);
+                $("#ip").val('{"ip":"'+_ip+'","city":"'+_city+'","country":"'+_country+'","country_code":"'+_country_code+'","country_calling_code":"'+_country_calling_code+'","loc":"'+_loc+'","postal":"'+_postal+'","region":"'+_region+'","cuontry":"'+_country+'","cuontry_code":"'+_country_code+'","timezone":"'+_timezone+'"}');
+        })
+    </script>
     <div class="content-section">
         <form method="POST" action="">
             {{ form.hidden_tag() }}
@@ -35,6 +59,10 @@
                     {{ form.remember(class="form-check-input") }}
                     {{ form.remember.label(class="form-check-label") }}
                 </div>
+                <div class="form-group" >
+                    {{ form.ip.label(class="form-control-label") }}
+                    {{ form.ip(class="form-control form-control-lg") }}
+                </div>
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
@@ -42,6 +70,7 @@
             <small class="text-muted ml-2">
                 <a href="#">Forgot Password?</a>
             </small>
+
         </form>
     </div>
     <div class="border-top pt-3">

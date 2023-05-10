@@ -45,14 +45,25 @@ function _init_user_wallet_test(){
   _base_coin_qty = _wallet[user][0].free
 }
 
+// prepare payload to update the user_algorun table in each sell transaction
+function prepare_algorun_db(){
+    var trx_table = _trx_table.rows().data().toArray();
+    var jsonTrxTable = JSON.stringify(trx_table);
+    var stats_table = _stat_table.rows().data().toArray();
+    var jsonStatsTable = JSON.stringify(stats_table);
+    _algorun['strategy'] = _strategy_method == "SYSTEM" ? "SYSTEM" :_algo_params["ruleName"];
+    _algorun["transactions"] = jsonTrxTable;
+    _algorun["summary"] = jsonStatsTable;
+}
+
 
 function _transaction_order_demo(token, price, qty,mode){
     try{
+        let trx_fee_rate = Number($("#trx_fee").val())/100;
         if(_order_type == "BUY"){
-//              console.log("Buy:",token,price, qty);
-              // update wallet
-              //1. Deduct base coin
+
                 _wallet[user][0].free = 0
+
               //2. update/create new token
                 if(!_wallet[user].find(x => x.asset === token)){ // create new token
                     _token = {'asset': token,'free':qty,'locked':0,'st_price':price};
@@ -61,7 +72,9 @@ function _transaction_order_demo(token, price, qty,mode){
                     _wallet[user].find(x => x.asset === token).free = qty;
                     _wallet[user].find(x => x.asset === token).st_price = price
                 }
-                _trx_table.row.add([get_current_date(),'TEST',_asset,_order_type,mode,token,math.round(price,3),math.round(qty,8),math.round(price*qty,3),0,0,0,0,math.round(price*qty,3)]).draw()
+                let trx_fee = trx_fee_rate * price * qty;
+                let balance = price*qty - trx_fee;
+                _trx_table.row.add([get_current_date(),'TEST',_asset,_order_type,mode,token,math.round(price,3),math.round(qty,8),math.round(price*qty,2),0,math.round(trx_fee,2),0,0,math.round(price*qty-trx_fee,2)]).draw();
                 $("#o_type").html("BUY Order is triggered");
                $("#order_content").html("Asset: "+token+"<br>Quantity: "+math.round(qty,8)+"<br>Price: "+math.round(price,8));
               _inPosition = true;
@@ -70,17 +83,21 @@ function _transaction_order_demo(token, price, qty,mode){
 //               console.log("Sell:",token,price, qty);
               // update wallet
               //1. add base coin
-               _wallet[user][0].free = math.round(price*qty,3)
+               _wallet[user][0].free = math.round(price*qty,2)
               //2. Update current token amount
               _wallet[user].find(x => x.asset === token).free = 0;
-              let start_price = math.round(_wallet[user].find(x => x.asset === token).st_price,8)
-              let duration = (new Date(get_current_date()) - new Date(_trx_table.row(_trx_table.page.info().recordsTotal-1).data()[0]))/1000
-                _trx_table.row.add([get_current_date(),'TEST',_asset,_order_type,mode,token,math.round(price,3),math.round(qty,8),math.round(price*qty,3),duration,0,math.round(price*qty - start_price*qty,3),math.round((price/start_price)*100-100,2),_wallet[user][0].free]).draw()
-
+              let start_price = math.round(_wallet[user].find(x => x.asset === token).st_price,8);
+              let duration = (new Date(get_current_date()) - new Date(_trx_table.row(_trx_table.page.info().recordsTotal-1).data()[0]))/1000;
+              let trx_fee = trx_fee_rate * price * qty;
+              let balance = price*qty - trx_fee;
+                _trx_table.row.add([get_current_date(),'TEST',_asset,_order_type,mode,token,math.round(price,3),math.round(qty,8),math.round(price*qty,2),duration,math.round(trx_fee,2),math.round(price*qty - start_price*qty - trx_fee,2),math.round((price/start_price)*100-100,2),_wallet[user][0].free]).draw()
                $("#o_type").html("SELL Order is triggered");
                $("#order_content").html("Asset: "+token+"<br>Quantity: "+math.round(qty,8)+"<br>Bought at Price: "+math.round(start_price,8)+
               "<br>Sell at Price: "+math.round(price,8)+"<br>P&L: "+math.round((price/start_price)*100-100,2)+"%");
               update_stats_table();
+              // update algo record
+              prepare_algorun_db();
+              update_algorun_db();
               _inPosition = false;
         }
         _trx_table.page('last').draw('page');
@@ -115,23 +132,13 @@ function test_twilio(cell,key,password){
 function run_bot(){
   try
   {
-        dialog("Algo Engine","Starting Algo Engine for market: "+_asset ,BootstrapDialog.TYPE_INFO);
+//        dialog("Algo Engine","Starting Algo Engine for market: "+_asset ,BootstrapDialog.TYPE_INFO);
 		$.ajax({
 		                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(_algo_params),
                 dataType: 'json',
 				  url: "http://127.0.0.1:5000/crypto_bot",
-//				  data: {
-//				            market : _asset,
-//                            timeFrame: _time_res,
-//                            action: "Start",
-//                            balance:  _wallet[user][0].free,
-//                            rules : _algo_params
-//                            contentType: 'application/json',
-//                            data: JSON.stringify(_algo_params),
-//                            dataType: 'json'
-//						}
 				})
 		 .done(function(data) {
 		   console.log("Algo engine run has completed successfully.")
@@ -157,6 +164,28 @@ function stop_crypto_bot(){
 		 .done(function(data) {
 		    console.log("Bot stopped successfully: ")
 		    $("#crytpoInfo").prop("disabled", false);
+		  }) // end successful ajax .done
+  }
+  catch(e){
+		dialog('Error', e ,BootstrapDialog.TYPE_DANGER);
+
+  }
+}
+
+
+function update_algorun_db(){
+  try
+  {
+       //dialog("Algo Engine","Starting Algo Engine for market: "+_asset ,BootstrapDialog.TYPE_INFO);
+		$.ajax({
+		        type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(_algorun),
+                dataType: 'json',
+				  url: "http://127.0.0.1:5000/update_algorun_db",
+				})
+		 .done(function(data) {
+		    console.log("Record was updated successfully.")
 		  }) // end successful ajax .done
   }
   catch(e){

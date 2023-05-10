@@ -249,7 +249,7 @@ const chartOptions = {
                             })
 //                firstRow.innerHTML = symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5);
 //                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+_candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ _candlestick.volume.toFixed(2)+'</span><span style="color:purple" >&emsp;RSI: '+ _candlestick.rsi.toFixed(2)+'</span></h6>'
-                }, 2000000);
+                }, 200);
 };
 
 

@@ -163,7 +163,7 @@ table.tv-lightweight-charts {
 
 .tooltip {
   pointer-events: none;
-  width:100px important!;
+  max-width:100% important!;
 }
 
 #balance{
@@ -367,3 +367,9 @@ height: 34px;
 .twilio{
     width:300px important!;
 }
+
+.progress{
+    width:25%;
+}
+
+

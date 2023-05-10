@@ -136,5 +136,5 @@ renderHighChart = async (symbol,hc_div) => {
                           .catch(error => console.log(error));
                     }catch(e){console.log("error in calc_sharpe "+e)}
                 };
-        }, 2000000);
+        }, 2000);
 };

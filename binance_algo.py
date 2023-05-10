@@ -21,6 +21,7 @@ import crypto_list
 import bs4 as bs
 import yfinance as yf
 
+
 from flask_socketio import emit
 
 
@@ -150,9 +151,11 @@ class crypto_bot:
             self.count_msg_processed +=1
         except BaseException as e:
             self.count_msg_error +=1
-        #print("Total handled",self.count_msg_processed + self.count_msg_error ," out of: " ,int(msg["count"]))
+        print("Total handled",self.count_msg_processed + self.count_msg_error ," out of: " ,int(msg["count"]))
         if (self.count_msg_processed + self.count_msg_error == int(msg["count"])):
             self._wait = False
+        else:
+            self._wait = True
 
 
 
@@ -286,18 +289,9 @@ class crypto_bot:
 
 #this is a test of github
   def downloadHistoryPrices(self, symbol,i, total):
-
-      # self.quote_df = pd.DataFrame()
       root_url = 'https://api.binance.com/api/v1/klines'
       url = root_url + '?symbol=' + symbol + '&interval=' + self._time_scale
       emit(self.user, {'data': url, 'symbol':symbol, 'index':i, 'total':total}, namespace='/', broadcast=True)
-      # data = json.loads(requests.get(url).text)
-      # self.quote_df = pd.DataFrame(data ,columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume',
-      #                                                           'close_time', 'qav', 'num_trades',
-      #                                                           'taker_base_vol', 'taker_quote_vol', 'ignore'
-      #                                             ]).astype(float)
-      # self.quote_df['Date'] = pd.to_datetime(self.quote_df['Date'], unit='ms')
-      # self.quote_df.set_index('Date', inplace=True)
       return None
 
   def downloadHistoryPricesNyse(self,stock):
@@ -321,12 +315,11 @@ class crypto_bot:
                   self.downloadHistoryPrices(pair,i,symbol_cnt )
               else:
                   self.downloadHistoryPricesNyse(pair)
-
+              # avoid max api rate
+              t.sleep(0.1)
           except BaseException as e:
               # print("Error download quotes :",e)
               continue
-      # print("---Download completed in %s seconds ---" % (tm.time() - start_time))
-      # self.market_prices = quotes
       return None
 
   def _get_pair_price(self,pair):
@@ -370,8 +363,12 @@ class crypto_bot:
   def _top_gainers_last_min(self):
       l = []
       # self._time_scale = '1m'
-      self.period = '2d'
-      self._get_market_data()
+      ## No need to download prices again as performance in websocket is good
+      # self.period = '2d'
+      # self._wait = True
+      # self._get_market_data()
+      # while self._wait:
+      #     pass
       for x in self.market_prices.keys():
           try:
               d = [0] * 3
@@ -421,7 +418,10 @@ class crypto_bot:
               self.period = '2d'
               # self._time_scale = '1m'
               self.pairs = [pair]
+              self._wait = True
               self._get_market_data()
+              while self._wait:
+                  pass
               quote[pair] = self.quote_df
               quote[pair] = self._add_indicators(quote[pair],pair)
         except BaseException as e:
@@ -530,28 +530,30 @@ class crypto_bot:
           if self._find_asset(self.market_prices[pair], pair):
               self.top_gainers.append(pair)
 
-
   def _run_algo(self):
-      # get list of symbols to work on
-      printf(f"{self._now()}: Fetch market {self.market} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
-      self.get_symbols()
-      printf(f"{self._now()}: Found {len(self.pairs)} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
-      print(f"{self._now()}: Get {self.market} market quotes...")
-      printf(f"{self._now()}: Download market quotes for all symbols. This may take couple of minutes.", {self._now()}, "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA", "NA")
-      # self._time_scale = '15m'
-      self.period = '2d'
-      ### GET INFORMATION FROM CLIENT !!!!!!!!!!!!!!
-      self._wait = True
-      self._get_market_data()
-      while self._wait:
-          pass
-      #################################################
-      self.remove_non_active_tokens()
-      # filter top volume/traders:
-      self.filter_top_traders = self._top_volume_trades(50)
-
       #Engine:
       while True:
+          self._cycle += 1
+          printf(f"\n{self._now()}: Running algo cycle {self._cycle} : ",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
+          printf(f"{self._now()}: Wallet balance: ${self._wallet._get_base_coin_balance()}",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
+          # get list of symbols to work on
+          printf(f"{self._now()}: Fetch market {self.market} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+          self.get_symbols()
+          printf(f"{self._now()}: Found {len(self.pairs)} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+          print(f"{self._now()}: Get {self.market} market quotes...")
+          printf(f"{self._now()}: Download market quotes for all symbols. This may take couple of minutes.",
+                 {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+          # self._time_scale = '15m'
+          self.period = '2d'
+          ### GET INFORMATION FROM CLIENT !!!!!!!!!!!!!!
+          self._wait = True
+          self._get_market_data()
+          while self._wait:
+              pass
+          #################################################
+          self.remove_non_active_tokens()
+          # filter top volume/traders:
+          self.filter_top_traders = self._top_volume_trades(50)
           #reset list of symbols
           self.pairs = self.filter_top_traders
           engine_status = os.environ["algo_engine"]
@@ -559,9 +561,6 @@ class crypto_bot:
           if engine_status == 'stop':
               printf(f"\n{self._now()}: Stop Algo engine was was received. Exiting Algo. ", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
               break
-          self._cycle += 1
-          printf(f"\n{self._now()}: Running algo cycle {self._cycle} : ",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
-          printf(f"{self._now()}: Wallet balance: ${self._wallet._get_base_coin_balance()}",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
           print(f"{self._now()}: Get top gainers in the last minutes.")
           printf(f"{self._now()}: Get top gainers in the last minutes", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA")
           self._top_gainers_last_min()
@@ -575,10 +574,9 @@ class crypto_bot:
  ############ Entry Strategy #################
               #examine the top gainers
               printf(f"{self._now()}: Get ENTRY STRATEGY matches.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
+              # Stay on "scan market" for 2 seconds (else scan market is too quick)
+              t.sleep(1)
               self.pair = self.top_last_min_gain
-              # self._time_scale = '1m'
-              self.period = '2d'
-              self._get_market_data() # new market_price quotes dictionary
               print(f"{self._now()}: Filter entry strategy.")
               self._get_entry_strategy_match() # find asset into top_gainers
               print(f"{self._now()}: Found {len(self.top_gainers)} symbols : {self.top_gainers}.")
@@ -631,7 +629,10 @@ class crypto_bot:
               self.pairs = [pair]
               self.period = '2d'
               # self._time_scale = '1m'
+              self._wait = True
               self._get_market_data()
+              while self._wait:
+                  pass
               print(f"{self._now()}: Monitor symbol: {pair}. Add indicators...")
               printf(f"{self._now()}: Monitor symbol: {pair}. Add indicators...",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
               self.market_prices = self._add_indicators(self.market_prices,pair)

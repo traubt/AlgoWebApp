@@ -54,7 +54,7 @@
                     console.log("closing interval "+_interval);
                     clearInterval(_interval);
                 }
-                _binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/"+symbol.toLowerCase()+"@kline_15m");
+                _binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/"+symbol.toLowerCase()+"@kline_"+rs);
                 _binanceSocket.onmessage = function (event) {
                 var message = JSON.parse(event.data);
                  _candlestick = message.k;

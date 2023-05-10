@@ -11,7 +11,7 @@ import secrets
 from flask import  url_for, flash,  redirect, jsonify
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm
-from flaskblog.models import User
+from flaskblog.models import User,UserAlgorun
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import  render_template, session
 from flask import request
@@ -34,8 +34,8 @@ from order import order
 from binance_algo import crypto_bot as bot
 from equity_algo_tbd import equity_bot as eq_bot
 import yfinance as yf
-import datetime as dt
-import re
+
+
 
 
 
@@ -50,7 +50,6 @@ client = Client('PfBHXvzQ63qxsUmYdeUvlGZHOiiJrXdlhQ7kVsmaQUtjlyhzvkoMPswqnrwS6bo
                 'HG4CkUd5tm5wIQcXnDTJUnRnssjLhfZwoTW4LgESzRNjosQvuhqjtSlZSlmcy9uo')
 account = client.get_account()
 wallet = {}
-user = 'Tomer'
 now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 coin = 'USDT'
 messages = []
@@ -98,7 +97,6 @@ def background_thread():
     pass
 
 
-#test git
 def _send_whatsapp_msg(c,k,p):
     # for i in wac.keys():
     status = "Not Success"
@@ -107,7 +105,7 @@ def _send_whatsapp_msg(c,k,p):
         wac = {}
         wac['Tomer'] = ['ACaa6d3a0629279c6f5aa185857a1fff99', 'bd80d0fb93f57aea98c600e4c5f86c32', '27741988890']
         client = WA('ACaa6d3a0629279c6f5aa185857a1fff99', 'bd80d0fb93f57aea98c600e4c5f86c32')
-        cell = wac[user][2]
+        cell = wac['Tomer'][2]
         # cell = "27741988890"
         message = client.messages.create(
             from_='whatsapp:+14155238886',
@@ -185,7 +183,15 @@ def get_historical_klines(symbol, interval='15m'):
 @app.route("/")
 @app.route("/home")
 def home():
+    # return render_template('home.html', posts=posts, async_mode=socketio.async_mode)
+    return render_template('index.html', posts=posts, async_mode=socketio.async_mode)
+
+@app.route("/")
+@app.route("/application")
+def application():
     return render_template('home.html', posts=posts, async_mode=socketio.async_mode)
+    # return render_template('index.html', posts=posts, async_mode=socketio.async_mode)
+
 
 @app.route("/about")
 def about():
@@ -214,18 +220,27 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        # user = User.query.filter_by(username=form.email.data).first()
-        #get user name from database
-        # cur = conn.cursor()
-        # cur.execute(f'SELECT * FROM accounts WHERE username = %s AND password = %s')
+        user_info = json.loads(form.ip.data)
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             session["user"] = user.username
             #update database with login
             user.last_login_date = datetime.utcnow()
+            user.plan = "SILVER"
+            if user_info["ip"]:
+                user.ip = user_info["ip"]
+                user.city = user_info["city"]
+                user.country = user_info["country"]
+                user.country_code = user_info["country_code"]
+                user.country_calling_code = user_info["country_calling_code"]
+                user.loc = user_info["loc"]
+                user.postal = user_info["postal"]
+                user.region = user_info["region"]
+                user.timezone = user_info["timezone"]
+            # user.country_code = user_info["country_code"]
             db.session.commit()
-            return redirect(next_page) if next_page else redirect(url_for('home'))
+            return redirect(next_page) if next_page else redirect(url_for('application'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -300,17 +315,10 @@ def portfolio_manager():
 
 @app.route('/algotrading')
 def algotrading():
-    # binance
-    # client = Client('PfBHXvzQ63qxsUmYdeUvlGZHOiiJrXdlhQ7kVsmaQUtjlyhzvkoMPswqnrwS6bok',
-    #                 'HG4CkUd5tm5wIQcXnDTJUnRnssjLhfZwoTW4LgESzRNjosQvuhqjtSlZSlmcy9uo')
-    # account = client.get_account()
-    #
-    # pairs = client.get_all_tickers()
-    # #filter USDT
-    # pairs = [item['symbol'] for item in pairs if 'USDT' in item['symbol']]
+    user = session["user"]
     pairs =[]
     payload = {'data': 'message sent from server'}
-    return render_template("algotrading.html", pairs=pairs, messages=messages)
+    return render_template("algotrading.html", pairs=pairs, messages=messages, user=user)
 
 
 
@@ -565,6 +573,27 @@ def get_assets():
 def crypto_bot():
     os.environ["algo_engine"] = 'Running'
     payload =  request.json
+    today = datetime.utcnow().date()
+    now = datetime.utcnow()
+    formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
+    date_string = today.strftime('%Y-%m-%d')
+    today = datetime.strptime(date_string, '%Y-%m-%d').date()
+
+    #insert new record to user_algorun
+    conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
+    user = session["user"]
+    cur = conn.cursor()
+    sql = f"INSERT INTO user_algorun (username,strategy_name,start_bal,run_date,start_date) VALUES \
+    ('{payload['user_name']}','{payload['ruleName']}', '{payload['walletInitBalance']}','{today}','{formatted_date}');"
+    cur.execute(sql)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    # algo_run = UserAlgorun(username=payload["user_name"], strategy_name=payload["strategy"],start_bal = payload["walletInitBalance"] )
+    # db.session.add(algo_run)
+    # db.session.commit()
+    #run the engine
     runalgo = bot(payload,socketio)
     runalgo._run_algo()
     return "OK"
@@ -585,13 +614,6 @@ def my_event(message):
 def handle_message(data):
     print(data)
     emit('flask_response', {'data': 'Receive acknowledge from flask'})
-
-# @socketio.on('Tomer')
-# def handle_message(data):
-#     print(data)
-
-
-# Broadcast a message to all clients
 
 @socketio.event
 def connect():
@@ -692,7 +714,6 @@ def update_user_portfolio():
             cur.execute(sql)
             rows = cur.fetchall()
             return json.loads(json.dumps( rows ))
-
     except BaseException as e:
         print("Failed to insert data into  table", e)
     finally:
@@ -700,8 +721,51 @@ def update_user_portfolio():
             conn.close()
             print("The DB connection is closed")
 
-
     return "Completed"
+
+
+@app.route("/update_algorun_db", methods=["GET", "POST"])
+def update_algorun_db():
+    try:
+        conn = pymysql.connect( host='localhost', user='root', password="",db='algo_tt',)
+        user = session["user"]
+        cur = conn.cursor()
+        data = request.get_json()
+        today = datetime.utcnow().date()
+        now = datetime.utcnow()
+        formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
+        date_string = today.strftime('%Y-%m-%d')
+        today = datetime.strptime(date_string, '%Y-%m-%d').date()
+        #
+        sql = f"select max(id) from user_algorun where username = '{user}' and strategy_name = '{data['strategy']}' and run_date = '{today}';"
+        count = cur.execute(sql)
+        rows = cur.fetchall()
+        id = list(rows[0])[0]
+        # update record
+        sql = f"update user_algorun set end_date = '{formatted_date}' , " \
+                f"duration = {int(data['duration'])} ," \
+                f"num_trx = {int(data['num_trx'])} ," \
+                f"end_bal = {float(data['end_bal'])}," \
+                f"profit = {float(data['profit'])} ,"\
+                f"pos_trades = {int(data['pos_trades'])},"\
+                f"neg_trades = {int(data['neg_trades'])},"\
+                f"tot_fee = {float(data['tot_fee'])}," \
+                f"transactions = '{data['transactions']}'," \
+                f"summary = '{data['summary']}' "\
+                f"where username = '{user}' and strategy_name = '{data['strategy']}' and run_date = '{today}' and id = {id};"
+        cur.execute(sql)
+        conn.commit()
+        print("Update user_algorun successfully ", id)
+        cur.close()
+        conn.close()
+    except BaseException as e:
+        print("Failed to insert data into  table", e)
+    finally:
+        if conn:
+            conn.close()
+            print("The DB connection is closed")
+    return jsonify({'success': True})
+
 
 
 '''   ---------------------------    END MOVE of routes_tbd.py --------------------------------------'''
