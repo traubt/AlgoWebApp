@@ -3,6 +3,7 @@
     <script>
         var _ip, _city, _country, _loc, _postal,_region, _timezone, _country_code,_country_calling_code;
 
+    $("#submit").prop('disabled', true);
     fetch('https://api.ipify.org?format=json')
       .then(response => response.json())
        .then(data => {
@@ -22,6 +23,7 @@
                 _country_calling_code = data.country_calling_code;
                 console.log(_ip,_city,_country,_postal,_region,_loc,_timezone,_country_code);
                 $("#ip").val('{"ip":"'+_ip+'","city":"'+_city+'","country":"'+_country+'","country_code":"'+_country_code+'","country_calling_code":"'+_country_calling_code+'","loc":"'+_loc+'","postal":"'+_postal+'","region":"'+_region+'","cuontry":"'+_country+'","cuontry_code":"'+_country_code+'","timezone":"'+_timezone+'"}');
+                $("#submit").prop('disabled', false);
         })
     </script>
     <div class="content-section">
@@ -59,12 +61,12 @@
                     {{ form.remember(class="form-check-input") }}
                     {{ form.remember.label(class="form-check-label") }}
                 </div>
-                <div class="form-group" >
+                <div class="form-group" hidden="true">
                     {{ form.ip.label(class="form-control-label") }}
                     {{ form.ip(class="form-control form-control-lg") }}
                 </div>
             </fieldset>
-            <div class="form-group">
+            <div class="form-group" >
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>
             <small class="text-muted ml-2">

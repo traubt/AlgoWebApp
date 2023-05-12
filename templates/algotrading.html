@@ -163,7 +163,7 @@
  <div class="container">
  <form id="login" onsubmit="process(event)">
    <p>Enter your phone number:</p>
-   <input id="phone" type="tel" name="phone" class="form-control cellNo"  />
+   <input id="phone" type="number" name="phone" class="form-control cellNo"  />
    <input type="submit" class="btn btn-primary" value="Verify" />
  </form>
   <div class="alert alert-info" style="display: none;"></div>
@@ -172,7 +172,7 @@
                                     <div class="form-group">
                                         <!--                <div class="checkbox" id="whatsappCB" name="wcb">-->
                                         <label>
-                                            <input type="checkbox" name="wacb" class="wa_checked">&nbspWhatsapp:&nbsp
+                                            <input type="checkbox" name="wacb" class="wa_checked" disabled>&nbspWhatsapp:&nbsp
                                         </label>
                                         <!--          </div>-->
                                     </div>
@@ -538,7 +538,7 @@
           <div class="row progressBlock">
             <div class="well" id="hcGuages">
                 <div class="icon">
-                    <a href="#" data-toggle="tooltip" data-placement="left" title="This is a tooltip!">
+                    <a href="#" data-toggle="tooltip" data-placement="left" title="This is a tooltip!" >
                       <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
                 </div>
@@ -624,21 +624,6 @@
 
 <script>
 
-   const phoneInputField = document.querySelector("#phone");
-   const phoneInput = window.intlTelInput(phoneInputField, {
-     preferredCountries: ["us", "il", "za", "de"],
-     utilsScript:
-    "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-   });
-
-const info = document.querySelector(".alert-info");
-function process(event) {
-    event.preventDefault();
-    const phoneNumber = phoneInput.getNumber();
-    info.style.display = "";
-    info.innerHTML = `Phone number in E.164 format: <strong>${phoneNumber}</strong>`;
-}
-
 <!--    var user = 'Tomer';-->
     var user = "{{user}}";
 	var _algo_chart = {};
@@ -668,6 +653,8 @@ function process(event) {
     var _asset = 'crypto'; // user selection of platform
     var _asset_list = [];
     var _quote = {} ; // holds latest quote data
+    var _plans;
+    var _user_info;
     var price = 0 ; //latest price of asset
     var _walletChart;
     var _highChart_val_a=18; //sharpe value of main symbol factor to 0-100
@@ -699,10 +686,43 @@ function process(event) {
     var _stop_loss_eval = "(g < "+(100 - $("#stop_loss").val())/100+")";
     var _strategy_method = "SYSTEM"; // "DIY" if built by
     var _algorun = {}; // object contains information to update the user_algorun table
+    var _query_output;
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
+
+	const phoneInputField = document.querySelector("#phone");
+    const phoneInput = window.intlTelInput(phoneInputField, {
+     preferredCountries: ["us", "il", "za", "de"],
+     utilsScript:
+    "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+    });
+
+    const info = document.querySelector(".alert-info");
+    function process(event) {
+        event.preventDefault();
+        const phoneNumber = phoneInput.getNumber();
+        info.style.display = "";
+        let intl_code = $(".iti__selected-flag").attr("title").substring($(".iti__selected-flag").attr("title").indexOf("+")+1);
+        let cellNo = $(".cellNo").val()
+        cellNo = cellNo.replace (/^0+/, '');
+        let valid = "";
+        if (cellNo.length < 9 || cellNo.length > 10 ){
+            valid = "Not a valid length !";
+            $('input.wa_checked').prop('checked', false);
+            $("#twilioKey").prop('disabled', true);
+            $("#twilioPass").prop('disabled', true);
+            $("#testWA").prop('disabled', true);
+        }else{
+            valid = "Valid";
+            $('input.wa_checked').prop('checked', true);
+            $("#twilioKey").prop('disabled', false);
+            $("#twilioPass").prop('disabled', false);
+            $("#testWA").prop('disabled', false);
+        }
+        info.innerHTML = `Phone number  format: <strong>+${intl_code}${cellNo}&nbsp${valid}</strong>`;
+    }
 
 function build_algo_parameters(rule_name){
      _algo_params = {
@@ -959,6 +979,7 @@ function load_strategy(template){
 	$(document).ready(function(){
 
     init_algo_payload("system");
+    get_plans();
 
     //hide strategy - default
     $(".strategy,#save_rule").hide();
@@ -1168,6 +1189,7 @@ async function fetch_api(url,index,total,symbol){
 /////////////////////////////  end  socket messages //////////////////////
 
     // initialize user
+    get_user_info();
     _init_user_wallet_test();
     monitor_wallet_chart();
 
@@ -1426,66 +1448,130 @@ $(".input_number").on('change foucusout',function(){
 		});
 
 //enable whatsapp
-        $(".wa_checked").click(function(){
-            if ($('input.wa_checked').is(':checked')) {
-<!--                $("#cellNo").prop('disabled', false);-->
-                $("#twilioKey").prop('disabled', false);
-                $("#twilioPass").prop('disabled', false);
-                $("#testWA").prop('disabled', false);
-            }
-        });
+<!--        $(".wa_checked").on('change',function(){-->
+<!--            if ($('input.wa_checked').is(':checked')) {-->
+<!--&lt;!&ndash;                $("#cellNo").prop('disabled', false);&ndash;&gt;-->
+<!--                $("#twilioKey").prop('disabled', false);-->
+<!--                $("#twilioPass").prop('disabled', false);-->
+<!--                $("#testWA").prop('disabled', false);-->
+<!--            }-->
+<!--        });-->
 
 // test whatsapp
           $("#testWA").click(function() {
           try{
             let intl_code = $(".iti__selected-flag").attr("title").substring($(".iti__selected-flag").attr("title").indexOf("+")+1);
-            if( $(".cellNo").val().length===0 || $("#twilioKey").val().length===0 || $("#twilioPass").val().length===0 ) {throw "Please enter all required fields"}
-            intl_code+test_twilio($(".cellNo").val(),$("#twilioKey").val(), $("#twilioPass").val())
+            if( $(".cellNo").val().length===0 || $("#twilioKey").val().length===0 || $("#twilioPass").val().length===0 ) {throw "Please enter all required fields"};
+            let cellNo = $(".cellNo").val();
+            cellNo = cellNo.replace (/^0+/, '');
+            let fullNo = intl_code+cellNo;
+            test_twilio(fullNo,$("#twilioKey").val(), $("#twilioPass").val());
           }
           catch (e){
             dialog("Test Whatsapp",e,BootstrapDialog.TYPE_INFO);
           }
           })
 
+function wait_for_db_to_return_data(){
+        wait = 1
+        while(wait){
+            if(! _query_output ){
+    <!--        dialog('Wait for DB response','Did not receive back in time  data from the database.<br>Please try press <button>Start BOT</button> again.',BootstrapDialog.TYPE_INFO);-->
+            wait = 1;
+            }else{
+            wait = 0;
+            }
+        }
+}
 
 // run crypto bot
-    $("#runAlgo").click(async function(){
-    // check if market is open
-           if(_asset == 'stocks'){
-                await is_market_open();
-                console.log("market open: " + _market_open_ind);
-                if(!(_market_open_ind)){
-                    alert(_asset + " market is closed");
-                    return 0;
-                }
-            }
-                     // update progress in chart
-             _buysell_element = { time: Math.round((Date.now()/1000),0),
-                position: 'belowBar',
-                color: 'black',
-                shape: 'arrowUp',
-                text: 'Algo-Engine has started',
+$("#runAlgo").click(async function(){
+    try{
+            let user_plan = _user_info[0][2];
+            let plan_duration_limit = _plans[_user_info[0][2]][2]
+            let plan_transactions_limit = _plans[_user_info[0][2]][1]
+            // get user usage for today
+            let query = "Total_Duration";
+            let response = await fetch('http://localhost:5000/get_query?query='+query);
+            if (!response.ok) {
+              dialog('Database Error', 'Can not fetch data from database',BootstrapDialog.TYPE_DANGER);
+              throw new Error(`HTTP error: ${response.status}`);
+              return 0
             };
-            _buysell_array.push(_buysell_element);
-            _lineSeries.setMarkers(_buysell_array);
-        _is_algo_mode = 1;
-        //update the color of wallet seris
-<!--       _lineSeries.applyOptions({-->
-<!--            color :''-->
-<!--       })-->
-        $('.fa-circle').css({ "color": "green","font-size":"35","font-weight": "bold"});
-        $('.fa-circle').text('BOT - ON');
-        // disable controls
-        _manual_sell = false;
-        // disable manual controls
-        $("#crytpoInfo").prop("disabled", true);
-        $("#buyOrder").prop("disabled", true);
-        $("#resetWallet").prop("disabled", true);
-        $("#runAlgo").prop("disabled", true);
-        $('#algoStrategy').collapse('hide');
-        $("nav").hide();
-        $('html, body').animate({ scrollTop: 0 }, 'slow');
-        run_bot()
+            _query_output = await response.json();
+            console.log("query output user limit duration : " + _query_output+ " Plan duration : "+plan_duration_limit);
+            if (Number(_query_output) > Number(plan_transactions_limit)){
+                dialog('AlgoRun Duration Limit', 'You have exceeded Algorun time : '+_query_output+' seconds, which is above the plan limit allocation of:'+plan_duration_limit+' seconds.<br>Please consider upgrading your plan.' ,BootstrapDialog.TYPE_INFO);
+                return 0;
+            }
+
+                // get user transaction usage for today
+            query = "Total_Transactions";
+            response = await fetch('http://localhost:5000/get_query?query='+query);
+            if (!response.ok) {
+              dialog('Database Error', 'Can not fetch data from database',BootstrapDialog.TYPE_DANGER);
+              throw new Error(`HTTP error: ${response.status}`);
+              return 0
+            };
+            _query_output = await response.json();
+            console.log("query output user limit transactions : " + _query_output+ " Plan transactions : "+plan_transactions_limit);
+            if (Number(_query_output) > Number(plan_transactions_limit)){
+                dialog('AlgoRun Transaction Limit', 'You have used: '+_query_output+' transactions which is above the plan limit allocation of:'+plan_transactions_limit+' transactions per day.<br>Please consider upgrading your plan.' ,BootstrapDialog.TYPE_INFO);
+                return 0;
+            }
+
+            // reset  history stats, transactions, logs
+            if (  _trx_table.data().count() > 0) {
+                BootstrapDialog.confirm('Restarting BOT will reset transactions and statistics. Are you sure ?', function(result){
+                    if(result) {
+                        _trx_table.rows().remove().draw();
+                        $("#log").empty();
+                        _stat_table.rows().remove().draw();
+                    }else{
+                        return 0;
+                    }
+                })
+            }
+
+            // check if market is open
+                   if(_asset == 'stocks'){
+                        await is_market_open();
+                        console.log("market open: " + _market_open_ind);
+                        if(!(_market_open_ind)){
+                            alert(_asset + " market is closed");
+                            return 0;
+                        }
+                    }
+                             // update progress in chart
+                     _buysell_element = { time: Math.round((Date.now()/1000),0),
+                        position: 'belowBar',
+                        color: 'black',
+                        shape: 'arrowUp',
+                        text: 'Algo-Engine has started',
+                    };
+                    _buysell_array.push(_buysell_element);
+                    _lineSeries.setMarkers(_buysell_array);
+                _is_algo_mode = 1;
+                //update the color of wallet seris
+        <!--       _lineSeries.applyOptions({-->
+        <!--            color :''-->
+        <!--       })-->
+                $('.fa-circle').css({ "color": "green","font-size":"35","font-weight": "bold"});
+                $('.fa-circle').text('BOT - ON');
+                // disable controls
+                _manual_sell = false;
+                // disable manual controls
+                $("#crytpoInfo").prop("disabled", true);
+                $("#buyOrder").prop("disabled", true);
+                $("#resetWallet").prop("disabled", true);
+                $("#runAlgo").prop("disabled", true);
+                $('#algoStrategy').collapse('hide');
+                $("nav").hide();
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+                run_bot()
+          } catch (error) {
+                console.error(`Could not run Bot: ${error}`);
+          }
     })
 
 // stop crypto bot

@@ -102,18 +102,19 @@ def _send_whatsapp_msg(c,k,p):
     status = "Not Success"
     try:
         # client = WA(k, p)
-        wac = {}
-        wac['Tomer'] = ['ACaa6d3a0629279c6f5aa185857a1fff99', 'bd80d0fb93f57aea98c600e4c5f86c32', '27741988890']
-        client = WA('ACaa6d3a0629279c6f5aa185857a1fff99', 'bd80d0fb93f57aea98c600e4c5f86c32')
-        cell = wac['Tomer'][2]
-        # cell = "27741988890"
+        # wac = {}
+        # wac['Tomer'] = ['ACaa6d3a0629279c6f5aa185857a1fff99', 'bd80d0fb93f57aea98c600e4c5f86c32', '27741988890']
+        # client = WA('ACaa6d3a0629279c6f5aa185857a1fff99', 'bd80d0fb93f57aea98c600e4c5f86c32')
+        client = WA(k, p)
+        # cell = wac['Tomer'][2]
+        cell = c
         message = client.messages.create(
             from_='whatsapp:+14155238886',
-            body=f"Hi there. Sending message from AlgoTrading.",
+            body=f"Hi there. Sending test message from AlgoTrading.",
             to=f'whatsapp:+{cell}'
         )
         if message:
-           status = "success"
+           status = "Success"
     except BaseException as e:
         print(f"could not send WA message. Error: {e}")
     return status
@@ -521,7 +522,7 @@ def test_twilio():
     cellphone = request.args.get('c')
     key = request.args.get('k')
     password  = request.args.get('p')
-    status = _send_whatsapp_msg(cellphone,password, password)
+    status = _send_whatsapp_msg(cellphone,key, password)
     return status
 
 # @app.route('/binance_init')
@@ -766,7 +767,72 @@ def update_algorun_db():
             print("The DB connection is closed")
     return jsonify({'success': True})
 
+@app.route("/update_cell_no", methods=["GET", "POST"])
+def update_cell_no():
+    try:
+        conn = pymysql.connect( host='localhost', user='root', password="",db='algo_tt',)
+        user = session["user"]
+        cur = conn.cursor()
+        data = request.args.get('cell_no')
+        sql = f"update user set cell_no = {data} where username = '{user}' ;"
+        cur.execute(sql)
+        conn.commit()
+        print("Update user table successfully with user's cell no")
+        cur.close()
+        conn.close()
+    except BaseException as e:
+        print("Failed to insert data into  table", e)
+    finally:
+        if conn:
+            conn.close()
+            print("The DB connection is closed")
+    return jsonify({'success': True})
 
+@app.route("/get_algo_plans", methods=["GET"])
+def get_algo_plans():
+    plans = {}
+    conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
+    cur = conn.cursor()
+    cur.execute(f"select * from plans")
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    for row in rows:
+        plans[row[0]] = row
+    return json.loads(json.dumps( plans ))
+
+@app.route("/get_user_info", methods=["GET"])
+def get_user_info():
+    conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
+    user = session["user"]
+    cur = conn.cursor()
+    cur.execute(f"select username,email,plan,convert(last_login_date,CHAR),city from user where username = '{user}'")
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return json.dumps( rows )
+
+@app.route("/get_query", methods=["GET","POST"])
+def get_query():
+    user = 'traubt'
+    today = datetime.utcnow().date()
+    query = request.args.get('query')
+    match query:
+        case "Total_Duration":
+            sql = f"SELECT sum(duration) from user_algorun where username='{user}' and run_date = '{today}';"
+        case "Total_Transactions":
+            sql = f"SELECT sum(num_trx) from user_algorun where username='{user}' and run_date = '{today}';"
+    conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
+    cur = conn.cursor()
+    count = cur.execute(sql)
+    rows = cur.fetchall()
+    if not rows[0][0]:
+        ret = "0"
+    else:
+        ret = str(rows[0][0])
+    cur.close()
+    conn.close()
+    return ret
 
 '''   ---------------------------    END MOVE of routes_tbd.py --------------------------------------'''
 

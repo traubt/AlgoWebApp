@@ -107,6 +107,26 @@ function _transaction_order_demo(token, price, qty,mode){
     }
 }
 
+function update_cell_no(cell){
+  try
+  {
+		$.ajax({
+				  method: "GET",
+				  url: "http://127.0.0.1:5000/update_cell_no",
+				  data: {
+				            cell_no: cell,
+						}
+				})
+		 .done(function(data) {
+//		    alert("Twilio test message: "+data)
+		  }) // end successful ajax .done
+  }
+  catch(e){
+		dialog('Error', e ,BootstrapDialog.TYPE_DANGER);
+
+  }
+}
+
 function test_twilio(cell,key,password){
   try
   {
@@ -120,7 +140,10 @@ function test_twilio(cell,key,password){
 						}
 				})
 		 .done(function(data) {
-		    alert("Twilio test message: "+data)
+		    alert("Twilio test message: "+data+".\r\n If you did not receive a message to your cell\,\nplease activate you twilio messaging by sending your private message code to:\n Twilio Sandbox (+141455238886 e.g. 'Join futher-six')");
+		    if (data = 'Success'){
+		        update_cell_no(cell);
+		    }
 		  }) // end successful ajax .done
   }
   catch(e){
@@ -192,4 +215,79 @@ function update_algorun_db(){
 		dialog('Error', e ,BootstrapDialog.TYPE_DANGER);
 
   }
+}
+
+function get_plans(){
+  try
+  {
+       //dialog("Algo Engine","Starting Algo Engine for market: "+_asset ,BootstrapDialog.TYPE_INFO);
+		$.ajax({
+		        type: 'GET',
+				 url: "http://127.0.0.1:5000/get_algo_plans",
+				})
+		 .done(function(data) {
+//		    let plans = JSON.parse(data)
+		    console.log(JSON.parse(JSON.stringify(data)))
+		    _plans = JSON.parse(JSON.stringify(data))
+		  }) // end successful ajax .done
+  }
+  catch(e){
+		dialog('Error', e ,BootstrapDialog.TYPE_DANGER);
+
+  }
+}
+
+function get_user_info(){
+  try
+  {
+       //dialog("Algo Engine","Starting Algo Engine for market: "+_asset ,BootstrapDialog.TYPE_INFO);
+		$.ajax({
+		        type: 'GET',
+				 url: "http://127.0.0.1:5000/get_user_info",
+				})
+		 .done(function(data) {
+//		    let plans = JSON.parse(data)
+		    console.log(JSON.stringify(data))
+		    _user_info = JSON.parse(JSON.parse(JSON.stringify(data)))
+		  }) // end successful ajax .done
+  }
+  catch(e){
+		dialog('Error', e ,BootstrapDialog.TYPE_DANGER);
+
+  }
+}
+
+function get_query(sqlQuery){
+  try
+  {
+		$.ajax({
+		        type: 'GET',
+				 url: "http://127.0.0.1:5000/get_query",
+				 data: {query: sqlQuery}
+				})
+		 .done(function(data) {
+            _query_output = data;
+		    console.log("the output from async function is: "+data)
+
+		  }) // end successful ajax .done
+  }
+  catch(e){
+		dialog('Error', e ,BootstrapDialog.TYPE_DANGER);
+
+  }
+}
+
+function exec_query(sqlQuery) {
+    return new Promise(function (resolve, reject) {
+        fetch('http://localhost:5000/get_query?query='+sqlQuery).then(
+            (response) => {
+                var result = response.data;
+                resolve(result);
+                console.log('Processing Request');
+            },
+                (error) => {
+                reject(error);
+            }
+        );
+    });
 }

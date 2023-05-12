@@ -570,44 +570,6 @@ function create_portfolio_obj2(){
 }
 
 
-//function get_current_quotes4sugg(array_of_tickers, table){
-//
-//   // var script = document.createElement('script');
-//
-//    // clean the array
-//		array_of_tickers = array_of_tickers.filter(function(n){ return n != undefined });
-//		var symbols = '["' + array_of_tickers.join('","') + '"]' ;
-//		//var symbols = array_of_tickers.join('","') ;
-//
-//		console.log("get_current_quotes4sugg: - Calling ajax get latest quotes");
-//
-//		$.ajax({
-//				  method: "POST",
-//				  //url: "quotes.php",
-//				  url: "quotes5.php",
-//				  data: {
-//							url		: "NA",
-//							content : symbols,
-//							content_tp : table
-//						}
-//				})
-//			.done(function(data) {
-//				console.log("get_current_quotes4sugg: - Complete loading latest quotes");
-//
-//				latest_quotes = JSON.parse(data);
-//
-//				global = {};
-//
-//				for(i=0; i < array_of_tickers.length ; i++){
-//						//--var current_quote = $.grep(latest_quotes, function(e){ return e.symbol == symbol; });
-//						 current_quote 		= flattenObject(JSON.parse(JSON.parse(latest_quotes[array_of_tickers[i]])));
-//						 global[array_of_tickers[i]] = current_quote;
-//				};
-//
-//			})// end done.
-//
-//}
-
 function get_current_quotes5(array_of_tickers, table){
 
    // var script = document.createElement('script');

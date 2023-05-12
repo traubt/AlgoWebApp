@@ -16,6 +16,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     last_login_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    cell_no = db.Column(db.String(12), nullable=True)
     plan = db.Column(db.String(10), nullable=True)
     city = db.Column(db.String(30), nullable=True)
     country = db.Column(db.String(30), nullable=True)

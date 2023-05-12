@@ -372,4 +372,12 @@ height: 34px;
     width:25%;
 }
 
-
+/*remove arrow from input type numbers */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
