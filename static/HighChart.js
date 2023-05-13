@@ -118,12 +118,13 @@ renderHighChart = async (symbol,hc_div) => {
                         var sharpe_15,sharpe_5;
                         let myHeaders = new Headers();
                         myHeaders.append('Content-Type', 'application/json');
-                        fetch('https://api.binance.com/api/v1/klines?symbol=BTCUSDT&interval='+rs, {
-                              mode: 'cors',
-                              headers: {
-                                'Access-Control-Allow-Origin':'*'
-                              }
-                            })
+                        fetch('https://api.binance.com/api/v1/klines?symbol=BTCUSDT&interval='+rs)
+//                        , {
+//                              mode: 'cors',
+//                              headers: {
+//                                'Access-Control-Allow-Origin':'*'
+//                              }
+//                            })
                          .then(response => response.json())
                           .then(data => fetch('http://localhost:5000/calc_sharpe' ,{
                                                                                         method : 'POST',

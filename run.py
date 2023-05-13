@@ -814,9 +814,9 @@ def get_user_info():
 
 @app.route("/get_query", methods=["GET","POST"])
 def get_query():
-    user = 'traubt'
     today = datetime.utcnow().date()
     query = request.args.get('query')
+    user = request.args.get('user')
     match query:
         case "Total_Duration":
             sql = f"SELECT sum(duration) from user_algorun where username='{user}' and run_date = '{today}';"

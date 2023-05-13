@@ -953,7 +953,7 @@ function load_strategy(template){
         // load rest of conditions which contain and/or - BUY
         if(template["count_buy_rules"] > 1){
             for (let i = 2; i <=  template["count_buy_rules"]; i++) {
-                    console.log("populating template rule: "+i);
+<!--                    console.log("populating template rule: "+i);-->
                     _condition_no = i;
                     add_condition(template["buy_rule_"+i]["and_or"],"buy"); // create skeleton
                     load_template_condition(template,i,"buy") // select rules
@@ -1051,12 +1051,16 @@ function icon_set(icon){
         let myArray = ['.fa-cloud-download-alt','.fa-filter','.fa-flag','.fa-coffee','.fa-money-bill-alt'];
         myArray.forEach(function(element) {
           $(element).css({ "color": "","font-size":""});
-          // reset progress bar
-<!--          if(element !== '.fa-cloud-download-alt'){-->
-<!--                 $(".progress-bar").css('width', "0%");-->
-<!--          }-->
         });
     $(icon).css({ "color": "red","font-size":"35px","font-weight": "bold"});
+}
+
+function icon_reset(){
+        let myArray = ['.fa-cloud-download-alt','.fa-filter','.fa-flag','.fa-coffee','.fa-money-bill-alt'];
+        myArray.forEach(function(element) {
+          $(element).css({ "color": "","font-size":""});
+        });
+        $(".progress-bar").css('width', "0%");
 }
 
 //
@@ -1153,7 +1157,8 @@ async function fetch_api(url,index,total,symbol){
                 if (msg.data.indexOf("cycle") >= 0){icon_set('.fa-cloud-download-alt')};
                 if (msg.data.indexOf("matches") > 0){icon_set('.fa-filter')};
                 if (msg.data.indexOf("Exiting") > 0){
-                        $('.fa-money-bill-alt').css({ "color": "","font-size":""});
+<!--                        $('.fa-money-bill-alt').css({ "color": "","font-size":""});-->
+                    icon_reset();
                     _buysell_element = { time: Math.round((Date.now()/1000),0),
                         position: 'belowBar',
                         color: 'black',
@@ -1173,7 +1178,7 @@ async function fetch_api(url,index,total,symbol){
 
             // URL fetch instruction from flask
             socket.on(user, function(msg) {
-                console.log("Call "+msg.index+"/"+msg.total+"  API : "+msg.data);
+<!--                console.log("Call "+msg.index+"/"+msg.total+"  API : "+msg.data);-->
                 let progress = Number(Number(msg.index)/Number(msg.total)*100);
                 let s_progress = progress.toString()+"%";
                 // avoid progress bar flickering for single download
@@ -1492,14 +1497,14 @@ $("#runAlgo").click(async function(){
             let plan_transactions_limit = _plans[_user_info[0][2]][1]
             // get user usage for today
             let query = "Total_Duration";
-            let response = await fetch('http://localhost:5000/get_query?query='+query);
+            let response = await fetch('http://localhost:5000/get_query?query='+query+'&user='+user);
             if (!response.ok) {
               dialog('Database Error', 'Can not fetch data from database',BootstrapDialog.TYPE_DANGER);
               throw new Error(`HTTP error: ${response.status}`);
               return 0
             };
             _query_output = await response.json();
-            console.log("query output user limit duration : " + _query_output+ " Plan duration : "+plan_duration_limit);
+<!--            console.log("query output user limit duration : " + _query_output+ " Plan duration : "+plan_duration_limit);-->
             if (Number(_query_output) > Number(plan_transactions_limit)){
                 dialog('AlgoRun Duration Limit', 'You have exceeded Algorun time : '+_query_output+' seconds, which is above the plan limit allocation of:'+plan_duration_limit+' seconds.<br>Please consider upgrading your plan.' ,BootstrapDialog.TYPE_INFO);
                 return 0;
@@ -1507,14 +1512,14 @@ $("#runAlgo").click(async function(){
 
                 // get user transaction usage for today
             query = "Total_Transactions";
-            response = await fetch('http://localhost:5000/get_query?query='+query);
+            response = await fetch('http://localhost:5000/get_query?query='+query+'&user='+user);
             if (!response.ok) {
               dialog('Database Error', 'Can not fetch data from database',BootstrapDialog.TYPE_DANGER);
               throw new Error(`HTTP error: ${response.status}`);
               return 0
             };
             _query_output = await response.json();
-            console.log("query output user limit transactions : " + _query_output+ " Plan transactions : "+plan_transactions_limit);
+<!--            console.log("query output user limit transactions : " + _query_output+ " Plan transactions : "+plan_transactions_limit);-->
             if (Number(_query_output) > Number(plan_transactions_limit)){
                 dialog('AlgoRun Transaction Limit', 'You have used: '+_query_output+' transactions which is above the plan limit allocation of:'+plan_transactions_limit+' transactions per day.<br>Please consider upgrading your plan.' ,BootstrapDialog.TYPE_INFO);
                 return 0;
