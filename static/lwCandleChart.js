@@ -125,7 +125,7 @@ const chartOptions = {
 		},
     });
 
-    console.log("fetch symbol history");
+//    console.log("fetch symbol history");
 
     market == 'stocks' ?  end_point = 'yfStockHistory' :  end_point = 'binancePairHistory';
     add_to_log(get_current_date()+' Fetch symbol '+symbol+' quotes');

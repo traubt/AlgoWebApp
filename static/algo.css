@@ -416,8 +416,7 @@ input[type=number] {
   height: 80vh;
   display: flex;
   flex-direction: column;
-  width: 65
-  vw;
+  width: 65vw;
   align-items: stretch;
 }
 

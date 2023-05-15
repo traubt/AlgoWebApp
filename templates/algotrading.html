@@ -1166,7 +1166,7 @@ async function fetch_api(url,index,total,symbol){
             // server is established.
             socket.on('connect', function() {
                 socket.emit('my_event', {data: 'I\'m connected!'});
-                console.log("I'm connected")
+<!--                console.log("I'm connected")-->
             });
 
             // socket RECEIVE handler
@@ -1674,7 +1674,7 @@ $("#runAlgo").click(async function(){
                 $("#buyOrder").prop("disabled", true);
                 $("#resetWallet").prop("disabled", true);
                 $("#runAlgo").prop("disabled", true);
-                ("#logout").prop("disabled", true);
+                $("#logout").prop("disabled", true);
                 $('#algoStrategy').collapse('hide');
                 $("nav").hide();
                 $('html, body').animate({ scrollTop: 0 }, 'slow');

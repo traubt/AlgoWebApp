@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-    {% for post in posts %}
+    <h5>Welcome {{current_user.username}} to the application area. <small>Your last login: {{current_user.last_login_date}}</small></h5>
+    <br>
+{% for post in posts %}
         <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
@@ -12,4 +14,6 @@
           </div>
         </article>
     {% endfor %}
+            <br><br>
+            <p>* Press the links in the navigation bar above to access the applications.</p>
 {% endblock content %}

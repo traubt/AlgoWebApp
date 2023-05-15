@@ -56,13 +56,14 @@
           <li><a class="nav-link scrollto " href="#portfolio">Portfolio</a></li>
 <!--          <li><a class="nav-link scrollto" href="#team">Team</a></li>-->
           <li><a class="nav-link scrollto" href="#pricing">Pricing</a></li>
+          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
           <!-- Navbar Right Side -->
           {% if current_user.is_authenticated %}
-            <li><a class="nav-item nav-link" href="{{ url_for('algotrading') }}">AlgoTrading</a></li>
+            <li style="margin-left:35px;"><a class="nav-item nav-link" href="{{ url_for('algotrading') }}">AlgoTrading</a></li>
             <li><a class="nav-item nav-link" href="{{ url_for('portfolio_manager') }}">Portfolio Manager</a></li>
             <li><a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a></li>
           {% else %}
-            <li><a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a></li>
+            <li style="margin-left:35px;"><a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a></li>
             <li><a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a></li>
           {% endif %}
 
@@ -85,7 +86,7 @@
 <!--              <li><a href="#">Drop Down 4</a></li>-->
 <!--            </ul>-->
 <!--          </li>-->
-          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->

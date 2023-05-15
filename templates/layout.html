@@ -55,12 +55,14 @@
 <!--              <a class="nav-item nav-link" href="{{ url_for('symbols') }}">TradingView</a>-->
 <!--              <a class="nav-item nav-link" href="{{ url_for('graph') }}">HighChart</a>-->
                 {% if current_user.is_authenticated %}
-                    <a class="nav-item nav-link" href="{{ url_for('portfolio_manager') }}">Portfolio Manager</a>
                     <a class="nav-item nav-link" href="{{ url_for('algotrading') }}">Algo Trading</a>
+                    <a class="nav-item nav-link" href="{{ url_for('portfolio_manager') }}">Portfolio Manager</a>
+
                 {% endif %}
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
+                <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
               {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
@@ -68,6 +70,7 @@
                 <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
                 <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
               {% endif %}
+
             </div>
           </div>
         </div>

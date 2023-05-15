@@ -69,16 +69,16 @@ conn = pymysql.connect(
 
 posts = [
     {
-        'author': 'Corey Schafer',
-        'title': 'Blog Post 1',
-        'content': 'First post content',
-        'date_posted': 'April 20, 2018'
+        'author': 'Admin',
+        'title': 'Algo-Trading BOT',
+        'content': 'Run the best strategies using our advanced AlgoTrading Bot.',
+        'date_posted': datetime.utcnow().date()
     },
     {
-        'author': 'Jane Doe',
-        'title': 'Blog Post 2',
-        'content': 'Second post content',
-        'date_posted': 'April 21, 2018'
+        'author': 'Admin',
+        'title': 'Portfolio Manager',
+        'content': 'Manage and optimize your portfolio with stocks from markets around the world',
+        'date_posted': datetime.utcnow().date()
     }
 ]
 

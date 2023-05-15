@@ -227,7 +227,7 @@ function get_plans(){
 				})
 		 .done(function(data) {
 //		    let plans = JSON.parse(data)
-		    console.log(JSON.parse(JSON.stringify(data)))
+//		    console.log(JSON.parse(JSON.stringify(data)))
 		    _plans = JSON.parse(JSON.stringify(data))
 		  }) // end successful ajax .done
   }
@@ -247,7 +247,7 @@ function get_user_info(){
 				})
 		 .done(function(data) {
 //		    let plans = JSON.parse(data)
-		    console.log(JSON.stringify(data))
+//		    console.log(JSON.stringify(data))
 		    _user_info = JSON.parse(JSON.parse(JSON.stringify(data)))
 		  }) // end successful ajax .done
   }
