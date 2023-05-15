@@ -1,31 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <script>
-        var _ip, _city, _country, _loc, _postal,_region, _timezone, _country_code,_country_calling_code;
 
-    $("#submit").prop('disabled', true);
-    fetch('https://api.ipify.org?format=json')
-      .then(response => response.json())
-       .then(data => {
-<!--             console.log(data.ip);-->
-             _ip = data.ip;
-             return fetch("https://ipapi.co/"+data.ip+"/json/"); // make a 2nd request and return a promise
-       })
-        .then(response => response.json())
-        .then(data => {
-                _city = data.city;
-                _country = data.country_name;
-                _loc = data.latitude+"/"+data.longitude;
-                _postal = data.postal;
-                _region = data.region;
-                _timezone = data.timezone;
-                _country_code = data.country_code;
-                _country_calling_code = data.country_calling_code;
-                console.log(_ip,_city,_country,_postal,_region,_loc,_timezone,_country_code);
-                $("#ip").val('{"ip":"'+_ip+'","city":"'+_city+'","country":"'+_country+'","country_code":"'+_country_code+'","country_calling_code":"'+_country_calling_code+'","loc":"'+_loc+'","postal":"'+_postal+'","region":"'+_region+'","cuontry":"'+_country+'","cuontry_code":"'+_country_code+'","timezone":"'+_timezone+'"}');
-                $("#submit").prop('disabled', false);
-        })
-    </script>
     <div class="content-section">
         <form method="POST" action="">
             {{ form.hidden_tag() }}
@@ -80,4 +55,30 @@
             Need An Account? <a class="ml-2" href="{{ url_for('register') }}">Sign Up Now</a>
         </small>
     </div>
+    <script>
+        var _ip, _city, _country, _loc, _postal,_region, _timezone, _country_code,_country_calling_code;
+
+    $("#submit").prop('disabled', true);
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+       .then(data => {
+<!--             console.log(data.ip);-->
+             _ip = data.ip;
+             return fetch("https://ipapi.co/"+data.ip+"/json/"); // make a 2nd request and return a promise
+       })
+        .then(response => response.json())
+        .then(data => {
+                _city = data.city;
+                _country = data.country_name;
+                _loc = data.latitude+"/"+data.longitude;
+                _postal = data.postal;
+                _region = data.region;
+                _timezone = data.timezone;
+                _country_code = data.country_code;
+                _country_calling_code = data.country_calling_code;
+                console.log(_ip,_city,_country,_postal,_region,_loc,_timezone,_country_code);
+                $("#ip").val('{"ip":"'+_ip+'","city":"'+_city+'","country":"'+_country+'","country_code":"'+_country_code+'","country_calling_code":"'+_country_calling_code+'","loc":"'+_loc+'","postal":"'+_postal+'","region":"'+_region+'","cuontry":"'+_country+'","cuontry_code":"'+_country_code+'","timezone":"'+_timezone+'"}');
+                $("#submit").prop('disabled', false     );
+        })
+    </script>
 {% endblock content %}

@@ -34,16 +34,21 @@ from order import order
 from binance_algo import crypto_bot as bot
 from equity_algo_tbd import equity_bot as eq_bot
 import yfinance as yf
-
-
-
-
+###chatroom section
+from flask_socketio import join_room, leave_room, send, SocketIO
+import random
+from string import ascii_uppercase
 
 async_mode = None
 global socketio
 socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
+rooms = {} #chat rooms
+sid = "" #sid for joining chatroom
+
+#chatroom
+
 
 
 client = Client('PfBHXvzQ63qxsUmYdeUvlGZHOiiJrXdlhQ7kVsmaQUtjlyhzvkoMPswqnrwS6bok',
@@ -221,11 +226,14 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        user_info = json.loads(form.ip.data)
+
+        if form.ip.data:
+            user_info = json.loads(form.ip.data)
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            session["user"] = user.username
+            # session["user"] = user.username
+            print(f"User: {user.username} has just login.")
             #update database with login
             user.last_login_date = datetime.utcnow()
             user.plan = "SILVER"
@@ -250,6 +258,7 @@ def login():
 @app.route("/logout")
 def logout():
     logout_user()
+    session.clear()
     return redirect(url_for('home'))
 
 
@@ -316,7 +325,7 @@ def portfolio_manager():
 
 @app.route('/algotrading')
 def algotrading():
-    user = session["user"]
+    user = current_user.username
     pairs =[]
     payload = {'data': 'message sent from server'}
     return render_template("algotrading.html", pairs=pairs, messages=messages, user=user)
@@ -582,7 +591,7 @@ def crypto_bot():
 
     #insert new record to user_algorun
     conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
-    user = session["user"]
+    user = current_user.username
     cur = conn.cursor()
     sql = f"INSERT INTO user_algorun (username,strategy_name,start_bal,run_date,start_date) VALUES \
     ('{payload['user_name']}','{payload['ruleName']}', '{payload['walletInitBalance']}','{today}','{formatted_date}');"
@@ -619,16 +628,110 @@ def handle_message(data):
 @socketio.event
 def connect():
     print("Socket establish connection...")
+    session["sid"] = request.sid
     global thread
     with thread_lock:
         if thread is None:
             thread = socketio.start_background_task(background_thread)
     emit('my_response', {'data': 'Connected to the server', 'count': 0})
 
+
+# @socketio.on("connect")
+# def connect(auth):
+#     print("I'm connected to chat room")
+#     room = session.get("room")
+#     name = session.get("name")
+#     if not room or not name:
+#         return
+#     if room not in rooms:
+#         leave_room(room)
+#         return
+#
+#     join_room(room)
+#     send({"name": name, "message": "has entered the room"}, to=room)
+#     rooms[room]["members"] += 1
+#     print(f"{name} joined room {room}")
+
 @socketio.on('broadcast_response')
 def handle_broadcast(data):
     print('received: ' + str(data))
     emit('my_response', {'data': 'Connected to the server', 'count': 9999})
+
+# CHAT ROOM SOCKETS implementation
+
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    room = data['room']
+    session["room"] = room
+    session["name"] = username
+    join_room(room)
+    #if first joiner than create the room
+    if room not in rooms:
+        rooms[room] = {"members": 0, "messages": []}
+    # send(username + ' has entered the room.', to=room)
+    send({"name": username, "message": "has entered the room"}, to=room)
+    rooms[room]["members"] += 1
+    print(f"{username} joined room {room}")
+    return "Success"
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    room = data['room']
+    leave_room(room)
+    send(username + ' has left the room.', to=room)
+
+@app.route("/chat_room", methods=["POST", "GET"])
+def chat_room():
+    # session.clear()
+    session["name"] = request.args.get('name')
+    session["room"] = request.args.get('room')
+    print("I'm connected to chat room")
+    room = session.get("room")
+    name = session.get("name")
+
+    # if not room or not name:
+    #     return
+    if room not in rooms: # first member in the roon -> create the room
+        rooms[room] = {"members": 0, "messages": []}
+
+    join_room(room,sid)
+    send({"name": name, "message": "has entered the room"}, to=room)
+    rooms[room]["members"] += 1
+    print(f"{name} joined room {room}")
+    return "Success"
+@socketio.on("message")
+def message(data):
+    room = session.get("room")
+    if room not in rooms:
+        return
+    # msgs = json.dumps(rooms[room]["messages"])
+    content = {
+        "name": session.get("name"),
+        "message": data["data"],
+        # "history_msgs": msgs,
+    }
+    send(content, to=room)
+    rooms[room]["messages"].append(content)
+
+    print(f"{session.get('name')} said: {data['data']}")
+
+@socketio.on("disconnect")
+def disconnect():
+    room = session.get("room")
+    name = session.get("name")
+    leave_room(room)
+
+    if room in rooms:
+        rooms[room]["members"] -= 1
+        if rooms[room]["members"] <= 0:
+            del rooms[room]
+
+    send({"name": name, "message": "has left the room"}, to=room)
+    print(f"{name} has left the room {room}")
+
+#  End chat room socket
 
 '''    ###########  DATABASE API ################'''
 
@@ -638,7 +741,7 @@ def get_user_portfolio():
     # conn = sqlite3.connect('c:\Sqlite3\DB\portfolio_manager')
     # conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-    cur_user =  session["user"]
+    cur_user =  current_user.username
     cur.execute(f"SELECT user_name ,user_portfolio_ind ,portfolio_data from user_portfolio where (user_portfolio_ind = 1 and user_name = '{cur_user}' and portfolio_data != '') or (user_name = 'sample' and user_portfolio_ind = 3) order by user_portfolio_ind")
     rows = cur.fetchall()
     return json.loads(json.dumps( [ix for ix in rows] ))
@@ -651,7 +754,7 @@ def update_user_portfolio():
         data = request.args.get('portfolioM')
         c_records = request.args.get('count_rows')
         action = request.args.get('action')
-        cur_user = session["user"]
+        cur_user = current_user.username
         p_type = request.args.get('portfolio_type')
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
@@ -729,7 +832,7 @@ def update_user_portfolio():
 def update_algorun_db():
     try:
         conn = pymysql.connect( host='localhost', user='root', password="",db='algo_tt',)
-        user = session["user"]
+        user = current_user.username
         cur = conn.cursor()
         data = request.get_json()
         today = datetime.utcnow().date()
@@ -771,7 +874,7 @@ def update_algorun_db():
 def update_cell_no():
     try:
         conn = pymysql.connect( host='localhost', user='root', password="",db='algo_tt',)
-        user = session["user"]
+        user = current_user.username
         cur = conn.cursor()
         data = request.args.get('cell_no')
         sql = f"update user set cell_no = {data} where username = '{user}' ;"
@@ -804,7 +907,7 @@ def get_algo_plans():
 @app.route("/get_user_info", methods=["GET"])
 def get_user_info():
     conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
-    user = session["user"]
+    user = current_user.username
     cur = conn.cursor()
     cur.execute(f"select username,email,plan,convert(last_login_date,CHAR),city from user where username = '{user}'")
     rows = cur.fetchall()

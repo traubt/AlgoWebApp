@@ -44,18 +44,20 @@
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-4" href="/">Flask Blog</a>
+          <a class="navbar-brand mr-4" href="/">Algo-TT</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-              <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+<!--              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>-->
+<!--              <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>-->
 <!--              <a class="nav-item nav-link" href="{{ url_for('symbols') }}">TradingView</a>-->
 <!--              <a class="nav-item nav-link" href="{{ url_for('graph') }}">HighChart</a>-->
-                <a class="nav-item nav-link" href="{{ url_for('portfolio_manager') }}">Portfolio Manager</a>
-                <a class="nav-item nav-link" href="{{ url_for('algotrading') }}">Algo Trading</a>
+                {% if current_user.is_authenticated %}
+                    <a class="nav-item nav-link" href="{{ url_for('portfolio_manager') }}">Portfolio Manager</a>
+                    <a class="nav-item nav-link" href="{{ url_for('algotrading') }}">Algo Trading</a>
+                {% endif %}
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
