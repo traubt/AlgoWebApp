@@ -83,7 +83,7 @@ const chartOptions = {
         const container = document.getElementById('chart');
         // create ohlc legend
         const legend = document.createElement('div');
-        legend.style = `position: absolute; left: 10px; top: 300px; z-index: 12; font-size: 13px; font-family: sans-serif; line-height: 18px; font-weight: 300;`;
+        legend.style = `z-index: 12; font-size: 13px; font-family: sans-serif; line-height: 18px; font-weight: 300;`;
         container.appendChild(legend);
 
         const firstRow = document.createElement('div');
