@@ -58,27 +58,32 @@
 
 <body data-spy="scroll" data-target=".nav" data-offset="30">
 
-<nav class="navbar navbar-default navbar-static-top ">
-    <div class="container">
-        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#algoParams" aria-expanded="false" aria-controls="collapseExample">
-          Parameters
-        </button>
-        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#algoStrategy" aria-expanded="false" aria-controls="collapseExample" >
-          Strategy
-        </button>
-        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
-          Backtest
-        </button>
-        <button class="btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
-          Alerts
-        </button>
-        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
-          API's
-        </button>
-        <button class="btn btn btn-info navbar-btn"  id="logout"  type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample">LOGOUT</button>
-    </div>
-</nav>
-        <div class="collapse" id="algoParams">
+<!--Define grid items-->
+    <div class="grid-container">
+        <div class="grid-navbar">
+            <nav class="navbar navbar-default navbar-static-top ">
+                <div class="container">
+                    <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#algoParams" aria-expanded="false" aria-controls="collapseExample">
+                      Parameters
+                    </button>
+                    <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#algoStrategy" aria-expanded="false" aria-controls="collapseExample" >
+                      Strategy
+                    </button>
+                    <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
+                      Backtest
+                    </button>
+                    <button class="btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
+                      Alerts
+                    </button>
+                    <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
+                      API's
+                    </button>
+                    <button class="btn btn btn-info navbar-btn"  id="logout"  type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample">LOGOUT</button>
+                </div>
+            </nav>
+        </div>
+        <div class="grid-collapse-params">
+            <div class="collapse" id="algoParams">
           <div class="well">
 
                <div class="strategy_p system_mode">
@@ -228,8 +233,9 @@
               </div>
           </div>
         </div>
-
-        <div class="collapse" id="algoStrategy">
+        </div>
+        <div class="grid-collapse-strategy">
+            <div class="collapse" id="algoStrategy">
           <div class="well">
               <div class="strategy_wrapper">
                   <div class="strategy strategy_params">
@@ -446,25 +452,17 @@
         </div>
 
 </div>
-
-    <div id="engineButtons">
-        <button id="runAlgo" type="button" class="btn btn-primary">Start BOT</button>
-        <button id="stopAlgo" type="button" class="btn btn-primary">Stop BOT</button>
-        <i class="fas fa-circle"></i>
-    </div>
-
-
-      <div class="rowOne">
-        <div class="row chartBlock">
-                <div class="well" id="stockInfo">
-                <div class="icon">
-                    <a href="#" data-toggle="tooltip" data-html="true" data-placement="left" title="Chart information <br>1.This is the first line of a tooltip. Very flexible<br>2.This is the second line">
-                      <span class="glyphicon glyphicon-info-sign"></span>
-                    </a>
+        </div>
+        <div class="grid-start-stop-btn" >
+                <div id="engineButtons">
+                    <button id="runAlgo" type="button" class="btn btn-primary">Start BOT</button>
+                    <button id="stopAlgo" type="button" class="btn btn-primary">Stop BOT</button>
+                    <i class="fas fa-circle"></i>
                 </div>
-                    <!--Well Stock Information -->
-                    <label for="tr_div" id="chart_symbol">BTCUSDT</label>
-                            <div id='tr_div' class="btn-group ts_btn_grp" data-toggle="buttons">
+        </div>
+        <div class="grid-chart-info">
+            <label for="tr_div" id="chart_symbol">BTCUSDT</label>
+            <div id='tr_div' class="btn-group ts_btn_grp" data-toggle="buttons">
                                 <label class="btn" data-value="1">
                                 <input type="radio" name="options" id="option0" autocomplete="off" > 1m
                               </label>
@@ -493,71 +491,46 @@
                                 <input type="radio" name="options" id="option8" autocomplete="off" > 1W
                               </label>
                             </div>
-                        <div id = "chartContainer">
-                            <div id="chart">
-                                    <div id="Legend" class="chartjsLegend">
-                                        <div id="firstRow"></div>
-                                    </div>
-                            </div>
-                    </div> <!--End stock-chart -->
-                    <div id="chartbutton" >
-                        <button id="buyOrder" type="button"  class="btn btn-primary ">Buy Market</button>
-                        <button id="sellOrder" type="button"  class="btn btn-primary">Sell Market</button>
-
-                    </div>
-                </div> <!-- End Well Stock Information -->
-            </div>
-
-            <div class="row progressBlock">
-                <div class="well" id="wallet">
-                    <div class="icon">
-                        <a href="#" data-toggle="tooltip" data-placement="left" title="Wallet balance">
-                          <span class="glyphicon glyphicon-info-sign"></span>
-                        </a>
-                    </div>
-                    <div id = "algoProgress">
-                        <div id="progress">
-                            <li><i class="fas fa-cloud-download-alt"></i><br>Download Quotes</li>
-                            <li><i class="fas fa-filter"></i><br>Scan Market</li>
-                            <li><i class="far fa-flag"></i><br>Buy Asset</li>
-                            <li><i class="fa fa-coffee"></i><br>Monitor Asset</li>
-                            <li><i class="far fa-money-bill-alt"></i><br>Sell Asset</li>
-                        </div>
-                        <div class="progress">
-                          <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 0em;">
-<!--                            0%-->
-                          </div>
-                        </div>
-                        <div class="waletClass" id="wallet_container"></div>
-                    </div>
-                    <div id="balance" ></div><h4>Balance:&nbsp</h4>
+        </div>
+        <div class="grid-wallet_progress">
+            <div id = "algoProgress">
+                <div id="progress">
+                    <li><i class="fas fa-cloud-download-alt"></i><br>Download Quotes</li>
+                    <li><i class="fas fa-filter"></i><br>Scan Market</li>
+                    <li><i class="far fa-flag"></i><br>Buy Asset</li>
+                    <li><i class="fa fa-coffee"></i><br>Monitor Asset</li>
+                    <li><i class="far fa-money-bill-alt"></i><br>Sell Asset</li>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 0em;">
+                  </div>
                 </div>
             </div>
-
-<!--          HIGHCHART meter-->
-          <div class="row progressBlock">
-            <div class="well" id="hcGuages">
-                <div class="icon">
-                    <a href="#" data-toggle="tooltip" data-placement="left" title="This is a tooltip!" >
-                      <span class="glyphicon glyphicon-info-sign"></span>
-                    </a>
-                </div>
-                <h5><u>Ticker/Benchmark Performance</u></h5>
-                    <figure class="highcharts-figure">
-                        <div id="tickerHC"></div>
-                        <div id="benchmarkHC"></div>
-                    </figure>
+        </div>
+        <div class="grid-sharpe-title">
+            Ticker / Benchmark Performance
+        </div>
+        <div class="grid-symbol-chart" id="chart"></div>
+        <div class="grid-wallet-chart" id="wallet_container"></div>
+        <div class="grid-sharpe-chart">
+            <figure class="highcharts-figure">
+                <div id="tickerHC"></div>
+                <div id="benchmarkHC"></div>
+            </figure>
+        </div>
+        <div class="grid-chart_buy-sell_buttons">
+            <div id="chartbutton" >
+              <button id="buyOrder" type="button"  class="btn btn-primary ">Buy Market</button>
+              <button id="sellOrder" type="button"  class="btn btn-primary">Sell Market</button>
             </div>
-          </div>
-
-      </div>
-
-
-</div>
-
-
-    <div class="row trxBlock">
-        <div class="well" id="transactions">
+        </div>
+        <div class="grid-balance">
+            <div class="balance-div">
+                <label for="balance">Balance: </label>
+                <div id="balance" ></div>
+            </div>
+        </div>
+        <div class="grid-transactions">
             <table id="trxTbl" class="display" style="width:100%">
                 <thead>
                     <tr>
@@ -581,37 +554,25 @@
                 </tbody>
             </table>
         </div>
+        <div class="grid-log">
+            <h3 >Server Log:</h3>
+            <div id="log" class="scroll"></div>
+        </div>
+        <div class="grid-stats" >
+            <h3>Statistics:</h3>
+            <table id="statTbl" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Measure</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-        <div class="row logBlock">
-            <div class="well" id="divLog">
-            <h3>Server Log:</h3>
-            <div id="log" class="scroll"></div>
-
-
-            </div>
-        </div>
-
-        <div class="row statsBlock">
-            <div class="well" id="divStats">
-                <h3>Statistics:</h3>
-                <div id="stats">
-                    <table id="statTbl" class="display" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>Measure</th>
-                                    <th>Value</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                </table>
-                </div>
-            </div>
-        </div>
-
-<!--<div id ="lwchart"></div>-->
-<!-- toast alert   -->
 <div id="orderAlert" class="alert alert-success" role="alert">
         <span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
         <strong id="o_type"></strong><br>

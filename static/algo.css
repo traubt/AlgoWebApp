@@ -8,6 +8,7 @@ and open the template in the editor.
     Author     : tomert
 */
 
+/*
 body {
   position: relative;
   font-family: Arial, Helvetica, sans-serif;
@@ -15,14 +16,177 @@ body {
   font-size : 12px;
   padding-top: 5px;
 }
+*/
+
+body{
+    padding-left:10px;
+    height: 98vh;
+    width: 98vw;
+}
+
+/*******************************  GRID LAYOUT ***********************************/
+
+.grid-container {
+  display: grid;
+  grid-template-rows: (30px,30px,200px,600px,200px);
+  grid-template-columns: repeat(20,1fr);
+
+  gap: 10px;
+  padding: 10px;
+}
+
+.grid-container > div {
+  /*background-color: rgba(255, 255, 255, 0.8);*/
+  text-align: center;
+  padding: 1px 0;
+  font-size: 14px;
+  border: solid 0.5px blue;
+}
+
+/* layout */
+.grid-navbar{
+   /* grid-area : 1/1/2/-1*/
+   grid-column : 1/-1
+}
+
+.grid-collapse-params{
+    grid-area: 2/1/3/-1
+}
+
+.grid-collapse-strategy
+{
+    grid-area: 2/1/3/-1
+}
+
+.grid-start-stop-btn{
+    grid-area : 3/1/4/6;
+    justify-self: start;
+    align-self:end;
+
+}
+.grid-chart-info{
+    grid-column : 1/8;
+    justify-self: start;
+    align-self:end;
+}
+.grid-wallet_progress{
+    grid-column : 8/16;
+    justify-self: center;
+    align-self:end;
+}
+.grid-sharpe-title{
+    grid-column : 16/20;
+    justify-self: center;
+    align-self:end;
+}
+.grid-symbol-chart{
+    grid-column : 1/8;
+    justify-self: strech;
+    align-self:strech;
+}
+.grid-wallet-chart{
+    grid-column : 8/16;
+    justify-self: strech;
+    align-self:strech;
+}
+.grid-sharpe-chart{
+    grid-column : 16/20;
+    justify-self: strech;
+    align-self:strech;
+}
+.grid-chart_buy-sell_buttons{
+    grid-column : 1/8;
+    justify-self: start;
+}
+.grid-balance{
+    grid-column : 8/16;
+    justify-self: end;
+    align-self:start;
+}
+.grid-transactions{
+    grid-column : 1/20;
+}
+.grid-log{
+    grid-column : 1/16;
+    height: 400px;
+}
+.grid-stats{
+    grid-column : 16/20;
+    height: 400px;
+}
+
+
+/****************************************END GRID LAYOUT***************************************/
+
+/***********************************  object design ******************************************/
+#progress li {
+  display: inline-block;
+  text-align: center;
+  margin-right: 60px;
+}
+
+#progress ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#progress {
+    padding-left: 42px;
+    padding-bottom: 10px;
+}
+
+.progressBlock {
+    width: 40%;
+    height: 30%;
+    margin-bottom:5px;
+    margin-left: 25px;
+}
+
+#progress i {
+  font-size: 20px;
+}
+
+#progress{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.progress{
+    width:25%;
+}
+
+#chart{
+    height:500px;
+}
+#wallet_container{
+    height:400px;
+}
+
+h6{
+    float:left;
+}
+
+.grid-log > h3{
+    float:left;
+}
+.grid-stats > h3{
+    float:left;
+}
+
+/************************************End object design *************************************/
 
 .navbar {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
-  padding: 5px;
-  margin-top: 10px;
+  padding: 1px;
+  margin-top: 5px;
   margin-bottom: 5px;
+}
+.navbar-btn {
+    float: left;
 }
 
 .container {
@@ -33,73 +197,20 @@ body {
     margin:5px;
 }
 
-.rowOne{
-    display:flex;
-    margin-bottom: -18px;
-}
-.chartBlock  {
-    width: 100%;
-    height: 30%;
-}
-
-.progressBlock {
-    width: 40%;
-    height: 30%;
-    margin-bottom:5px;
-    margin-left: 25px;
-}
-
-.logBlock{
-    width:63%;
-    height: 1000px;
-}
-
-.statsBlock{
-    width: 38%;
-    float: right;
-}
-
-  .logBlock, .statsBlock{
-    display: inline-block;
-  }
-
-#chartContainer {
-    position: inherit;
-    width: 100%;
-    height: 50vh;
-}
-
-#chart {
-    position: absolute;
-    width: 100%;
-    height: 50vh;
-}
-
 #chartbutton{
     margin-top :10px;
 }
 
-#Legend {
- position: absolute;
- left: 12px; top: 12px;
- font-size: 14px;
- font-family: sans-serif;
- line-height: 18px;
- font-weight: 300;
-}
-
+/*
 
 #stockInfo {
     position: relative;
         width: 100%;
         padding-bottom: 5px;
 }
+*/
 
 
-#progress {
-    padding-left: 42px;
-    padding-bottom: 10px;
-}
 
 #algoProgress {
     width:100%;
@@ -128,18 +239,11 @@ div.scroll {
     height: 452px;
 }
 
-#wallet_container{
-    width:100%;
-    height: 33vh;
-}
-
 #divLog{
     height: 940px;
 }
 
-#log{
-    height:850px
-}
+
 
 /*
 table.tv-lightweight-charts {
@@ -173,7 +277,6 @@ table.tv-lightweight-charts {
     font-size: 20px;
     text-align: center;
     border-radius: 5px;
-    margin-top: 3px;
     padding:2px;
 }
 
@@ -194,25 +297,6 @@ table.tv-lightweight-charts {
     padding-top: 6px;
 }
 
-#progress ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-#progress li {
-  display: inline-block;
-  text-align: center;
-  margin-right: 60px;
-}
-#progress i {
-  font-size: 20px;
-}
-
-#progress{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-}
 
 /*   HIGH CHART  */
 .highcharts-figure,
@@ -368,9 +452,7 @@ height: 34px;
     width:300px important!;
 }
 
-.progress{
-    width:25%;
-}
+
 
 /*remove arrow from input type numbers */
 input::-webkit-outer-spin-button,
@@ -459,3 +541,13 @@ h2 {
   font-size: 10px;
   color: darkgray;
 }
+
+/*   TO BE DELETED
+
+#chart {
+    position: absolute;
+    width: 100%;
+    height: 50vh;
+}
+
+-----------------------------------------------------------------------*/
