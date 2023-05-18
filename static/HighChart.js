@@ -126,7 +126,7 @@ renderHighChart = async (symbol,hc_div) => {
 //                              }
 //                            })
                          .then(response => response.json())
-                          .then(data => fetch('http://localhost:5000/calc_sharpe' ,{
+                          .then(data => fetch(_URL+'/calc_sharpe' ,{
                                                                                         method : 'POST',
                                                                                         body: JSON.stringify(data),
                                                                                         headers : myHeaders,

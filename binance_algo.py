@@ -117,7 +117,7 @@ class crypto_bot:
     self._wallet = wallet(self._base_coin, self._default_amount)
     self._strategy = payload["strategy"]
     if self._strategy == 'DIY':
-        print(f"Strategy: {self._strategy}")
+        # print(f"Strategy: {self._strategy}")
         self._time_scale = payload["interval"] + "m"
         self._indicators = payload["indicators"]
         self._buy_rule = payload["buyRule"]
@@ -126,7 +126,7 @@ class crypto_bot:
         self._no_movement = int(payload["sellNoMovement"])
         self._secure_profit = float(payload["secureProfit"])
     else: #"SYSTEM"
-        print(f"Strategy: {self._strategy}")
+        # print(f"Strategy: {self._strategy}")
         self._time_scale = "5m"
         self._buy_rule = "(max_ratio > 1)" #  and (min_ratio < 1) and (max_avg_ratio < 1.04)"
         self._sell_rule = "(df.Close[-1] < df.Open[-2])"
@@ -151,7 +151,7 @@ class crypto_bot:
             self.count_msg_processed +=1
         except BaseException as e:
             self.count_msg_error +=1
-        print("Total handled",self.count_msg_processed + self.count_msg_error ," out of: " ,int(msg["count"]))
+        # print("Total handled",self.count_msg_processed + self.count_msg_error ," out of: " ,int(msg["count"]))
         if (self.count_msg_processed + self.count_msg_error == int(msg["count"])):
             self._wait = False
         else:
@@ -226,7 +226,7 @@ class crypto_bot:
           max_dateTime = max([self.market_prices[i].index[-1] for i in self.pairs])
           for token in self.pairs:
               if self.market_prices[token].index[-1] != max_dateTime:
-                  print("removing symbol not recently traded:",token)
+                  # print("removing symbol not recently traded:",token)
                   self.market_prices.pop(token)
                   self.pairs.remove(token)
       except BaseException as e:
@@ -308,7 +308,7 @@ class crypto_bot:
       self.count_msg_error = 0
       #request client for api test one for now
       # self.pairs =['ALPACAUSDT','BTCUSDT']
-      for pair in tqdm(self.pairs):
+      for pair in tqdm(self.pairs, disable=True):
           try:
               i = i + 1
               if self.market == 'crypto':
@@ -436,7 +436,7 @@ class crypto_bot:
       max_ret = 0
       max_date = self._now()
       secure_ret = 0
-      print(f"\n{self._now()} {pair} Check exit: check price action every second.")
+      # print(f"\n{self._now()} {pair} Check exit: check price action every second.")
       t_interval = 1 # sleep time every 1 sec
       count_sec = 0
 
@@ -457,7 +457,7 @@ class crypto_bot:
                   txt = "Token: " + pair + " Price: " + str(round(df.Close[-1], 2)) +  ", Current Return: " + str(round(g, 3)) + "%, Max Return: "\
                          + str( round(max_ret, 3)) + "%, Secure Return: " + str(secure_ret) + "%." + monitor_indicators
               # logging.info(txt)
-                  print(txt)
+              #     print(txt)
               printi(f"{self._now()}  Token: {pair}  Price:  {str(round(df.Close[-1], 10))} ,  Previous Open: {str(round(df.Open[-2],6))}, Stop-Loss:  {str(stop_loss)}, Profit: {str(round(g, 3))} %, Max Return:{str(round(max_ret,6))}, Secure Profit:{str(round(secure_ret,6))} ,{monitor_indicators}",
                      {self._now()},
                      {str(round(df.Close[-1], 10))},
@@ -489,27 +489,27 @@ class crypto_bot:
               ######### EXIT FROM POSITION #########
               # No movement
               if (count_sec > self._no_movement) and (secure_ret == 0):
-                  print(f"{self._now()}:Trigger {self._no_movement} seconds no growth for {pair}")
+                  # print(f"{self._now()}:Trigger {self._no_movement} seconds no growth for {pair}")
                   sell = True
                   rsn = "No_Growth"
                   return sell, rsn, max_ret, max_date
               # Exit Secure return
               elif (secure_ret > 0 ) and (g < secure_ret):
-                  print(f"{self._now()}:Trigger sell  for {pair}. ")
+                  # print(f"{self._now()}:Trigger sell  for {pair}. ")
                   printf(f"{self._now()}: Trigger sell Secure Return for {pair}", {self._now()}, "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA")
                   sell = True
                   rsn = "Secure_Return"
                   return sell, rsn, max_ret, max_date
               # Exit Strategy Rule
               elif eval(self._sell_rule):
-                  print(f"{self._now()}:Trigger sell rule: {self._sell_rule} for {pair}. ")
+                  # print(f"{self._now()}:Trigger sell rule: {self._sell_rule} for {pair}. ")
                   printf(f"{self._now()}: Trigger sell rule: {self._sell_rule} for {pair}", {self._now()}, "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA")
                   sell = True
                   rsn = "Exit_Strategy"
                   return sell, rsn, max_ret, max_date
               # Stop Loss
               elif price < stop_loss:
-                  print(f"{self._now()}:Trigger reach stop-loss {stop_loss}% for {pair} ")
+                  # print(f"{self._now()}:Trigger reach stop-loss {stop_loss}% for {pair} ")
                   printf(f"{self._now()}: Trigger reach stop-loss {stop_loss}% for {pair} ", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
                   sell = True
                   rsn = "Stop_Loss"
@@ -518,7 +518,7 @@ class crypto_bot:
               else:
                   t.sleep(t_interval)
       except BaseException as e:
-          print(f" Error monitoring token: {e}")
+          # print(f" Error monitoring token: {e}")
           printf(f"{self._now()}: Error in monitoring token. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
                  "NA", "NA", "NA", "NA")
 
@@ -540,7 +540,7 @@ class crypto_bot:
           printf(f"{self._now()}: Fetch market {self.market} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
           self.get_symbols()
           printf(f"{self._now()}: Found {len(self.pairs)} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
-          print(f"{self._now()}: Get {self.market} market quotes...")
+          # print(f"{self._now()}: Get {self.market} market quotes...")
           printf(f"{self._now()}: Download market quotes for all symbols. This may take couple of minutes.",
                  {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
           # self._time_scale = '15m'
@@ -561,15 +561,15 @@ class crypto_bot:
           if engine_status == 'stop':
               printf(f"\n{self._now()}: Stop Algo engine was was received. Exiting Algo. ", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
               break
-          print(f"{self._now()}: Get top gainers in the last minutes.")
+          # print(f"{self._now()}: Get top gainers in the last minutes.")
           printf(f"{self._now()}: Get top gainers in the last minutes", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA")
           self._top_gainers_last_min()
-          print(f"{self._now()}: Found {len(self.top_last_min_gain)} symbols : {self.top_last_min_gain}.")
+          # print(f"{self._now()}: Found {len(self.top_last_min_gain)} symbols : {self.top_last_min_gain}.")
           printf(f"{self._now()}: Found {len(self.top_last_min_gain)} symbols : {self.top_last_min_gain}.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
           # # Processing top gainers
           if len(self.top_last_min_gain) > 0 :
               self.pairs = self.top_last_min_gain
-              print(f"{self._now()}: Get quotes of candidates.")
+              # print(f"{self._now()}: Get quotes of candidates.")
 
  ############ Entry Strategy #################
               #examine the top gainers
@@ -577,9 +577,9 @@ class crypto_bot:
               # Stay on "scan market" for 2 seconds (else scan market is too quick)
               t.sleep(1)
               self.pair = self.top_last_min_gain
-              print(f"{self._now()}: Filter entry strategy.")
+              # print(f"{self._now()}: Filter entry strategy.")
               self._get_entry_strategy_match() # find asset into top_gainers
-              print(f"{self._now()}: Found {len(self.top_gainers)} symbols : {self.top_gainers}.")
+              # print(f"{self._now()}: Found {len(self.top_gainers)} symbols : {self.top_gainers}.")
               printf(f"{self._now()}: Found {len(self.top_gainers)} symbols which match ENTRY STRATEGY.  Symbols : {self.top_gainers}. ", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA")
 ##########################################################
 
@@ -587,7 +587,7 @@ class crypto_bot:
               if len(self.top_gainers) > 0:
                   pair = random.choice(self.top_gainers)
                   # pair = random.choice(self.top_last_min_gain)
-                  print(f"{self._now()}: About to buy asset: {pair}")
+                  # print(f"{self._now()}: About to buy asset: {pair}")
                   printf(f"{self._now()}: About to buy asset: {pair}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
                       # stepSize = float(self.client.get_symbol_info(pair)['filters'][1]['stepSize'])
                       # precision = int(round(-math.log(stepSize, 10), 0))
@@ -600,7 +600,7 @@ class crypto_bot:
 
                   buy_order = order("BUY",self._get_broker(),pair,pair_price, qty, self._wallet)
                   # Send test buy to Binanace
-                  print(f"{self._now()}: Send BUY test order of {pair} with quantity: {qty}")
+                  # print(f"{self._now()}: Send BUY test order of {pair} with quantity: {qty}")
 
                   # Test Binance transaction ---------------------------------------------------------------------
                   #order_passed, results = new_order._test_buy_order(pair, qty) #todo: activate when moving to live
@@ -612,8 +612,8 @@ class crypto_bot:
                   if order_passed:
                       try:
                             buy_order._buy_demo()
-                            printf(f"{self._now()}: Send BUY test order of {pair} with quantity: {qty}", {self._now()},
-                                   {pair_price}, "GROW", "BUY", {pair}, {qty}, {pair_price * qty}, "ALGO", 100, 0)
+                            # printf(f"{self._now()}: Send BUY test order of {pair} with quantity: {qty}", {self._now()},
+                            #        {pair_price}, "GROW", "BUY", {pair}, {qty}, {pair_price * qty}, "ALGO", 100, 0)
                       except BaseException as e:
                             print(f"{self._now()}: Order could not be fullfiled. \n Error: {e}")
 
@@ -623,7 +623,7 @@ class crypto_bot:
 
 
         ### Sell Order
-              print(f"{self._now()}: Monitor symbol: {pair}. Get last hour candles...")
+              # print(f"{self._now()}: Monitor symbol: {pair}. Get last hour candles...")
               printf(f"{self._now()}: Monitor symbol: {pair}. Get last hour candles...",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
               # Working on single symblol
               self.pairs = [pair]
@@ -633,7 +633,7 @@ class crypto_bot:
               self._get_market_data()
               while self._wait:
                   pass
-              print(f"{self._now()}: Monitor symbol: {pair}. Add indicators...")
+              # print(f"{self._now()}: Monitor symbol: {pair}. Add indicators...")
               printf(f"{self._now()}: Monitor symbol: {pair}. Add indicators...",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
               self.market_prices = self._add_indicators(self.market_prices,pair)
 
@@ -641,7 +641,7 @@ class crypto_bot:
               st_price = self._wallet._get_token_st_price(pair)
               current_price = self._get_pair_price(pair)
               t_qty = self._wallet._get_token_balance(pair)
-              print( f"{self._now()} Symbol: {pair}. Start Price: {round(st_price, 7)}.  Current Price: {current_price}. Current PNL: {round(self._get_pair_price(pair) / st_price * 100 - 100, 2)}% ")
+              # print( f"{self._now()} Symbol: {pair}. Start Price: {round(st_price, 7)}.  Current Price: {current_price}. Current PNL: {round(self._get_pair_price(pair) / st_price * 100 - 100, 2)}% ")
               printf(
                   f"{self._now()} Symbol: {pair}. Start Price: {round(st_price, 7)}.  Current Price: {current_price}. Current PNL: {round(self._get_pair_price(pair) / st_price * 100 - 100, 2)}% ",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
 
@@ -655,20 +655,20 @@ class crypto_bot:
                   # precision = 1 / stepSize
                   # qty = int(qty * precision) / precision
                   gain = round(pair_price / st_price * 100 - 100, 2)
-                  print(f"{self._now()} Trying to execute SELL  {pair}, Quantity: {qty}")
+                  # print(f"{self._now()} Trying to execute SELL  {pair}, Quantity: {qty}")
                   printf(f"{self._now()} Trying to execute SELL  {pair}, Quantity: {qty}",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
 
                   # SELL ORDER ....
                   #initialize order object
                   sell_order = order("SELL",self._get_broker(),pair,pair_price, qty, self._wallet)
                   # Send test buy to Binanace
-                  print(f"{self._now()}: Send SELL test order of {pair} with quantity: {qty}")
+                  # print(f"{self._now()}: Send SELL test order of {pair} with quantity: {qty}")
                   printf(f"{self._now()}: Send SELL test order of {pair} with quantity: {qty}",{self._now()}, {pair_price},"GROW","SELL",{pair},{qty},{pair_price*qty},"ALGO",100,0)
                   # Test Binance transaction ---------------------------------------------------------------------
                   # Todo: test live sell
                   order_passed = True
                   ##### ------------------------------------------------------------------------------------------
-                  print(f"{self._now()}: SELL {pair}. Price: {pair_price}. Reason: {sell_rsn}. PNL: {gain}%. mode: **{self._mode}**")
+                  # print(f"{self._now()}: SELL {pair}. Price: {pair_price}. Reason: {sell_rsn}. PNL: {gain}%. mode: **{self._mode}**")
                   printf( f"{self._now()}: SELL {pair}. Price: {pair_price}. Reason: {sell_rsn}. PNL: {gain}%. mode: **{self._mode}**",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
 
                   # Update Wallet
@@ -678,5 +678,5 @@ class crypto_bot:
                       except BaseException as e:
                             print(f"{self._now()}: Order could not be fullfiled. \n Error: {e}")
 
-                  print(f"{self._now()}: Order cycle completed")
+                  # print(f"{self._now()}: Order cycle completed")
                   t.sleep(3)

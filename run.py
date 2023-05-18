@@ -6,6 +6,7 @@ from flask_socketio import SocketIO
 
 import os
 import secrets
+import logging
 
 # from PIL import Image
 from flask import  url_for, flash,  redirect, jsonify
@@ -38,6 +39,7 @@ import yfinance as yf
 from flask_socketio import join_room, leave_room, send, SocketIO
 import random
 from string import ascii_uppercase
+from pyngrok import ngrok
 
 async_mode = None
 global socketio
@@ -328,7 +330,7 @@ def algotrading():
     user = current_user.username
     pairs =[]
     payload = {'data': 'message sent from server'}
-    return render_template("algotrading.html", pairs=pairs, messages=messages, user=user)
+    return render_template("algotrading.html", pairs=pairs, messages=messages, user=user ,url=public_url)
 
 
 
@@ -592,6 +594,8 @@ def crypto_bot():
     #insert new record to user_algorun
     conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
     user = current_user.username
+    logging.getLogger(user)
+    logging.info(f'Starting bot for user {user}')
     cur = conn.cursor()
     sql = f"INSERT INTO user_algorun (username,strategy_name,start_bal,run_date,start_date) VALUES \
     ('{payload['user_name']}','{payload['ruleName']}', '{payload['walletInitBalance']}','{today}','{formatted_date}');"
@@ -891,7 +895,7 @@ def update_cell_no():
             print("The DB connection is closed")
     return jsonify({'success': True})
 
-@app.route("/get_algo_plans", methods=["GET"])
+@app.route("/get_algo_plans", methods=["GET","POST"])
 def get_algo_plans():
     plans = {}
     conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
@@ -904,7 +908,7 @@ def get_algo_plans():
         plans[row[0]] = row
     return json.loads(json.dumps( plans ))
 
-@app.route("/get_user_info", methods=["GET"])
+@app.route("/get_user_info", methods=["GET","POST"])
 def get_user_info():
     conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
     user = current_user.username
@@ -940,5 +944,29 @@ def get_query():
 '''   ---------------------------    END MOVE of routes_tbd.py --------------------------------------'''
 
 if __name__ == '__main__':
-    # app.run(debug=True, use_reloader=False)
+    # public_url = ngrok.connect(5000).public_url
+    public_url = "http://127.0.0.1:5000"
+    print(f" * ngrok tunnel \"{public_url}\" -> \"http://127.0.0.1:5000\"")
+
+
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+    #set server logs
+    # Set up a logger with the name 'my_logger'
+    logger = logging.getLogger('tomer:')
+    # Set the logging level
+    # logger.setLevel(logging.INFO)
+    # Create a stream handler to write log messages to the console
+    sh = logging.StreamHandler()
+    # Set the logging level for the stream handler
+    sh.setLevel(logging.INFO)
+    # Create a formatter to format log messages
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # Add the formatter to the stream handler
+    sh.setFormatter(formatter)
+    # Add the stream handler to the logger
+    logger.addHandler(sh)
+    # Replace print statements with logger calls
+    # print('This is a message')
+
     socketio.run(app,allow_unsafe_werkzeug=True,debug=True, use_reloader=False)

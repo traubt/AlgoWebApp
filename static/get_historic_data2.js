@@ -37,7 +37,7 @@ function	get_symbol_historyP(ticker){
 				  method: "get",
 				  //url: "quotes.php",
 				  datatype:'json',
-				  url: "http://127.0.0.1:5000/currentQuote",
+				  url: _URL+"/currentQuote",
 				  data: {
 							q : ticker
 						}
@@ -127,7 +127,7 @@ function get_symbol_current_quote5(symbol){
 				  method: "get",
 				  //url: "quotes.php",
 				  datatype:'json',
-				  url: "http://127.0.0.1:5000/currentQuote",
+				  url: _URL+"/currentQuote",
 				  data: {
 							q : symbol
 						}
@@ -329,7 +329,7 @@ function get_history2(){
                 $.ajax({
                           method: "get",
                           datatype:'json',
-                          url: "http://127.0.0.1:5000/multipleHistoryQuotes",
+                          url: _URL+"/multipleHistoryQuotes",
                           data: {
                                     q : array_of_tickers
                                 }
@@ -584,7 +584,7 @@ function get_current_quotes5(array_of_tickers, table){
 		$.ajax({
 				  method: "get",
 				  datatype:'json',
-				  url: "http://127.0.0.1:5000/multipleCurrentQuote",
+				  url: _URL+"/multipleCurrentQuote",
 				  data: {
 							q : symbols
 						}
@@ -701,7 +701,7 @@ function get_symbols_history_quotes(){
 		$.ajax({
 				  method: "get",
 				  datatype:'json',
-				  url: "http://127.0.0.1:5000/multipleHistoryQuotes",
+				  url: _URL+"/multipleHistoryQuotes",
 				  data: {
 							q : array_of_tickers
 						}
@@ -838,7 +838,7 @@ function get_Rate_Exchange(pair){
 		$.ajax({
 				  method: "GET",
 				  //url: "quotes.php",
-				  url: "http://127.0.0.1:5000/rateExchange",
+				  url: _URL+"/rateExchange",
 				  data: {
 							q : symbols
 						}
@@ -878,7 +878,7 @@ function	get_symbol_hist(ticker){
 				  method: "get",
 				  //url: "quotes.php",
 				  datatype:'json',
-				  url: "http://127.0.0.1:5000/historyQuotes",
+				  url: _URL+"/historyQuotes",
 				  data: {
 							q : ticker
 						}
@@ -933,7 +933,7 @@ function get_crypto_history(pair){
 		$.ajax({
 				  method: "GET",
 				  //url: "quotes.php",
-				  url: "http://127.0.0.1:5000/binance_pair_history",
+				  url: _URL+"/binance_pair_history",
 				  data: {
 							q : symbol
 						}
@@ -958,7 +958,7 @@ async function populate_tickers_dropdown(){
 		 $.ajax({
 				  method: "GET",
 				  //url: "quotes.php",
-				  url: "http://127.0.0.1:5000/get_assets",
+				  url: _URL+"/get_assets",
 				  data: {
 							q : _asset
 						},
@@ -986,7 +986,7 @@ async function get_current_stock_quote(symbol){
 				  method: "get",
 				  //url: "quotes.php",
 				  datatype:'json',
-				  url: "http://127.0.0.1:5000/currentQuote",
+				  url: _URL+"/currentQuote",
 				  data: {
 							q : symbol
 						},

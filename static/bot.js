@@ -112,7 +112,7 @@ function update_cell_no(cell){
   {
 		$.ajax({
 				  method: "GET",
-				  url: "http://127.0.0.1:5000/update_cell_no",
+				  url: _URL+"/update_cell_no",
 				  data: {
 				            cell_no: cell,
 						}
@@ -132,7 +132,7 @@ function test_twilio(cell,key,password){
   {
 		$.ajax({
 				  method: "GET",
-				  url: "http://127.0.0.1:5000/test_twilio",
+				  url: _URL+"/test_twilio",
 				  data: {
 				            c: cell,
 							k : key,
@@ -161,7 +161,7 @@ function run_bot(){
                 contentType: 'application/json',
                 data: JSON.stringify(_algo_params),
                 dataType: 'json',
-				  url: "http://127.0.0.1:5000/crypto_bot",
+				  url: _URL+"/crypto_bot",
 				})
 		 .done(function(data) {
 		   console.log("Algo engine run has completed successfully.")
@@ -179,7 +179,7 @@ function stop_crypto_bot(){
         dialog("Algo Engine","Stopping Algo Engine " ,BootstrapDialog.TYPE_INFO);
 		$.ajax({
 				  method: "GET",
-				  url: "http://127.0.0.1:5000/stop_bot",
+				  url: _URL+"/stop_bot",
 				  data: {
                             action: "Stop"
 						}
@@ -205,7 +205,7 @@ function update_algorun_db(){
                 contentType: 'application/json',
                 data: JSON.stringify(_algorun),
                 dataType: 'json',
-				  url: "http://127.0.0.1:5000/update_algorun_db",
+				  url: _URL+"/update_algorun_db",
 				})
 		 .done(function(data) {
 		    console.log("Record was updated successfully.")
@@ -220,10 +220,17 @@ function update_algorun_db(){
 function get_plans(){
   try
   {
+//        fetch('http://localhost:5000/get_algo_plans')
+//        .then(r => r.json())
+//          .then(data => {
+//                    _plan = JSON.parse(JSON.stringify(data));
+//                    console.log("I passed get algo plan successfully");
+//          })
+
        //dialog("Algo Engine","Starting Algo Engine for market: "+_asset ,BootstrapDialog.TYPE_INFO);
 		$.ajax({
-		        type: 'GET',
-				 url: "http://127.0.0.1:5000/get_algo_plans",
+		        type: "POST",
+				 url: _URL+"/get_algo_plans",
 				})
 		 .done(function(data) {
 //		    let plans = JSON.parse(data)
@@ -242,8 +249,8 @@ function get_user_info(){
   {
        //dialog("Algo Engine","Starting Algo Engine for market: "+_asset ,BootstrapDialog.TYPE_INFO);
 		$.ajax({
-		        type: 'GET',
-				 url: "http://127.0.0.1:5000/get_user_info",
+		        type: "POST",
+				 url: _URL+"/get_user_info",
 				})
 		 .done(function(data) {
 //		    let plans = JSON.parse(data)
@@ -262,7 +269,7 @@ function get_query(sqlQuery){
   {
 		$.ajax({
 		        type: 'GET',
-				 url: "http://127.0.0.1:5000/get_query",
+				 url: _URL+"/get_query",
 				 data: {query: sqlQuery}
 				})
 		 .done(function(data) {
@@ -279,7 +286,7 @@ function get_query(sqlQuery){
 
 function exec_query(sqlQuery) {
     return new Promise(function (resolve, reject) {
-        fetch('http://localhost:5000/get_query?query='+sqlQuery).then(
+        fetch(_URL+'/get_query?query='+sqlQuery).then(
             (response) => {
                 var result = response.data;
                 resolve(result);

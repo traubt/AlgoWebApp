@@ -40,7 +40,8 @@ body{
   text-align: start;
   padding: 1px 0;
   font-size: 14px;
-  border: solid 0.5px blue;
+  border: solid 0.5px lightblue;
+  border-radius:5px;
 }
 
 /* layout */
@@ -84,12 +85,12 @@ body{
     align-self:strech;
 }
 .grid-wallet-chart{
-    grid-column : 8/16;
+    grid-column : 8/17;
     justify-self: strech;
     align-self:strech;
 }
 .grid-sharpe-chart{
-    grid-column : 16/20;
+    grid-column : 17/21;
     justify-self: strech;
     align-self:strech;
 }
@@ -98,19 +99,19 @@ body{
     justify-self: start;
 }
 .grid-balance{
-    grid-column : 8/16;
+    grid-column : 8/17;
     justify-self: end;
     align-self:start;
 }
 .grid-transactions{
-    grid-column : 1/20;
+    grid-column : 1/21;
 }
 .grid-log{
     grid-column : 1/16;
     height: 800px;
 }
 .grid-stats{
-    grid-column : 16/20;
+    grid-column : 16/21;
     height: auto;
 }
 
@@ -133,6 +134,8 @@ body{
 #progress {
     padding-left: 42px;
     padding-bottom: 10px;
+        margin-top: 6px;
+    margin-bottom: -8px;
 }
 
 .progressBlock {
@@ -158,7 +161,6 @@ body{
 }
 
 #chart{
-    height:500px;
     position:relative;
 }
 
@@ -253,8 +255,8 @@ div.scroll {
     height: 452px;
 }
 
-#divLog{
-    height: 940px;
+#log{
+    height: 729px;
 }
 
 
@@ -391,7 +393,7 @@ height: 34px;
 
 .alert-success {
     width : 300px;
-    height : 130px;
+    height : auto;
     position:absolute;
     top:580px;
     right:0px;
@@ -549,6 +551,10 @@ h2 {
 .muted {
   font-size: 10px;
   color: darkgray;
+}
+
+#chart_symbol{
+    margin-left:2px;
 }
 
 /*   TO BE DELETED
