@@ -835,10 +835,10 @@ def update_algorun_db():
         conn.close()
     except BaseException as e:
         print("Failed to insert data into  table", e)
-    finally:
-        if conn:
-            conn.close()
-            print("The DB connection is closed")
+    # finally:
+    #     if conn:
+    #         conn.close()
+    #         print("The DB connection is closed")
     return jsonify({'success': True})
 
 @app.route("/update_cell_no", methods=["GET", "POST"])
@@ -911,7 +911,7 @@ def get_query():
 '''   ---------------------------    END MOVE of routes_tbd.py --------------------------------------'''
 
 if __name__ == '__main__':
-    # public_url = ngrok.connect(5000).public_url
+    public_url = ngrok.connect(5000).public_url
     public_url = "http://127.0.0.1:5000"
     print(f" * ngrok tunnel \"{public_url}\" -> \"http://127.0.0.1:5000\"")
 

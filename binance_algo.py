@@ -28,69 +28,9 @@ from flask_socketio import emit
 count_msg = 0
 interval = '15m'
 period = '5d'
-_USER = ""
+USER = ""
 
-def printf(msg, msg_date,msg_price,msg_grow,order_type,msg_symbol,msg_qty,msg_amt,msg_sellRsn,msg_timeLapse,msg_fee):
-    try:
-        global count_msg
-        count_msg = count_msg + 1
-        message = msg.strip()
-        msg_date = list(msg_date)[0]
-        msg_price = list(msg_price)[0]
-        msg_grow = msg_grow
-        msg_type = order_type
-        msg_symbol = list(msg_symbol)[0]
-        msg_qty = list(msg_qty)[0]
-        msg_amt = list(msg_amt)[0]
-        msg_sellRsn = msg_sellRsn
-        msg_timeLapse = msg_timeLapse
-        emit('my_response',
-                  {'data':message, 'count': count_msg,
-                   'date':msg_date,
-                   'price':msg_price,
-                   'grow':msg_grow,
-                   'type':msg_type,
-                   'symbol':msg_symbol,
-                   'qty':msg_qty,
-                   'amt':msg_amt,
-                   'sell_rsn':msg_sellRsn,
-                   'time_lapse':msg_timeLapse,
-                   # 'fee':msg_fee}, namespace='/', broadcast=True)
-                    'fee': msg_fee}, namespace='/',room='traubt')
-    except BaseException as e:
-        print(f"error: {e} \n when trying to send messages: {msg}")
-    return None
 
-#print information to client
-def printi(msg, msg_date, msg_price, msg_grow, order_type, msg_symbol, msg_qty, msg_amt, msg_sellRsn, msg_timeLapse, msg_fee):
-    try:
-        global count_msg
-        count_msg = count_msg + 1
-        message = msg.strip()
-        msg_date = list(msg_date)[0]
-        msg_price = float(list(msg_price)[0])
-        msg_grow = float(list(msg_grow)[0])
-        msg_type = order_type
-        msg_symbol = msg_symbol
-        msg_qty = msg_qty
-        msg_amt = msg_amt
-        msg_sellRsn = msg_sellRsn
-        msg_timeLapse = msg_timeLapse
-        emit('my_response',
-                  {'data':message, 'count': count_msg,
-                   'date':msg_date,
-                   'price':msg_price,
-                   'grow':msg_grow,
-                   'type':msg_type,
-                   'symbol':msg_symbol,
-                   'qty':msg_qty,
-                   'amt':msg_amt,
-                   'sell_rsn':msg_sellRsn,
-                   'time_lapse':msg_timeLapse,
-                   'fee':msg_fee}, namespace='/',room='traubt')
-    except BaseException as e:
-        print(f"error: {e} \n when trying to send messages: {msg}")
-    return None
 
 class crypto_bot:
   def __init__(self, payload,socket):
@@ -114,7 +54,7 @@ class crypto_bot:
     # self.start_time = tm.time()
     #-- Payload
     self.user = payload["user_name"]
-    _USER = self.user # for emit send message to user
+    USER = self.user # for emit send message to user
     self.market = payload["market"]
     self._default_amount = float(payload["walletInitBalance"])
     self._wallet = wallet(self._base_coin, self._default_amount)
@@ -136,6 +76,8 @@ class crypto_bot:
         self._stop_loss = 2
         self._no_movement = 60
         self._secure_profit = 1
+
+
 
     # handle user socket messages
     @socket.on(self.user)
@@ -162,7 +104,67 @@ class crypto_bot:
 
 
 
+  def printf(self,msg, msg_date, msg_price, msg_grow, order_type, msg_symbol, msg_qty, msg_amt, msg_sellRsn, msg_timeLapse,msg_fee):
+        try:
+            global count_msg
+            count_msg = count_msg + 1
+            message = msg.strip()
+            msg_date = list(msg_date)[0]
+            msg_price = list(msg_price)[0]
+            msg_grow = msg_grow
+            msg_type = order_type
+            msg_symbol = list(msg_symbol)[0]
+            msg_qty = list(msg_qty)[0]
+            msg_amt = list(msg_amt)[0]
+            msg_sellRsn = msg_sellRsn
+            msg_timeLapse = msg_timeLapse
+            emit('my_response',
+                 {'data': message, 'count': count_msg,
+                  'date': msg_date,
+                  'price': msg_price,
+                  'grow': msg_grow,
+                  'type': msg_type,
+                  'symbol': msg_symbol,
+                  'qty': msg_qty,
+                  'amt': msg_amt,
+                  'sell_rsn': msg_sellRsn,
+                  'time_lapse': msg_timeLapse,
+                  # 'fee':msg_fee}, namespace='/', broadcast=True)
+                  'fee': msg_fee}, namespace='/', room=self.user)
+        except BaseException as e:
+            print(f"error: {e} \n when trying to send messages: {msg}")
+        return None
 
+    # print information to client
+  def printi(self,msg, msg_date, msg_price, msg_grow, order_type, msg_symbol, msg_qty, msg_amt, msg_sellRsn, msg_timeLapse,msg_fee):
+        try:
+            global count_msg
+            count_msg = count_msg + 1
+            message = msg.strip()
+            msg_date = list(msg_date)[0]
+            msg_price = float(list(msg_price)[0])
+            msg_grow = float(list(msg_grow)[0])
+            msg_type = order_type
+            msg_symbol = msg_symbol
+            msg_qty = msg_qty
+            msg_amt = msg_amt
+            msg_sellRsn = msg_sellRsn
+            msg_timeLapse = msg_timeLapse
+            emit('my_response',
+                 {'data': message, 'count': count_msg,
+                  'date': msg_date,
+                  'price': msg_price,
+                  'grow': msg_grow,
+                  'type': msg_type,
+                  'symbol': msg_symbol,
+                  'qty': msg_qty,
+                  'amt': msg_amt,
+                  'sell_rsn': msg_sellRsn,
+                  'time_lapse': msg_timeLapse,
+                  'fee': msg_fee}, namespace='/', room=self.user)
+        except BaseException as e:
+            print(f"error: {e} \n when trying to send messages: {msg}")
+        return None
 
   def _now(self):
       return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -229,7 +231,7 @@ class crypto_bot:
                   self.market_prices.pop(token)
                   self.pairs.remove(token)
       except BaseException as e:
-          printf(f"{self._now()}: Error in remove not active tokens: {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
+          self.printf(f"{self._now()}: Error in remove not active tokens: {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
                  "NA", "NA", "NA", "NA")
       return None
 
@@ -335,22 +337,28 @@ class crypto_bot:
       top_volume = []
       top_traders = []
       #filter top volume
-      for x in self.market_prices.keys():
-          d = [0] * 2
-          volume = float(self.market_prices[x]['Volume'][-100:].mean())
-          d[0] = x
-          d[1] = volume
-          l.append(d)
-      top_volume = [x[0] for x in sorted(l, key=lambda a: a[1], reverse=True)[:100]]
-      #filter number of trades only applicable for binance
-      if self.market == 'crypto':
-          for t in top_volume:
-              r = [0] * 2
-              trades = float(self.market_prices[t]['num_trades'][-100:].mean())
-              r[0] = t
-              r[1] = trades
-              m.append(r)
-          top_traders = [x[0] for x in sorted(m, key=lambda a: a[1], reverse=True)[:filter_trades]]
+      try:
+          for x in self.market_prices.keys():
+              d = [0] * 2
+              volume = float(self.market_prices[x]['Volume'][-100:].mean())
+              d[0] = x
+              d[1] = volume
+              l.append(d)
+          top_volume = [x[0] for x in sorted(l, key=lambda a: a[1], reverse=True)[:100]]
+          #filter number of trades only applicable for binance
+          if self.market == 'crypto':
+              for t in top_volume:
+                  r = [0] * 2
+                  trades = float(self.market_prices[t]['num_trades'][-100:].mean())
+                  r[0] = t
+                  r[1] = trades
+                  m.append(r)
+              top_traders = [x[0] for x in sorted(m, key=lambda a: a[1], reverse=True)[:filter_trades]]
+      except BaseException as e:
+          print(f"Error find asset: {e}")
+          self.printf(f"{self._now()}: Error in top volume trades. Could not process symbol {x}. Error: {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+          pass
+
 
       if self.market == 'crypto' :
           final_list = top_traders
@@ -404,10 +412,10 @@ class crypto_bot:
               # idx = df.loc[:].loc[(df['Close'] > open) & (df['Close'] < price)].index[-1]
               # last = len(df) - df[:].index.get_loc(idx)
               # print(f"{self.now} Breakout: {token} , Current price: {price}, Open: {open}, Break history at: {idx}, {last} minutes ago")
-              # printf(f"{self.now} Breakout: {token} , Current price: {price}, Open: {open}, Break history at: {idx}, {last} minutes ago",{self.now},{price},"NA"  ,"NA","NA","NA","NA","NA","NA","NA")
+              # self.printf(f"{self.now} Breakout: {token} , Current price: {price}, Open: {open}, Break history at: {idx}, {last} minutes ago",{self.now},{price},"NA"  ,"NA","NA","NA","NA","NA","NA","NA")
       except BaseException as e:
           print(f"Error find asset: {e}")
-          printf(f"{self._now()}: Error in find asset module. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+          self.printf(f"{self._now()}: Error in find asset module. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
           None
       return found
 
@@ -425,7 +433,7 @@ class crypto_bot:
               quote[pair] = self._add_indicators(quote[pair],pair)
         except BaseException as e:
             print(f" Could not download 1 min quote: {e}")
-            printf(f"{self._now()}: Could not download 1 min quote. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
+            self.printf(f"{self._now()}: Could not download 1 min quote. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
                    "NA", "NA", "NA", "NA")
         return quote[pair]
 
@@ -457,7 +465,7 @@ class crypto_bot:
                          + str( round(max_ret, 3)) + "%, Secure Return: " + str(secure_ret) + "%." + monitor_indicators
               # logging.info(txt)
               #     print(txt)
-              printi(f"{self._now()}  Token: {pair}  Price:  {str(round(df.Close[-1], 10))} ,  Previous Open: {str(round(df.Open[-2],6))}, Stop-Loss:  {str(stop_loss)}, Profit: {str(round(g, 3))} %, Max Return:{str(round(max_ret,6))}, Secure Profit:{str(round(secure_ret,6))} ,{monitor_indicators}",
+              self.printi(f"{self._now()}  Token: {pair}  Price:  {str(round(df.Close[-1], 10))} ,  Previous Open: {str(round(df.Open[-2],6))}, Stop-Loss:  {str(stop_loss)}, Profit: {str(round(g, 3))} %, Max Return:{str(round(max_ret,6))}, Secure Profit:{str(round(secure_ret,6))} ,{monitor_indicators}",
                      {self._now()},
                      {str(round(df.Close[-1], 10))},
                      {str(round(g, 3))},
@@ -495,21 +503,21 @@ class crypto_bot:
               # Exit Secure return
               elif (secure_ret > 0 ) and (g < secure_ret):
                   # print(f"{self._now()}:Trigger sell  for {pair}. ")
-                  printf(f"{self._now()}: Trigger sell Secure Return for {pair}", {self._now()}, "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA")
+                  self.printf(f"{self._now()}: Trigger sell Secure Return for {pair}", {self._now()}, "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA")
                   sell = True
                   rsn = "Secure_Return"
                   return sell, rsn, max_ret, max_date
               # Exit Strategy Rule
               elif eval(self._sell_rule):
                   # print(f"{self._now()}:Trigger sell rule: {self._sell_rule} for {pair}. ")
-                  printf(f"{self._now()}: Trigger sell rule: {self._sell_rule} for {pair}", {self._now()}, "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA")
+                  self.printf(f"{self._now()}: Trigger sell rule: {self._sell_rule} for {pair}", {self._now()}, "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA", "NA")
                   sell = True
                   rsn = "Exit_Strategy"
                   return sell, rsn, max_ret, max_date
               # Stop Loss
               elif price < stop_loss:
                   # print(f"{self._now()}:Trigger reach stop-loss {stop_loss}% for {pair} ")
-                  printf(f"{self._now()}: Trigger reach stop-loss {stop_loss}% for {pair} ", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+                  self.printf(f"{self._now()}: Trigger reach stop-loss {stop_loss}% for {pair} ", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
                   sell = True
                   rsn = "Stop_Loss"
                   return sell, rsn, max_ret, max_date
@@ -518,7 +526,7 @@ class crypto_bot:
                   t.sleep(t_interval)
       except BaseException as e:
           # print(f" Error monitoring token: {e}")
-          printf(f"{self._now()}: Error in monitoring token. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
+          self.printf(f"{self._now()}: Error in monitoring token. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
                  "NA", "NA", "NA", "NA")
 
       return sell, rsn
@@ -533,14 +541,14 @@ class crypto_bot:
       #Engine:
       while True:
           self._cycle += 1
-          printf(f"\n{self._now()}: Running algo cycle {self._cycle} : ",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
-          printf(f"{self._now()}: Wallet balance: ${self._wallet._get_base_coin_balance()}",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
+          self.printf(f"\n{self._now()}: Running algo cycle {self._cycle} : ",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
+          self.printf(f"{self._now()}: Wallet balance: ${self._wallet._get_base_coin_balance()}",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
           # get list of symbols to work on
-          printf(f"{self._now()}: Fetch market {self.market} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+          self.printf(f"{self._now()}: Fetch market {self.market} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
           self.get_symbols()
-          printf(f"{self._now()}: Found {len(self.pairs)} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+          self.printf(f"{self._now()}: Found {len(self.pairs)} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
           # print(f"{self._now()}: Get {self.market} market quotes...")
-          printf(f"{self._now()}: Download market quotes for all symbols. This may take couple of minutes.",
+          self.printf(f"{self._now()}: Download market quotes for all symbols. This may take couple of minutes.",
                  {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
           # self._time_scale = '15m'
           self.period = '2d'
@@ -556,15 +564,15 @@ class crypto_bot:
           #reset list of symbols
           self.pairs = self.filter_top_traders
           engine_status = os.environ["algo_engine"]
-          printf(f"\n{self._now()}: Engine status. : {engine_status}", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
+          self.printf(f"\n{self._now()}: Engine status. : {engine_status}", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
           if engine_status == 'stop':
-              printf(f"\n{self._now()}: Stop Algo engine was was received. Exiting Algo. ", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
+              self.printf(f"\n{self._now()}: Stop Algo engine was was received. Exiting Algo. ", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
               break
           # print(f"{self._now()}: Get top gainers in the last minutes.")
-          printf(f"{self._now()}: Get top gainers in the last minutes", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA")
+          self.printf(f"{self._now()}: Get top gainers in the last minutes", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA")
           self._top_gainers_last_min()
           # print(f"{self._now()}: Found {len(self.top_last_min_gain)} symbols : {self.top_last_min_gain}.")
-          printf(f"{self._now()}: Found {len(self.top_last_min_gain)} symbols : {self.top_last_min_gain}.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
+          self.printf(f"{self._now()}: Found {len(self.top_last_min_gain)} symbols : {self.top_last_min_gain}.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
           # # Processing top gainers
           if len(self.top_last_min_gain) > 0 :
               self.pairs = self.top_last_min_gain
@@ -572,14 +580,14 @@ class crypto_bot:
 
  ############ Entry Strategy #################
               #examine the top gainers
-              printf(f"{self._now()}: Get ENTRY STRATEGY matches.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
+              self.printf(f"{self._now()}: Get ENTRY STRATEGY matches.", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
               # Stay on "scan market" for 2 seconds (else scan market is too quick)
               t.sleep(1)
               self.pair = self.top_last_min_gain
               # print(f"{self._now()}: Filter entry strategy.")
               self._get_entry_strategy_match() # find asset into top_gainers
               # print(f"{self._now()}: Found {len(self.top_gainers)} symbols : {self.top_gainers}.")
-              printf(f"{self._now()}: Found {len(self.top_gainers)} symbols which match ENTRY STRATEGY.  Symbols : {self.top_gainers}. ", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA")
+              self.printf(f"{self._now()}: Found {len(self.top_gainers)} symbols which match ENTRY STRATEGY.  Symbols : {self.top_gainers}. ", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA")
 ##########################################################
 
             ### Buy Order
@@ -587,7 +595,7 @@ class crypto_bot:
                   pair = random.choice(self.top_gainers)
                   # pair = random.choice(self.top_last_min_gain)
                   # print(f"{self._now()}: About to buy asset: {pair}")
-                  printf(f"{self._now()}: About to buy asset: {pair}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+                  self.printf(f"{self._now()}: About to buy asset: {pair}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
                       # stepSize = float(self.client.get_symbol_info(pair)['filters'][1]['stepSize'])
                       # precision = int(round(-math.log(stepSize, 10), 0))
                   precision = 10
@@ -611,19 +619,19 @@ class crypto_bot:
                   if order_passed:
                       try:
                             buy_order._buy_demo()
-                            printf(f"{self._now()}: Send BUY test order of {pair} with quantity: {qty}", {self._now()},
+                            self.printf(f"{self._now()}: Send BUY test order of {pair} with quantity: {qty}", {self._now()},
                                    {pair_price}, "GROW", "BUY", {pair}, {qty}, {pair_price * qty}, "ALGO", 100, 0)
                       except BaseException as e:
                             print(f"{self._now()}: Order could not be fullfiled. \n Error: {e}")
 
               else:
-                  printf(f"{self._now()}: Algo did not find entry strategy hit from symbol list. Continue scanning...", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+                  self.printf(f"{self._now()}: Algo did not find entry strategy hit from symbol list. Continue scanning...", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
                   continue
 
 
         ### Sell Order
               # print(f"{self._now()}: Monitor symbol: {pair}. Get last hour candles...")
-              printf(f"{self._now()}: Monitor symbol: {pair}. Get last hour candles...",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
+              self.printf(f"{self._now()}: Monitor symbol: {pair}. Get last hour candles...",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
               # Working on single symblol
               self.pairs = [pair]
               self.period = '2d'
@@ -633,7 +641,7 @@ class crypto_bot:
               while self._wait:
                   pass
               # print(f"{self._now()}: Monitor symbol: {pair}. Add indicators...")
-              printf(f"{self._now()}: Monitor symbol: {pair}. Add indicators...",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
+              self.printf(f"{self._now()}: Monitor symbol: {pair}. Add indicators...",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
               self.market_prices = self._add_indicators(self.market_prices,pair)
 
               # Get symbol buying quotes
@@ -641,7 +649,7 @@ class crypto_bot:
               current_price = self._get_pair_price(pair)
               t_qty = self._wallet._get_token_balance(pair)
               # print( f"{self._now()} Symbol: {pair}. Start Price: {round(st_price, 7)}.  Current Price: {current_price}. Current PNL: {round(self._get_pair_price(pair) / st_price * 100 - 100, 2)}% ")
-              printf(
+              self.printf(
                   f"{self._now()} Symbol: {pair}. Start Price: {round(st_price, 7)}.  Current Price: {current_price}. Current PNL: {round(self._get_pair_price(pair) / st_price * 100 - 100, 2)}% ",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
 
               # Check Exit Position
@@ -655,20 +663,20 @@ class crypto_bot:
                   # qty = int(qty * precision) / precision
                   gain = round(pair_price / st_price * 100 - 100, 2)
                   # print(f"{self._now()} Trying to execute SELL  {pair}, Quantity: {qty}")
-                  printf(f"{self._now()} Trying to execute SELL  {pair}, Quantity: {qty}",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
+                  self.printf(f"{self._now()} Trying to execute SELL  {pair}, Quantity: {qty}",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
 
                   # SELL ORDER ....
                   #initialize order object
                   sell_order = order("SELL",self._get_broker(),pair,pair_price, qty, self._wallet)
                   # Send test buy to Binanace
                   # print(f"{self._now()}: Send SELL test order of {pair} with quantity: {qty}")
-                  printf(f"{self._now()}: Send SELL test order of {pair} with quantity: {qty}",{self._now()}, {pair_price},"GROW","SELL",{pair},{qty},{pair_price*qty},"ALGO",100,0)
+                  self.printf(f"{self._now()}: Send SELL test order of {pair} with quantity: {qty}",{self._now()}, {pair_price},"GROW","SELL",{pair},{qty},{pair_price*qty},"ALGO",100,0)
                   # Test Binance transaction ---------------------------------------------------------------------
                   # Todo: test live sell
                   order_passed = True
                   ##### ------------------------------------------------------------------------------------------
                   # print(f"{self._now()}: SELL {pair}. Price: {pair_price}. Reason: {sell_rsn}. PNL: {gain}%. mode: **{self._mode}**")
-                  printf( f"{self._now()}: SELL {pair}. Price: {pair_price}. Reason: {sell_rsn}. PNL: {gain}%. mode: **{self._mode}**",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
+                  self.printf( f"{self._now()}: SELL {pair}. Price: {pair_price}. Reason: {sell_rsn}. PNL: {gain}%. mode: **{self._mode}**",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
 
                   # Update Wallet
                   if order_passed:
