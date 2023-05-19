@@ -86,22 +86,8 @@ posts = [
 
 #####################  HELPERS FUNCTIONS ###########################
 
-url = 'https://api.coinbase.com/v2/prices/btc-usd/spot'
+# url = 'https://api.coinbase.com/v2/prices/btc-usd/spot'
 
-
-# global_message = ""
-
-def background_thread():
-    """Example of how to send server generated events to clients."""
-
-    # count = 0
-    # while True:
-    #     socketio.sleep(3)
-    #     count += 1
-    #     price = ((requests.get(url)).json())['data']['amount']
-    #     socketio.emit('my_response',
-    #                   {'data': 'Bitcoin current price (USD): ' + price, 'count': count})
-    pass
 
 
 def _send_whatsapp_msg(c,k,p):
@@ -594,8 +580,7 @@ def crypto_bot():
     #insert new record to user_algorun
     conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
     user = current_user.username
-    logging.getLogger(user)
-    logging.info(f'Starting bot for user {user}')
+    print(f'Starting bot for user {user}')
     cur = conn.cursor()
     sql = f"INSERT INTO user_algorun (username,strategy_name,start_bal,run_date,start_date) VALUES \
     ('{payload['user_name']}','{payload['ruleName']}', '{payload['walletInitBalance']}','{today}','{formatted_date}');"
@@ -624,44 +609,21 @@ def my_event(message):
          {'data': message['data'], 'count': session['receive_count']})
 
 # Receive the test request from client and send back a test response
-@socketio.on('test_message')
-def handle_message(data):
-    print(data)
-    emit('flask_response', {'data': 'Receive acknowledge from flask'})
+# @socketio.on('test_message')
+# def handle_message(data):
+#     print(data)
+#     emit('flask_response', {'data': 'Receive acknowledge from flask'})
 
 @socketio.event
 def connect():
     print("Socket establish connection...")
-    session["sid"] = request.sid
-    global thread
-    with thread_lock:
-        if thread is None:
-            thread = socketio.start_background_task(background_thread)
+    # global thread
+    # with thread_lock:
+    #     if thread is None:
+    #         thread = socketio.start_background_task(background_thread)
     emit('my_response', {'data': 'Connected to the server', 'count': 0})
 
 
-# @socketio.on("connect")
-# def connect(auth):
-#     print("I'm connected to chat room")
-#     room = session.get("room")
-#     name = session.get("name")
-#     if not room or not name:
-#         return
-#     if room not in rooms:
-#         leave_room(room)
-#         return
-#
-#     join_room(room)
-#     send({"name": name, "message": "has entered the room"}, to=room)
-#     rooms[room]["members"] += 1
-#     print(f"{name} joined room {room}")
-
-@socketio.on('broadcast_response')
-def handle_broadcast(data):
-    print('received: ' + str(data))
-    emit('my_response', {'data': 'Connected to the server', 'count': 9999})
-
-# CHAT ROOM SOCKETS implementation
 
 @socketio.on('join')
 def on_join(data):
@@ -670,13 +632,17 @@ def on_join(data):
     session["room"] = room
     session["name"] = username
     join_room(room)
-    #if first joiner than create the room
-    if room not in rooms:
-        rooms[room] = {"members": 0, "messages": []}
-    # send(username + ' has entered the room.', to=room)
-    send({"name": username, "message": "has entered the room"}, to=room)
-    rooms[room]["members"] += 1
-    print(f"{username} joined room {room}")
+    if room == username:
+        send({"name": username, "message": "has established private socket connection","room":username}, to=room)
+        print(f"Creating private socket for: {room}")
+    else:
+        #if first joiner than create the room
+        if room not in rooms:
+            rooms[room] = {"members": 0, "messages": []}
+        # send(username + ' has entered the room.', to=room)
+        send({"name": username, "message": "has entered the room"}, to=room)
+        rooms[room]["members"] += 1
+        print(f"{username} joined room {room}")
     return "Success"
 
 @socketio.on('leave')
@@ -714,6 +680,7 @@ def message(data):
     content = {
         "name": session.get("name"),
         "message": data["data"],
+        "room" : room,
         # "history_msgs": msgs,
     }
     send(content, to=room)
@@ -951,22 +918,22 @@ if __name__ == '__main__':
 
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
-    #set server logs
-    # Set up a logger with the name 'my_logger'
-    logger = logging.getLogger('tomer:')
-    # Set the logging level
-    # logger.setLevel(logging.INFO)
-    # Create a stream handler to write log messages to the console
-    sh = logging.StreamHandler()
-    # Set the logging level for the stream handler
-    sh.setLevel(logging.INFO)
-    # Create a formatter to format log messages
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    # Add the formatter to the stream handler
-    sh.setFormatter(formatter)
-    # Add the stream handler to the logger
-    logger.addHandler(sh)
-    # Replace print statements with logger calls
-    # print('This is a message')
+    # #set server logs
+    # # Set up a logger with the name 'my_logger'
+    # logger = logging.getLogger('tomer:')
+    # # Set the logging level
+    # # logger.setLevel(logging.INFO)
+    # # Create a stream handler to write log messages to the console
+    # sh = logging.StreamHandler()
+    # # Set the logging level for the stream handler
+    # sh.setLevel(logging.INFO)
+    # # Create a formatter to format log messages
+    # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # # Add the formatter to the stream handler
+    # sh.setFormatter(formatter)
+    # # Add the stream handler to the logger
+    # logger.addHandler(sh)
+    # # Replace print statements with logger calls
+    # # print('This is a message')
 
     socketio.run(app,allow_unsafe_werkzeug=True,debug=True, use_reloader=False)

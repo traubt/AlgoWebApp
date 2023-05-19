@@ -19,8 +19,8 @@ const chartOptions = {
      }
 
     var chart = LightweightCharts.createChart(document.getElementById('chart'), {
-        width: 520,
-        height: 480,
+        width: $(".grid-symbol-chart").width() -10,
+        height: $(".grid-symbol-chart").height() -10,
 //        layout: {
 //            backgroundColor: '#000000',
 //            textColor: 'rgba(255, 255, 255, 0.9)',

@@ -1137,12 +1137,13 @@ async function fetch_api(url,index,total,symbol){
             // The callback function is invoked when a connection with the
             // server is established.
             socket.on('connect', function() {
-                socket.emit('my_event', {data: 'I\'m connected!'});
-<!--                console.log("I'm connected")-->
+<!--                socket.emit('my_event', {data: 'I\'m connected!'});-->
+                socket.emit('join', {room: user, username: user});
             });
 
             // socket RECEIVE handler
             socket.on('my_response', function(msg) {
+                console.log("Connection message from the server:",msg.data,msg.count);
                 if(!_manual_sell){
                         $('#log').append('<br>' + $('<div/>').text('#' + msg.count +': ' + msg.data).html());
                 };
@@ -1230,7 +1231,7 @@ async function fetch_api(url,index,total,symbol){
 
             // URL fetch instruction from flask
             socket.on(user, function(msg) {
-<!--                console.log("Call "+msg.index+"/"+msg.total+"  API : "+msg.data);-->
+                console.log("Call "+msg.index+"/"+msg.total+"  API : "+msg.data);
                 let progress = Number(Number(msg.index)/Number(msg.total)*100);
                 let s_progress = progress.toString()+"%";
                 // avoid progress bar flickering for single download
@@ -1247,7 +1248,12 @@ async function fetch_api(url,index,total,symbol){
   const messages = document.getElementById("messages");
 
   socket.on("message", (data) => {
+    if (data.room != user) {
+    console.log("created room for:",data.room);
     createMessage(data.name, data.message);
+    }else{
+    console.log("created private socket for:",data.room);
+    }
   });
 
 //chat room send message

@@ -19,7 +19,8 @@ renderHighChart = async (symbol,hc_div) => {
         plotBackgroundImage: null,
         plotBorderWidth: 0,
         plotShadow: false,
-        height: '80%'
+        height: '80%',
+        width : $("#tickerHC").width() -5,
     },
 
     title: {

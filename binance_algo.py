@@ -28,6 +28,7 @@ from flask_socketio import emit
 count_msg = 0
 interval = '15m'
 period = '5d'
+_USER = ""
 
 def printf(msg, msg_date,msg_price,msg_grow,order_type,msg_symbol,msg_qty,msg_amt,msg_sellRsn,msg_timeLapse,msg_fee):
     try:
@@ -54,7 +55,8 @@ def printf(msg, msg_date,msg_price,msg_grow,order_type,msg_symbol,msg_qty,msg_am
                    'amt':msg_amt,
                    'sell_rsn':msg_sellRsn,
                    'time_lapse':msg_timeLapse,
-                   'fee':msg_fee}, namespace='/', broadcast=True)
+                   # 'fee':msg_fee}, namespace='/', broadcast=True)
+                    'fee': msg_fee}, namespace='/',room='traubt')
     except BaseException as e:
         print(f"error: {e} \n when trying to send messages: {msg}")
     return None
@@ -85,7 +87,7 @@ def printi(msg, msg_date, msg_price, msg_grow, order_type, msg_symbol, msg_qty, 
                    'amt':msg_amt,
                    'sell_rsn':msg_sellRsn,
                    'time_lapse':msg_timeLapse,
-                   'fee':msg_fee}, namespace='/', broadcast=True)
+                   'fee':msg_fee}, namespace='/',room='traubt')
     except BaseException as e:
         print(f"error: {e} \n when trying to send messages: {msg}")
     return None
@@ -112,6 +114,7 @@ class crypto_bot:
     # self.start_time = tm.time()
     #-- Payload
     self.user = payload["user_name"]
+    _USER = self.user # for emit send message to user
     self.market = payload["market"]
     self._default_amount = float(payload["walletInitBalance"])
     self._wallet = wallet(self._base_coin, self._default_amount)
@@ -182,10 +185,6 @@ class crypto_bot:
 
 
   def get_symbols(self):
-      # #send request to client
-      # emit(self.user,
-      #      {'data': "Please - get_US_market_list"}, namespace='/', broadcast=True)
-      # Prepare quotes for all coin pairs
       if self.market == 'crypto':
           self.pairs = crypto_list.crypto_pairs
           #remove UP symbols
@@ -291,7 +290,7 @@ class crypto_bot:
   def downloadHistoryPrices(self, symbol,i, total):
       root_url = 'https://api.binance.com/api/v1/klines'
       url = root_url + '?symbol=' + symbol + '&interval=' + self._time_scale
-      emit(self.user, {'data': url, 'symbol':symbol, 'index':i, 'total':total}, namespace='/', broadcast=True)
+      emit(self.user, {'data': url, 'symbol':symbol, 'index':i, 'total':total}, namespace='/',room=self.user)
       return None
 
   def downloadHistoryPricesNyse(self,stock):
@@ -612,8 +611,8 @@ class crypto_bot:
                   if order_passed:
                       try:
                             buy_order._buy_demo()
-                            # printf(f"{self._now()}: Send BUY test order of {pair} with quantity: {qty}", {self._now()},
-                            #        {pair_price}, "GROW", "BUY", {pair}, {qty}, {pair_price * qty}, "ALGO", 100, 0)
+                            printf(f"{self._now()}: Send BUY test order of {pair} with quantity: {qty}", {self._now()},
+                                   {pair_price}, "GROW", "BUY", {pair}, {qty}, {pair_price * qty}, "ALGO", 100, 0)
                       except BaseException as e:
                             print(f"{self._now()}: Order could not be fullfiled. \n Error: {e}")
 

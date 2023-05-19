@@ -191,6 +191,7 @@ h6{
     font-weight: bold;
     display: flex;
  }
+
 /************************************End object design *************************************/
 
 .navbar {
@@ -315,7 +316,7 @@ table.tv-lightweight-charts {
    /* min-width: 310px; */
     max-width: 500px;
     margin: 1em auto;
-    width : 240px;
+
 }
 
 .highcharts-data-table table {
