@@ -59,7 +59,7 @@
 <body data-spy="scroll" data-target=".nav" data-offset="30">
 
 <!--Define grid items-->
-    <div class="grid-container">
+<div class="grid-container">
         <div class="grid-navbar">
             <nav class="navbar navbar-default navbar-static-top ">
                 <div class="container">
@@ -164,7 +164,7 @@
 
               </div>
               <div class="strategy_p notifications">
-                  <div class="title"><label>Whatsapp Notifications</label></div>
+              <div class="title"><label>Whatsapp Notifications</label></div>
 
  <div class="container">
  <form id="login" onsubmit="process(event)">
@@ -174,29 +174,23 @@
  </form>
   <div class="alert alert-info" style="display: none;"></div>
 </div>
-                                <form class="form-inline">
-                                    <div class="form-group">
-                                        <!--                <div class="checkbox" id="whatsappCB" name="wcb">-->
-                                        <label>
-                                            <input type="checkbox" name="wacb" class="wa_checked" disabled>&nbspWhatsapp:&nbsp
-                                        </label>
-                                        <!--          </div>-->
-                                    </div>
-<!--                                    <label class="sr-only" for="phone"></label>-->
-<!--                                    <input type="number" class="form-control" id="cellNo" placeholder="Cell No." value="27741988890" disabled>-->
-<!--                                    <form id="login" onsubmit="process(event)">-->
-<!--                                    <input id="phone" type="tel" name="phone" /><input type="submit" class="btn" value="Verify" />-->
-<!--                                    <label class="sr-only" for="twilioPass">Twilio Key</label>-->
-<!--                                    </form>-->
+            <form class="form-inline">
+                <div class="form-group">
+                    <!--                <div class="checkbox" id="whatsappCB" name="wcb">-->
+                    <label>
+                        <input type="checkbox" name="wacb" class="wa_checked" disabled>&nbspWhatsapp:&nbsp
+                    </label>
+                    <!--          </div>-->
+                </div>
 <!--                                    <input type="password" class="form-control" id="twilioKey" placeholder="Enter Twilio Key" value="ACaa6d3a0629279c6f5aa185857a1fff99" disabled>-->
-                                    <input type="password" class="form-control twilio" id="twilioKey" placeholder="Enter Twilio Key"  disabled>
-                                    <!--          <div class="form-group">-->
-                                    <label class="sr-only" for="twilioPass">Password</label>
+                <input type="password" class="form-control twilio" id="twilioKey" placeholder="Enter Twilio Key"  disabled>
+                <!--          <div class="form-group">-->
+                <label class="sr-only" for="twilioPass">Password</label>
 <!--                                    <input type="password" class="form-control" id="twilioPass" placeholder="Enter Twilio Password" value="bd80d0fb93f57aea98c600e4c5f86c32" disabled>-->
-                                    <input type="password" class="form-control twilio" id="twilioPass" placeholder="Enter Twilio Password"  disabled>
-                                    <!--          </div>-->
-                                    <button id="testWA" type="button" class="btn btn-primary" disabled>Test Whatsapp message</button>
-                                </form>
+                <input type="password" class="form-control twilio" id="twilioPass" placeholder="Enter Twilio Password"  disabled>
+                <!--          </div>-->
+                <button id="testWA" type="button" class="btn btn-primary" disabled>Test Whatsapp message</button>
+            </form>
 
               </div>
               <div class="strategy_p chart_pref">
@@ -211,19 +205,19 @@
                         <div class="flex-row">
                             <label for="tf" class="flex-item">Default Interval:</label>
                             <select class="flex-item" id="tf">
-                                <option value="1" selected>1m</option>
-                                <option value="5" selected>5m</option>
-                                <option value="15" >15m</option>
-                                <option value="30">30m</option>
-                                <option value="60">1h</option>
-                                <option value="120">2h</option>
-                                <option value="240">4h</option>
-                                <option value="D">1d</option>
-                                <option value="W">1w</option>
+                                <option value="1" selected>1min</option>
+                                <option value="5" selected>5min</option>
+                                <option value="15" >15min</option>
+                                <option value="30">30min</option>
+                                <option value="60">1hr</option>
+                                <option value="120">2hr</option>
+                                <option value="240">4hr</option>
+                                <option value="D">1day</option>
+                                <option value="W">1week</option>
                             </select>
                         </div>
                             <div class="flex-row">
-                                    <label for="tf" class="flex-item">Color Theme:</label>
+                                    <label for="color" class="flex-item">Color Theme:</label>
                                     <select class="flex-item" id="color">
                                         <option value="light" selected>light</option>
                                         <option value="dark">dark</option>
@@ -462,7 +456,7 @@
                 </div>
         </div>
         <div class="grid-chart-info" hidden="true">
-            <label for="tr_div" id="chart_symbol">Chart Timeframe :</label>
+<!--            <label for="tr_div" id="chart_symbol">Chart Timeframe :</label>-->
             <div id='tr_div' class="btn-group ts_btn_grp" data-toggle="buttons">
                                 <label class="btn" data-value="1">
                                 <input type="radio" name="options" id="option0" autocomplete="off" > 1m
@@ -581,7 +575,6 @@
             </table>
         </div>
     </div>
-
 <div id="orderAlert" class="alert alert-success" role="alert">
         <span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
         <strong id="o_type"></strong><br>
@@ -590,9 +583,8 @@
           <span aria-hidden="true">&times;</span>
         </button>
 </div>
-
 <!-- CHAT ROOM  -->
-    <form id ="chatRoomForm" class="form-inline" style="margin-left:10px" >
+<form id ="chatRoomForm" class="form-inline" style="margin-left:10px" >
       <div class="form-group">
         <label for="chat_room">Select Chat Room :</label>
             <select class="form-control" id="chat_room" title="Chat Room">
@@ -604,7 +596,6 @@
           <button id="joinCR" type="button" class="btn btn-primary" >Join Chat Room</button>
         </div>
 </form>
-
 <div class="message-box">
   <h2 id="crTitle"></h2>
 <!--    <h2>Chat Room: {{code}}</h2>-->
@@ -633,10 +624,10 @@
 	var _algo_chart = {};
 	var _klinedata = {};
 	var _binanceSocket = {};
-	var _candleseries; // Websocket candle sticks
-	var _sma_series;
+	var _candleseries,__candleseries; // Websocket candle sticks
+	var _sma_series,__sma_series;
 	var _rsi_series;
-	var _volumeSeries;
+	var _volumeSeries,__volumeSeries;
 	var _message = {};  // latest price object
     var _candlestick ; // latest price candlestick
     var _interval = 0; // holds the "websocket" interval of yfinance
@@ -651,8 +642,9 @@
 	var _base_coin_qty = 0; // hold wallet amount of base coin
 	var _order_type = ""; // BUY/SELL
 	var _time_res = "5";
+	var _time_res_scnd = "1";
 	var _theme = "light";
-	var _symbol = "ETHUSDT";
+	var _symbol = 'ETHUSDT';
 	var _binanceSocket = {};
 	var _b_time_res = {"1":"1m","5":"5m","15":"15m","30":"30m","60":"1h","120":"2h","240":"4h","D":"1d","W":"1w"};  // map td timeframe to binance timeframe
     var _asset = 'crypto'; // user selection of platform
@@ -1008,6 +1000,8 @@ function load_strategy(template){
 	//initialize
 	$(document).ready(function(){
 
+<!--	_symbol = $("#tickers").val();-->
+
     init_algo_payload("system");
     get_plans();
 
@@ -1254,8 +1248,11 @@ $("#send-chat").click(function(){
     $('#orderAlert').hide()
 
     //get list of stocks/cryptos
-    $("#ticker_type").text("Select default symbol (S&P 500):")
-    populate_tickers_dropdown()
+    $("#ticker_type").text("Select default symbol:")
+    populate_tickers_dropdown();
+    // set ETHUSDT second select to default option
+
+    _symbol =  $("#tickers").val();
 
     //get all selected item from select picker
     var selectedItems = $(".select_tickers").find("option:selected").map(function() {
@@ -1399,6 +1396,12 @@ $(".input_number").on('change foucusout',function(){
         renderChartSecondary(_asset,$("#chart_symbol").text(),"1",_theme);
         //Highcharts.charts[0].setTitle({ text: _symbol });
 
+    });
+
+    $('#tfChart').change(function() {
+        _time_res_scnd = $(this).children('option:selected').val();
+        $("#chart_secondary").empty();
+        renderChartSecondary(_asset,_symbol,_time_res_scnd ,_theme);
     });
 
  // Display token chart

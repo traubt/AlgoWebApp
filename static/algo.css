@@ -40,8 +40,8 @@ body{
   text-align: start;
   padding: 1px 0;
   font-size: 14px;
-  border: solid 0.5px lightblue;
-  border-radius:5px;
+  /*border: solid 0.5px lightblue;
+  border-radius:5px; */
 }
 
 /* layout */
@@ -62,7 +62,7 @@ body{
     grid-area : 4/1/5/6;
     justify-self: start;
     align-self:start;
-    margin-top: -22px;
+    margin-top: -42px;
 
 }
 .grid-chart-info{
@@ -74,7 +74,7 @@ body{
     grid-area : 4/10/5/14;
     justify-self: center;
     align-self:end;
-    margin-top: -22px;
+    margin-top: -30px;
 }
 .grid-sharpe-title{
     grid-column : 16/20;
@@ -87,32 +87,37 @@ body{
     align-self:strech;
     margin-top: -50px;
     height:350px;
+    margin-top: -83px;
 }
 .grid-wallet-chart{
     grid-column : 8/17;
     justify-self: strech;
     align-self:strech;
+    margin-top:-10px;
 }
 .grid-sharpe-chart{
     grid-column : 17/21;
     justify-self: strech;
     align-self:strech;
+    margin-top:-50px;
 }
 .grid-symbol-chart-secondary{
     grid-column : 1/8;
     justify-self: strech;
     align-self:strech;
-    margin-top: -220px;
+    margin-top: -231px;
     height:300px;
 }
 .grid-chart_buy-sell_buttons{
     grid-column : 1/8;
     justify-self: start;
+    margin-top:-30px;
 }
 .grid-balance{
     grid-column : 8/17;
     justify-self: end;
     align-self:start;
+    margin-top: -30px;
 }
 .grid-transactions{
     grid-column : 1/21;
@@ -190,6 +195,13 @@ body{
     left: 10px;
     top: 10px;
 }
+
+#chartSecondary > #tfChart{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 
 #wallet_container{
     height:500px;

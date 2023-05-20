@@ -1,42 +1,15 @@
-const run_algo = async (symbol) => {
-        if (_asset == 'stocks'){
-          get_current_stock_quote(symbol)
-        }
-        else{
-        _binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/"+symbol.toLowerCase()+"@kline_"+_b_time_res[_time_res]);
-        _binanceSocket.onmessage = async function (event) {
-        // get indicators
-        _klinedata = await getData();
-            _message = JSON.parse(event.data);
-            _candlestick = _message.k;
-        }
-            // update candles and indicators
-//            _candleseries.update({
-//                time: _candlestick.t / 1000,
-//                open: _candlestick.o,
-//                high: _candlestick.h,
-//                low: _candlestick.l,
-//                close: _candlestick.c
-//            });
-//             _volume_series.update({
-//                  time: _candlestick.t / 1000,
-//                  value: _candlestick.v,
-//                  color: _candlestick.c > _candlestick.o ?   "#26A69A" : "#EF5350",
-//            })
-// update indicators
-//                let d = _klinedata[_klinedata.length-1]
-//                _sma_series.update({ time: d.time, value: d.sma });
-//                _ema_series.update({ time: d.time, value: d.ema });
-//                _macd_slow_series.update({ time: d.time, value: d.macd_slow });
-//                _macd_fast_series.update({ time: d.time, value: d.macd_fast });
-//                _rsi_series.update({ time: d.time, value: d.rsi });
-//                _macd_histogram_series.update({
-//                                                  time: d.time,
-//                                                  value: d.macd_histogram,
-//                                                  color: d.macd_histogram > 0 ?  "#26A69A" : "#EF5350",
-//                                                });
-        }
-    }
+var _time_frame = `<label for="tfChart" class="tf_secondary"></label>
+                     <select class="flex-item" id="tfChart" name='Timeframe'>
+                        <option value="1" selected>1min</option>
+                        <option value="5">5min</option>
+                        <option value="15" >15min</option>
+                        <option value="30">30min</option>
+                        <option value="60">1hr</option>
+                        <option value="120">2hr</option>
+                        <option value="240">4hr</option>
+                        <option value="D">1day</option>
+                        <option value="W">1week</option>
+                    </select>`
 
 function _init_user_wallet_test(){
   _wallet[user] = [];

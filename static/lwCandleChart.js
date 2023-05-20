@@ -92,7 +92,7 @@ const chartOptions = {
         legend.appendChild(firstRow);
 
         const secondRow = document.createElement('div');
-//        secondRow.innerHTML = "SMA(10)"
+        secondRow.innerHTML = "SMA(10)"
         secondRow.style.color = 'white';
         legend.appendChild(secondRow);
 
@@ -226,10 +226,10 @@ const chartOptions = {
 //                                            console.log(cur_time, new Date(cur_time) +'  '+symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5)+' v: '+_candlestick.volume );
                                     }
                 // update legend
-                                firstRow.innerHTML = symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5);
+                                firstRow.innerHTML = symbol + ' O: '+parseFloat(_candlestick.open) +' H: '+parseFloat(_candlestick.high) +' L: '+parseFloat(_candlestick.low) +' C: '+parseFloat(_candlestick.close)+'  ('+$("#tf").find("option:selected").text()+')';
                                 secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+_candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ _candlestick.volume.toFixed(2)+'</span><span style="color:purple" >&emsp;RSI: '+ _candlestick.rsi.toFixed(2)+'</span></h6>'
                                 //update SHARPE chart
-                               _highChart_val_a  = parseFloat(_candlestick.sharpe).toFixed(2);
+                               _highChart_val_a  = parseFloat(_candlestick.sharpe);
 
 
                    //update wallet chart
@@ -268,7 +268,7 @@ const chartOptions = {
         clearInterval(_intervalSec);
      }
 
-    const chartSec = LightweightCharts.createChart(document.getElementById('chart_secondary'), {
+    var chartSec = LightweightCharts.createChart(document.getElementById('chart_secondary'), {
         width: $(".grid-symbol-chart-secondary").width() -10,
         height: $(".grid-symbol-chart-secondary").height() -10,
         crosshair: {
@@ -326,18 +326,32 @@ const chartOptions = {
 
         const firstRow = document.createElement('div');
         firstRow.innerHTML = symbol  //+ ' O: '+_candlestick.open.toFixed(2) +' H: '+_candlestick.high.toFixed(2) +' L: '+_candlestick.low.toFixed(2) +' C: '+_candlestick.close.toFixed(2);
-        firstRow.style.color = 'black';
+
         legend.appendChild(firstRow);
 
         const secondRow = document.createElement('div');
 //        secondRow.innerHTML = "SMA(10)"
         secondRow.style.color = 'white';
         legend.appendChild(secondRow);
+        //append time frame
+        $("#chart_secondary").append(_time_frame);
+        $('#chart_secondary').css({'position': 'relative'});
+        $('#tfChart').css({
+            'position': 'absolute',
+            'top': '0',
+            'right': '65px',
+            'z-index': '5'
+        });
+        firstRow.style.color = 'black';
+        firstRow.style.position = 'absolute';
+        firstRow.style.top = '5px';
+        firstRow.style.right = '200';
+        firstRow.style.zIndex = '6';
 
         chartSec.subscribeCrosshairMove(param => {
 //            priceFormatted = ' O: '+_candlestick.open.toFixed(2) +' H: '+_candlestick.high.toFixed(2) +' L: '+_candlestick.low.toFixed(2) +' C: '+_candlestick.close.toFixed(2);
             if (param.time) {
-                const data = param.seriesPrices.get(_candleseries);
+                const data = param.seriesPrices.get(__candleseries);
                 const open = data.value !== undefined ? data.value : data.open.toFixed(2);
                 const high = data.value !== undefined ? data.value : data.high.toFixed(2);
                 const low = data.value !== undefined ? data.value : data.low.toFixed(2);
@@ -345,12 +359,11 @@ const chartOptions = {
                 priceFormatted = ' O: '+open +' H: '+high +' L: '+low +' C: '+close;
             }
             firstRow.innerHTML = `${symbolName} ${priceFormatted}`;
-//            $("#firstRow").innerHTML = `${symbolName} <strong>${priceFormatted}</strong>`;
         });
 
         chartSec.timeScale().fitContent();
 
-     const candleseries = chartSec.addCandlestickSeries({
+     __candleseries = chartSec.addCandlestickSeries({
         upColor: '#00ff00',
         downColor: '#ff0000',
         borderDownColor: 'rgba(255, 144, 0, 1)',
@@ -371,15 +384,15 @@ const chartOptions = {
         .then((r) => r.json())
         .then((response) => {
 //            console.log(response)
-            candleseries.setData(response);
+            __candleseries.setData(response);
               //SMA
-              const sma_series = chartSec.addLineSeries({ color: 'blue', lineWidth: 1 });
+              __sma_series = chartSec.addLineSeries({ color: 'blue', lineWidth: 1 });
               const sma_data = response
                 .filter((d) => d.ma10)
                 .map((d) => ({ time: d.time, value: d.ma10 }));
-               sma_series.setData(sma_data);
+               __sma_series.setData(sma_data);
                 // VOLUME
-                const volumeSeries = chartSec.addHistogramSeries({
+                 __volumeSeries = chartSec.addHistogramSeries({
                         color: '#26a69a',
                         priceFormat: {
                             type: 'volume',
@@ -391,7 +404,7 @@ const chartOptions = {
                             bottom: 0,
                         },
                     });
-                    volumeSeries.priceScale().applyOptions({
+                    __volumeSeries.priceScale().applyOptions({
                         scaleMargins: {
                             top: 0.7, // highest point of the series will be 70% away from the top
                             bottom: 0,
@@ -400,7 +413,7 @@ const chartOptions = {
                       const vol_data = response
                         .filter((d) => d.volume)
                         .map((d) => ({ time: d.time, value: d.volume,color: d.close > d.open ? '#00ff00' : '#ff0000'}));
-                      volumeSeries.setData(vol_data);
+                      __volumeSeries.setData(vol_data);
 
               })
 
@@ -420,7 +433,7 @@ const chartOptions = {
 //                            console.log("yahoo web socket is running...");
                              candlestick = response[response.length - 1];
                              if (market == 'stocks'){
-                                     candleseries.update({
+                                     __candleseries.update({
                                         time: candlestick.time,
                                         open: candlestick.open,
                                         high: candlestick.high,
@@ -432,27 +445,27 @@ const chartOptions = {
                                       })
                              }else{
                                                 let cur_time = candlestick.time * 1000
-                                                candleseries.update({
+                                                __candleseries.update({
                                                 time: candlestick.time,
                                                     "open": candlestick.open,
                                                     "high": candlestick.high,
                                                     "low": candlestick.low,
                                                     "close": candlestick.close
                                                    })
-                                                volumeSeries.update({
+                                                __volumeSeries.update({
                                                 time: candlestick.time,
                                                 value : candlestick.volume,
                                                 color: candlestick.close > candlestick.open ? '#00ff00' : '#ff0000'
                                                    })
-                                                sma_series.update({
+                                                __sma_series.update({
                                                 time: candlestick.time,
                                                 value : candlestick.ma10,
                                                    })
 //                                            console.log(cur_time, new Date(cur_time) +'  '+symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5)+' v: '+_candlestick.volume );
                                     }
                 // update legend
-                                firstRow.innerHTML = symbol + ' O: '+candlestick.open.toFixed(5) +' H: '+candlestick.high.toFixed(5) +' L: '+candlestick.low.toFixed(5) +' C: '+candlestick.close.toFixed(5);
-                                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ candlestick.volume.toFixed(2)+'</span></h6>'
+                                firstRow.innerHTML = symbol + ' O: '+parseFloat(_candlestick.open) +' H: '+parseFloat(_candlestick.high) +' L: '+parseFloat(_candlestick.low) +' C: '+parseFloat(_candlestick.close);
+//                                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ candlestick.volume.toFixed(2)+'</span></h6>'
 
                             })
 //                firstRow.innerHTML = symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5);

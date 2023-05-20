@@ -970,6 +970,8 @@ async function populate_tickers_dropdown(){
                         for ( var key in _asset_list ) {
                             $("#tickers").append("<option value="+_asset_list[key]+">"+key+"</option>")
                         }
+                        $("#tickers").prop("selectedIndex", 1);
+                        _symbol = $("#tickers").val();
 //                        $('#tickers').selectpicker("refresh");
 //                        $('#algo_tickers').selectpicker("refresh");
                        }
