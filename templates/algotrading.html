@@ -1398,11 +1398,17 @@ $(".input_number").on('change foucusout',function(){
 
     });
 
-    $('#tfChart').change(function() {
-        _time_res_scnd = $(this).children('option:selected').val();
+    $(document).on('change', '#tfChart', function() {
+          _time_res_scnd = $(this).children('option:selected').val();
         $("#chart_secondary").empty();
         renderChartSecondary(_asset,_symbol,_time_res_scnd ,_theme);
-    });
+   });
+
+<!--    $('#tfChart').change(function() {-->
+<!--        _time_res_scnd = $(this).children('option:selected').val();-->
+<!--        $("#chart_secondary").empty();-->
+<!--        renderChartSecondary(_asset,_symbol,_time_res_scnd ,_theme);-->
+<!--    });-->
 
  // Display token chart
 		$("#crytpoInfo").click(function(){

@@ -259,6 +259,7 @@ const chartOptions = {
     let end_point;
     let priceFormatted = '';
     _symbol = symbol;
+    let origRs = rs;
     // convert time scale for binance
 
     market == 'crypto' ? rs = _b_time_res[rs] : rs;
@@ -335,6 +336,7 @@ const chartOptions = {
         legend.appendChild(secondRow);
         //append time frame
         $("#chart_secondary").append(_time_frame);
+        $("#tfChart").val(origRs);
         $('#chart_secondary').css({'position': 'relative'});
         $('#tfChart').css({
             'position': 'absolute',
