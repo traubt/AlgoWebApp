@@ -13,7 +13,8 @@ var _time_frame = `<label for="tfChart" class="tf_secondary"></label>
 
 function _init_user_wallet_test(){
   _wallet[user] = [];
-  _token = {'asset': _coin,'free':_init_wallet_amount,'locked':0,'st_price':_init_wallet_amount};
+//  _token = {'asset': _coin,'free':_init_wallet_amount,'locked':0,'st_price':_init_wallet_amount};
+  _token = {'asset': _coin,'free':_user_wallet[0][4],'locked':0,'st_price':_user_wallet[3]};
   _wallet[user].push(_token);
   _base_coin_qty = _wallet[user][0].free
 }
@@ -68,9 +69,10 @@ function _transaction_order_demo(token, price, qty,mode){
                $("#order_content").html("Asset: "+token+"<br>Quantity: "+math.round(qty,8)+"<br>Bought at Price: "+math.round(start_price,8)+
               "<br>Sell at Price: "+math.round(price,8)+"<br>P&L: "+math.round((price/start_price)*100-100,2)+"%");
               update_stats_table();
-              // update algo record
+              // update db record
               prepare_algorun_db();
               update_algorun_db();
+              update_user_wallet(balance);
               _inPosition = false;
         }
         _trx_table.page('last').draw('page');
@@ -129,6 +131,7 @@ function run_bot(){
   try
   {
 //        dialog("Algo Engine","Starting Algo Engine for market: "+_asset ,BootstrapDialog.TYPE_INFO);
+        _algo_params["walletInitBalance"] = _user_wallet[0][4];
 		$.ajax({
 		                 type: 'POST',
                 contentType: 'application/json',
@@ -236,6 +239,7 @@ function get_user_info(){
 
   }
 }
+
 
 function get_query(sqlQuery){
   try

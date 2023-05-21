@@ -202,6 +202,13 @@ def register():
         user = User(username=form.username.data, email=form.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
+        conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
+        curr = conn.cursor()
+        sql = f"INSERT INTO user_wallet (username) VALUES ('{form.username.data}');"
+        curr.execute(sql)
+        conn.commit()
+        curr.close()
+        conn.close()
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
@@ -875,7 +882,7 @@ def get_algo_plans():
         plans[row[0]] = row
     return json.loads(json.dumps( plans ))
 
-@app.route("/get_user_info", methods=["GET","POST"])
+@app.route("/get_user_info", methods=["GET","POST"]) #todo: move this to get_query
 def get_user_info():
     conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
     user = current_user.username
@@ -888,25 +895,48 @@ def get_user_info():
 
 @app.route("/get_query", methods=["GET","POST"])
 def get_query():
-    today = datetime.utcnow().date()
-    query = request.args.get('query')
-    user = request.args.get('user')
-    match query:
-        case "Total_Duration":
-            sql = f"SELECT sum(duration) from user_algorun where username='{user}' and run_date = '{today}';"
-        case "Total_Transactions":
-            sql = f"SELECT sum(num_trx) from user_algorun where username='{user}' and run_date = '{today}';"
-    conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
-    cur = conn.cursor()
-    count = cur.execute(sql)
-    rows = cur.fetchall()
-    if not rows[0][0]:
-        ret = "0"
-    else:
-        ret = str(rows[0][0])
-    cur.close()
-    conn.close()
-    return ret
+    try:
+        today = datetime.utcnow().date()
+        now = datetime.utcnow()
+        formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
+        date_string = today.strftime('%Y-%m-%d')
+        today = datetime.strptime(date_string, '%Y-%m-%d').date()
+        query = request.args.get('query')
+        user = request.args.get('user')
+        amount = request.args.get('amount')
+        match query:
+            case "Total_Duration":
+                sql = f"SELECT sum(duration) from user_algorun where username='{user}' and run_date = '{today}';"
+            case "Total_Transactions":
+                sql = f"SELECT sum(num_trx) from user_algorun where username='{user}' and run_date = '{today}';"
+            case "User_Wallet":
+                sql = f"SELECT * from user_wallet where username='{user}';"
+            case "Update_Wallet":
+                sql = f"UPDATE user_wallet SET curr_wallet_amount = {round(float(amount),2)} , last_wallet_date = '{formatted_date}', gain_pct = curr_wallet_amount/init_wallet_amount*100-100 where username='{user}';"
+            case "Archive_Wallet":
+                sql = f"INSERT INTO user_wallet_history SELECT * from user_wallet where username='{user}';"
+            case "New_Wallet":
+                sql = f"update user_wallet set wallet_ind = wallet_ind +1, init_wallet_amount = {amount}, init_wallet_date = '{formatted_date}', curr_wallet_amount = {amount}, last_wallet_date ='{formatted_date}',gain_pct=0 where username='{user}';"
+        conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
+        cur = conn.cursor()
+        count = cur.execute(sql)
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+        if not rows[0][0]:
+            ret = "0"
+            return ret
+        elif len(rows[0]) == 1:
+            ret = str(rows[0][0])
+            return ret
+        elif len(rows[0]) > 1:
+            return jsonify( rows )
+        else:
+            return "Error"
+    except BaseException as e:
+            print(f"could not execute query: {sql}. Error: {e}")
+            return "Error"
+
 
 '''   ---------------------------    END MOVE of routes_tbd.py --------------------------------------'''
 

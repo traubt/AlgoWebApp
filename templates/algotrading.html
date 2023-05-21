@@ -633,8 +633,10 @@
     var _interval = 0; // holds the "websocket" interval of yfinance
     var _intervalSec = 0; // holds the "websocket" interval of secondary
     var _interval_highchart = 0;
+    var _interval_wallet = 0;
 	var _inPosition = false;
 	var _wallet = []; // user wallet
+	var _user_wallet = []; // replacing _wallet
 	var _init_wallet_amount; // initial wallet amount
 	var _token = {} // wallet content
 	var _coin = 'USDT' // default coin
@@ -679,7 +681,7 @@
     var _sell_rule = "";
     var _buy_rule_eval = ""; // rule for python
     var _sell_rule_eval = ""; // rule for python
-    var _algo_params;
+    var _algo_params = {};
     var _stop_loss_eval = "(g < "+(100 - $("#stop_loss").val())/100+")";
     var _strategy_method = "SYSTEM"; // "DIY" if built by
     var _algorun = {}; // object contains information to update the user_algorun table
@@ -808,7 +810,7 @@ function generateData() {
 
 // monitor wallet balance
 function monitor_wallet_chart() {
-     setInterval(() => {
+     _interval_wallet = setInterval(() => {
       var prev_amount;
       // update line series if in algo mode
       if(!_inPosition ){
@@ -818,7 +820,7 @@ function monitor_wallet_chart() {
                     value: _wallet[user][0].free,
                 });
             };
-            $("#balance").html("$"+_wallet[user][0].free);
+            $("#balance").html("$"+_init_wallet_amount);
             _wallet[user][0].free >= _init_wallet_amount ? $("#balance").css("color","#52e152"):$("#balance").css("color","#ff0000");
           }
      },2000);  };
@@ -872,19 +874,6 @@ async function is_market_open(){
             .catch((err) => console.log("Can’t access " + url + " response. Blocked by browser?" + err));
 }
 
-<!--function populate_strategy_condition(div_id){-->
-<!--        //enable condition selection-->
-<!--        $(div_id).prop("disabled", false);-->
-<!--        $(div_id).selectpicker('val', 'Condition:');-->
-<!--        $(div_id).empty();-->
-<!--        $(div_id).selectpicker('refresh');-->
-<!--            //populate condition for that indicator-->
-<!--        $.each(_tech_indicators[_indicator].condition[0], function(index, value) {-->
-<!--            $(div_id).append("<option>"+value+"</option>")-->
-<!--            $(div_id).selectpicker('refresh');-->
-<!--        });-->
-<!--}-->
-
 function populate_strategy_rh(div_id){
          //enable  selection
         $(div_id).prop("disabled", false);
@@ -912,10 +901,10 @@ function populate_strategy_rh(div_id){
 
 function init_algo_payload(strategy){
 	//default algo parameter
-	_algo_params = {
+	const obj = {
 	    user_name : user,
 	    ruleName:strategy,
-        walletInitBalance:$('#sel-options').val(),
+<!--        walletInitBalance:_wallet[user][0].free,-->
         interval:$("#strtegy_inteval").val(),
         candidate:$('#candidate_filter').val(),
         maxCandidate:$('#Total').val(),
@@ -928,7 +917,39 @@ function init_algo_payload(strategy){
         market:_asset,
         strategy:_strategy_method
     };
+    _algo_params = Object.assign( _algo_params , obj);  // add initial amount to the algo params
 }
+
+async function _refresh_wallet(amount){
+    let query = "Archive_Wallet";
+    let  url = _URL+'/get_query?query='+query+'&user='+user;
+    await fetch(url);
+    query = "New_Wallet";
+    url = _URL+'/get_query?query='+query+'&user='+user+'&amount='+amount;
+    await fetch(url);
+}
+
+async function _init_user_wallet(){
+    let query = "User_Wallet";
+    let  url = _URL+'/get_query?query='+query+'&user='+user;
+    _wallet[user] = [];
+    await fetch(url)
+   .then(response => response.json()).then(data => {
+                                    _user_wallet = data;
+                                    _init_wallet_amount = data[0][4];
+                                    $("#balance").html("$"+_init_wallet_amount);
+                                      _token = {'asset': _coin,'free':_user_wallet[0][4],'locked':0,'st_price':_user_wallet[0][4]};
+                                      _wallet[user].push(_token);
+                                      _base_coin_qty = _wallet[user][0].free
+                                    });
+};
+
+async function update_user_wallet(amount){
+    let query = "Update_Wallet";
+    let  url = _URL+'/get_query?query='+query+'&user='+user+'&amount='+amount;
+    await fetch(url);
+<!--   .then(response => response.json()).then(data => {_user_wallet = data});-->
+};
 
 function init_strategy(){
 	//populate strategy left hand side - attirube 1
@@ -994,14 +1015,11 @@ function load_strategy(template){
     catch (e){
             dialog("Upload Strategy","Could not load strategy <br>" + e,BootstrapDialog.TYPE_INFO);
     }
-
 }
 
 	//initialize
 	$(document).ready(function(){
-
-<!--	_symbol = $("#tickers").val();-->
-
+    _init_user_wallet();
     init_algo_payload("system");
     get_plans();
 
@@ -1032,7 +1050,8 @@ function load_strategy(template){
     renderHighChart('BTCUSDT',"benchmarkHC");
 
 	// initial wallet amount
-	_init_wallet_amount =  Number($("#sel-options").val());
+
+<!--	_init_wallet_amount =  Number($("#sel-options").val());-->
 
 	// initialize bot indicator
 	$('.fa-circle').css({ "color": "red","font-size":"35","font-weight": "bold"});
@@ -1241,7 +1260,7 @@ $("#send-chat").click(function(){
 
     // initialize user
     get_user_info();
-    _init_user_wallet_test();
+<!--    _init_user_wallet_test();-->
     monitor_wallet_chart();
 
     // hide alert
@@ -1519,14 +1538,19 @@ $(".input_number").on('change foucusout',function(){
 
 //reset wallet
         $("#resetWallet").click(function(){
-            if (!_inPosition){
-                _init_wallet_amount = Number($("#sel-options").val());
-                _init_user_wallet_test();
-                monitor_wallet_chart();
-                dialog("Reset Wallet","Wallet was reset successfully to "+$("#sel-options").find("option:selected").text(),BootstrapDialog.TYPE_INFO);
-            }else{
-                dialog("Reset Wallet","Can't reset wallet while in-market",BootstrapDialog.TYPE_INFO);
-            }
+            BootstrapDialog.confirm('Reset wallet will reset wallet gain/loss to zero. Are you sure ?', function(result){
+                if(result) {
+                    _init_wallet_amount = Number($("#sel-options").val());
+                    _wallet[user][0].free = _init_wallet_amount
+                        if(_interval_wallet > 0){
+                            clearInterval(_interval_wallet);
+                         }
+                    monitor_wallet_chart();
+                    _refresh_wallet(_init_wallet_amount);
+                    _init_user_wallet();
+                    dialog("Reset Wallet","Wallet was reset successfully to "+$("#sel-options").find("option:selected").text(),BootstrapDialog.TYPE_INFO);
+                }else{ return 0};
+		    });
 		});
 
 //enable whatsapp
@@ -1603,6 +1627,7 @@ $("#runAlgo").click(async function(){
                 dialog('AlgoRun Transaction Limit', 'You have used: '+_query_output+' transactions which is above the plan limit allocation of:'+plan_transactions_limit+' transactions per day.<br>Please consider upgrading your plan.' ,BootstrapDialog.TYPE_INFO);
                 return 0;
             }
+
 
             // reset  history stats, transactions, logs
             if (  _trx_table.data().count() > 0) {
