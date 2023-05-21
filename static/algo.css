@@ -106,6 +106,7 @@ body{
     justify-self: strech;
     align-self:strech;
     margin-top: -231px;
+    margin-left: 10px;
     height:300px;
 }
 .grid-chart_buy-sell_buttons{

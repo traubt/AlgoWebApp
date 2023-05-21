@@ -1,3 +1,47 @@
+function darkMode(chart){
+    let darkMode = {
+        width: $(chart).width() -10,
+        height: $(chart).height() -10,
+          layout: {
+        backgroundColor: '#253248',
+        textColor: 'rgba(255, 255, 255, 0.9)',
+      },
+      grid: {
+        vertLines: {
+          color: '#334158',
+        },
+        horzLines: {
+          color: '#334158',
+        },
+      },
+      crosshair: {
+        mode: LightweightCharts.CrosshairMode.Normal,
+      },
+      priceScale: {
+        borderColor: '#485c7b',
+      },
+      timeScale: {
+        borderColor: '#485c7b',
+                    timeVisible: true,
+            secondsVisible: false,
+      },
+    }
+return darkMode
+}
+
+const candleStickColors = {
+      upColor: '#4bffb5',
+      downColor: '#ff4976',
+      borderDownColor: '#ff4976',
+      borderUpColor: '#4bffb5',
+      wickDownColor: '#838ca1',
+      wickUpColor: '#838ca1',
+      priceFormat: {
+    minMove: 0.0000001,
+    precision: 7,
+		},
+    }
+
 const chartOptions = {
 	layout: {
 		textColor: 'red',
@@ -5,10 +49,13 @@ const chartOptions = {
 	},
 };
 
+
+
  renderChart = async (market, symbol,rs,theme) => {
     var end_point;
     var priceFormatted = '';
     _symbol = symbol;
+    let current_chart = ".grid-symbol-chart"
     // convert time scale for binance
 
     market == 'crypto' ? rs = _b_time_res[rs] : rs;
@@ -18,33 +65,7 @@ const chartOptions = {
         clearInterval(_interval);
      }
 
-    var chart = LightweightCharts.createChart(document.getElementById('chart'), {
-        width: $(".grid-symbol-chart").width() -10,
-        height: $(".grid-symbol-chart").height() -10,
-//        layout: {
-//            backgroundColor: '#000000',
-//            textColor: 'rgba(255, 255, 255, 0.9)',
-//        },
-//        grid: {
-//            vertLines: {
-//                color: 'rgba(197, 203, 206, 0.5)',
-//            },
-//            horzLines: {
-//                color: 'rgba(197, 203, 206, 0.5)',
-//            },
-//        },
-        crosshair: {
-            mode: LightweightCharts.CrosshairMode.Normal,
-        },
-        priceScale: {
-            borderColor: 'rgba(197, 203, 206, 0.8)',
-        },
-        timeScale: {
-            borderColor: 'rgba(197, 203, 206, 0.8)',
-            timeVisible: true,
-            secondsVisible: false,
-        },
-    }, chartOptions);
+    var chart = LightweightCharts.createChart(document.getElementById('chart'), darkMode(current_chart) , chartOptions);
 
     chart.applyOptions({
             rightPriceScale: {
@@ -88,7 +109,7 @@ const chartOptions = {
 
         const firstRow = document.createElement('div');
         firstRow.innerHTML = symbol  //+ ' O: '+_candlestick.open.toFixed(2) +' H: '+_candlestick.high.toFixed(2) +' L: '+_candlestick.low.toFixed(2) +' C: '+_candlestick.close.toFixed(2);
-        firstRow.style.color = 'black';
+        firstRow.style.color = 'white';
         legend.appendChild(firstRow);
 
         const secondRow = document.createElement('div');
@@ -112,18 +133,7 @@ const chartOptions = {
 
         chart.timeScale().fitContent();
 
-     _candleseries = chart.addCandlestickSeries({
-        upColor: '#00ff00',
-        downColor: '#ff0000',
-        borderDownColor: 'rgba(255, 144, 0, 1)',
-        borderUpColor: 'rgba(255, 144, 0, 1)',
-        wickDownColor: 'rgba(255, 144, 0, 1)',
-        wickUpColor: 'rgba(255, 144, 0, 1)',
-        priceFormat: {
-			minMove: 0.0000001,
-			precision: 7,
-		},
-    });
+     _candleseries = chart.addCandlestickSeries( candleStickColors );
 
 //    console.log("fetch symbol history");
 
@@ -135,7 +145,7 @@ const chartOptions = {
 //            console.log(response)
             _candleseries.setData(response);
               //SMA
-              _sma_series = chart.addLineSeries({ color: 'blue', lineWidth: 1 });
+              _sma_series = chart.addLineSeries({ color: '#08f9ee', lineWidth: 1 });
               const sma_data = response
                 .filter((d) => d.ma10)
                 .map((d) => ({ time: d.time, value: d.ma10 }));
@@ -161,11 +171,11 @@ const chartOptions = {
                     });
                       const vol_data = response
                         .filter((d) => d.volume)
-                        .map((d) => ({ time: d.time, value: d.volume,color: d.close > d.open ? '#00ff00' : '#ff0000'}));
+                        .map((d) => ({ time: d.time, value: d.volume,color: d.close > d.open ? '#4bffb5' : '#ff4976'}));
                       _volumeSeries.setData(vol_data);
                 //RSI
                    _rsi_series = chart.addLineSeries({
-                    color: 'purple',
+                    color: '#ccf102',
                     lineWidth: 1,
                     pane: 1,
                   });
@@ -213,7 +223,7 @@ const chartOptions = {
                                                 _volumeSeries.update({
                                                 time: _candlestick.time,
                                                 value : _candlestick.volume,
-                                                color: _candlestick.close > _candlestick.open ? '#00ff00' : '#ff0000'
+                                                color: _candlestick.close > _candlestick.open ? '#4bffb5' : '#ff4976'
                                                    })
                                                 _sma_series.update({
                                                 time: _candlestick.time,
@@ -227,7 +237,7 @@ const chartOptions = {
                                     }
                 // update legend
                                 firstRow.innerHTML = symbol + ' O: '+parseFloat(_candlestick.open) +' H: '+parseFloat(_candlestick.high) +' L: '+parseFloat(_candlestick.low) +' C: '+parseFloat(_candlestick.close)+'  ('+$("#tf").find("option:selected").text()+')';
-                                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+_candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ _candlestick.volume.toFixed(2)+'</span><span style="color:purple" >&emsp;RSI: '+ _candlestick.rsi.toFixed(2)+'</span></h6>'
+                                secondRow.innerHTML = '<h6><span style="color:#08f9ee">SMA(10): '+_candlestick.ma10.toFixed(2)+'</span><span style="color:white" >&emsp;Vol: '+ _candlestick.volume.toFixed(2)+'</span><span style="color:#ccf102" >&emsp;RSI: '+ _candlestick.rsi.toFixed(2)+'</span></h6>'
                                 //update SHARPE chart
                                _highChart_val_a  = parseFloat(_candlestick.sharpe);
 
@@ -249,7 +259,7 @@ const chartOptions = {
                                 }
                             })
 //                firstRow.innerHTML = symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5);
-//                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+_candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ _candlestick.volume.toFixed(2)+'</span><span style="color:purple" >&emsp;RSI: '+ _candlestick.rsi.toFixed(2)+'</span></h6>'
+//                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+_candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ _candlestick.volume.toFixed(2)+'</span><span style="color:#ccf102" >&emsp;RSI: '+ _candlestick.rsi.toFixed(2)+'</span></h6>'
                 }, 2000);
 };
 
@@ -261,6 +271,7 @@ const chartOptions = {
     _symbol = symbol;
     let origRs = rs;
     // convert time scale for binance
+    let current_chart = ".grid-symbol-chart-secondary"
 
     market == 'crypto' ? rs = _b_time_res[rs] : rs;
     // kill websocket
@@ -269,21 +280,7 @@ const chartOptions = {
         clearInterval(_intervalSec);
      }
 
-    var chartSec = LightweightCharts.createChart(document.getElementById('chart_secondary'), {
-        width: $(".grid-symbol-chart-secondary").width() -10,
-        height: $(".grid-symbol-chart-secondary").height() -10,
-        crosshair: {
-            mode: LightweightCharts.CrosshairMode.Normal,
-        },
-        priceScale: {
-            borderColor: 'rgba(197, 203, 206, 0.8)',
-        },
-        timeScale: {
-            borderColor: 'rgba(197, 203, 206, 0.8)',
-            timeVisible: true,
-            secondsVisible: false,
-        },
-    }, chartOptions);
+    var chartSec = LightweightCharts.createChart(document.getElementById('chart_secondary'), darkMode(current_chart), chartOptions);
 
     chartSec.applyOptions({
             rightPriceScale: {
@@ -344,7 +341,7 @@ const chartOptions = {
             'right': '65px',
             'z-index': '5'
         });
-        firstRow.style.color = 'black';
+        firstRow.style.color = 'white';
         firstRow.style.position = 'absolute';
         firstRow.style.top = '5px';
         firstRow.style.right = '200';
@@ -365,18 +362,7 @@ const chartOptions = {
 
         chartSec.timeScale().fitContent();
 
-     __candleseries = chartSec.addCandlestickSeries({
-        upColor: '#00ff00',
-        downColor: '#ff0000',
-        borderDownColor: 'rgba(255, 144, 0, 1)',
-        borderUpColor: 'rgba(255, 144, 0, 1)',
-        wickDownColor: 'rgba(255, 144, 0, 1)',
-        wickUpColor: 'rgba(255, 144, 0, 1)',
-        priceFormat: {
-			minMove: 0.0000001,
-			precision: 7,
-		},
-    });
+     __candleseries = chartSec.addCandlestickSeries( candleStickColors );
 
 //    console.log("fetch symbol history");
 
@@ -388,7 +374,7 @@ const chartOptions = {
 //            console.log(response)
             __candleseries.setData(response);
               //SMA
-              __sma_series = chartSec.addLineSeries({ color: 'blue', lineWidth: 1 });
+              __sma_series = chartSec.addLineSeries({ color: '#08f9ee', lineWidth: 1 });
               const sma_data = response
                 .filter((d) => d.ma10)
                 .map((d) => ({ time: d.time, value: d.ma10 }));
@@ -414,7 +400,7 @@ const chartOptions = {
                     });
                       const vol_data = response
                         .filter((d) => d.volume)
-                        .map((d) => ({ time: d.time, value: d.volume,color: d.close > d.open ? '#00ff00' : '#ff0000'}));
+                        .map((d) => ({ time: d.time, value: d.volume,color: d.close > d.open ? '#4bffb5' : '#ff4976'}));
                       __volumeSeries.setData(vol_data);
 
               })
@@ -457,7 +443,7 @@ const chartOptions = {
                                                 __volumeSeries.update({
                                                 time: candlestick.time,
                                                 value : candlestick.volume,
-                                                color: candlestick.close > candlestick.open ? '#00ff00' : '#ff0000'
+                                                color: candlestick.close > candlestick.open ? '#4bffb5' : '#ff4976'
                                                    })
                                                 __sma_series.update({
                                                 time: candlestick.time,
@@ -471,7 +457,7 @@ const chartOptions = {
 
                             })
 //                firstRow.innerHTML = symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5);
-//                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+_candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ _candlestick.volume.toFixed(2)+'</span><span style="color:purple" >&emsp;RSI: '+ _candlestick.rsi.toFixed(2)+'</span></h6>'
+//                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+_candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ _candlestick.volume.toFixed(2)+'</span><span style="color:#ccf102" >&emsp;RSI: '+ _candlestick.rsi.toFixed(2)+'</span></h6>'
                 }, 2000);
 };
 
