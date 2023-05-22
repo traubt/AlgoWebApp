@@ -584,20 +584,23 @@
         </button>
 </div>
 <!-- CHAT ROOM  -->
-<form id ="chatRoomForm" class="form-inline" style="margin-left:10px" >
-      <div class="form-group">
-        <label for="chat_room">Select Chat Room :</label>
-            <select class="form-control" id="chat_room" title="Chat Room">
-                <option value="General" selected>General</option>
-                <option value="myRegion">My Region</option>
-                <option value="crypto" >Crypto</option>
-                <option value="US">Us Stock Market</option>
-            </select>
-          <button id="joinCR" type="button" class="btn btn-primary" >Join Chat Room</button>
-        </div>
-</form>
+
 <div class="message-box">
-  <h2 id="crTitle"></h2>
+    <div id="crTitle" >
+        <form id ="chatRoomForm" class="form-inline" style="margin-left:10px" >
+              <div class="form-group">
+                <label for="chat_room">Chat Room :</label>
+                    <select class="form-control" id="chat_room" title="Chat Room">
+                        <option value="General" selected>General</option>
+                        <option value="myRegion">My Region</option>
+                        <option value="crypto" >Crypto</option>
+                        <option value="US">Us Stock Market</option>
+                    </select>
+                  <button id="joinCR" type="button" class="btn btn-success" >Join</button>
+                  <button id="leaveCR" type="button" class="btn btn-danger" disabled >Leave</button>
+                </div>
+        </form>
+    </div>
 <!--    <h2>Chat Room: {{code}}</h2>-->
   <div class="messages" id="messages"></div>
   <div class="inputs">
@@ -815,11 +818,13 @@ function monitor_wallet_chart() {
       var prev_amount;
       // update line series if in algo mode
       if(!_inPosition ){
-            if (_wallet[user][0].free != 0){ //fix glitch
-                _lineSeries.update({
-                    time: Math.round((Date.now()/1000),0),
-                    value: _wallet[user][0].free,
-                });
+            if (_wallet[user][0].free){
+                if (_wallet[user][0].free != 0){ //fix glitch
+                    _lineSeries.update({
+                        time: Math.round((Date.now()/1000),0),
+                        value: _wallet[user][0].free,
+                    });
+                };
             };
             $("#balance").html("$"+_init_wallet_amount);
             _wallet[user][0].free >= _init_wallet_amount ? $("#balance").css("color","#52e152"):$("#balance").css("color","#ff0000");
@@ -1070,19 +1075,23 @@ function load_strategy(template){
 
 	// initialize wallet balance chart
 	_lwchart = LightweightCharts.createChart(document.getElementById('wallet_container'), {
-	        layout: {
-            background: { color: 'red' },
-            textColor: 'green',
+          layout: {
+        backgroundColor: '#eee',
+<!--        textColor: 'rgba(255, 255, 255, 0.9)',-->
+        textColor: 'green',
+              },
+            grid: {
+        vertLines: {
+          color: '#334158',
         },
-<!--        grid: {-->
-<!--            vertLines: { color: '#444' },-->
-<!--            horzLines: { color: '#444' },-->
-<!--        },-->
+        horzLines: {
+          color: '#334158',
+        },
+      },
             timeScale: {
             borderColor: 'rgba(197, 203, 206, 0.8)',
             timeVisible: true,
             secondsVisible: true,
-            lineType: 'Curved',
         },
         priceFormat: {
             type: 'price',
@@ -1501,7 +1510,7 @@ $(".input_number").on('change foucusout',function(){
                 // update transaction table
                 $('#orderAlert').show().delay(8000).fadeOut('fast');
                 }else{
-                    dialog("In-Market",_message.s + " is currently processed by Algo engine.",BootstrapDialog.TYPE_INFO);
+                    dialog("In-Market",token + " is currently processed by Algo engine.",BootstrapDialog.TYPE_INFO);
             }
 		});
 
@@ -1510,7 +1519,9 @@ $(".input_number").on('change foucusout',function(){
             if( _inPosition ){
                 var token = _symbol;
                 _manual_sell = true;
-                $("#stopAlgo").click();
+                if (_is_algo_mode){
+                    $("#stopAlgo").click();
+                };
                 _is_algo_mode = 0;
                 price =  _candlestick.close ;
                 var qty = _wallet[user].find(x => x.asset === token).free;
@@ -1526,7 +1537,7 @@ $(".input_number").on('change foucusout',function(){
                     };
                     _buysell_array.push(_buysell_element);
                     _lineSeries.setMarkers(_buysell_array);
-                if(!_is_algo_mode){
+                if(_is_algo_mode !== 0){
                  _buysell_element = { time: Math.round((Date.now()/1000),0),
                         position: 'belowBar',
                         color: 'black',
@@ -1702,10 +1713,10 @@ $("#runAlgo").click(async function(){
 
 // stop crypto bot
     $("#stopAlgo").click(function(){
-            if (_is_algo_mode != 1){
-                alert("Algo engine is not running.");
-                return 0;
-            }
+<!--            if (_is_algo_mode != 1 ){-->
+<!--                alert("Algo engine is not running.");-->
+<!--                return 0;-->
+<!--            }-->
             // Stop websocket
                 if(_interval > 0){
         //        console.log("closing interval "+_interval);
@@ -1720,7 +1731,7 @@ $("#runAlgo").click(async function(){
                                     position: 'belowBar',
                                     color: 'black',
                                     shape: 'arrowUp',
-                                    text: 'Stop-Algo requested',
+                                    text: 'Stop-BOT request',
                                 };
                 _buysell_array.push(_buysell_element);
                 _lineSeries.setMarkers(_buysell_array);
@@ -1868,11 +1879,24 @@ function strategy_validation(){
 
 // chat room
 $("#joinCR").click(function(){
+   $("#messages").empty()
     let room = $("#chat_room").val();
 <!--    fetch(_URL+'/chat_room?room='+room+'&name='+name)-->
 <!--    .then(response => console.log("Chat room: "+room+ " was created : "))-->
         socket.emit('join', {room: room, username: user});
-        $("#crTitle").text('Chat Room: ' + room);
+        $("#crTitle p").text('Room: ' + room);
+        $("#leaveCR").prop('disabled', false);
+        $("#joinCR").prop('disabled', true);
+        $("#chat_room").prop('disabled', true);
+    })
+
+$("#leaveCR").click(function(){
+    let room = $("#chat_room").val();
+    socket.emit('leave', {'room': room, 'username': user });
+    $("#leaveCR").prop('disabled', true);
+    $("#joinCR").prop('disabled', false);
+    $("#chat_room").prop('disabled', false);
+    $("#crTitle p").text('Room: ');
     })
 
 }); // end document ready

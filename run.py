@@ -656,8 +656,16 @@ def on_join(data):
 def on_leave(data):
     username = data['username']
     room = data['room']
-    leave_room(room)
-    send(username + ' has left the room.', to=room)
+
+    # send(username + ' has left the room.', to=room)
+    if room == username:
+        send({"name": username, "message": "User is logged out","room":username}, to=room)
+        print(f"{username} logged out: {room}")
+    else:
+        send({"name": username, "message": "has left the room"}, to=room)
+        leave_room(room)
+        rooms[room]["members"] -= 1
+        print(f"{username} logged out: {room}")
 
 @app.route("/chat_room", methods=["POST", "GET"])
 def chat_room():
