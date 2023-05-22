@@ -39,9 +39,9 @@ body{
   /*background-color: rgba(255, 255, 255, 0.8);*/
   text-align: start;
   padding: 1px 0;
-  font-size: 14px;
-  /*border: solid 0.5px lightblue;
-  border-radius:5px; */
+  font-size: 12px;
+  border: solid 0.5px lightblue;
+  border-radius:5px;
 }
 
 /* layout */
@@ -62,7 +62,7 @@ body{
     grid-area : 4/1/5/6;
     justify-self: start;
     align-self:start;
-    margin-top: -42px;
+    margin-top: -63px;
 
 }
 .grid-chart-info{
@@ -71,10 +71,13 @@ body{
     align-self:end;
 }
 .grid-wallet_progress{
-    grid-area : 4/10/5/14;
+    /*grid-area : 4/10/5/14;*/
+    display:flex;
+    grid-column : 8/17;
     justify-self: center;
     align-self:end;
     margin-top: -30px;
+        padding: 6px 70px;
 }
 .grid-sharpe-title{
     grid-column : 16/20;
@@ -86,8 +89,8 @@ body{
     justify-self: strech;
     align-self:strech;
     margin-top: -50px;
-    height:350px;
-    margin-top: -83px;
+    height:300px;
+    margin-top: -38px;
 }
 .grid-wallet-chart{
     grid-column : 8/17;
@@ -163,7 +166,7 @@ body{
 }
 
 #progress i {
-  font-size: 20px;
+  font-size: 13px;
 }
 
 #progress{
@@ -221,7 +224,7 @@ h6{
 
 #sharpe_title{
     justify-content: center;
-    font-size: 17px;
+    font-size: 13px;
     font-weight: bold;
     display: flex;
  }

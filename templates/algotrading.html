@@ -145,9 +145,9 @@
                                   <label for="sel-options" class="fles-item">Wallet Initial Amount:</label>
                                   <select id="sel-options" class="flex-item">
                                                                     <option value=100>$100</option>
-                                                                    <option value=1000 >$1,000</option>
+                                                                    <option value=1000 selected>$1,000</option>
                                                                     <option value=10000>$10,000</option>
-                                                                    <option value=100000 selected>$100,000</option>
+                                                                    <option value=100000 >$100,000</option>
                                   </select>
                                   <button id="resetWallet" type="button" class="btn btn-primary flex-item">Reset Wallet</button>
                             </div>
@@ -738,7 +738,7 @@ $(function () {
     const content = `
     <div class="text">
         <span `+ style+` >
-            <strong>${name}</strong>: ${msg}
+            <strong>[${name}]</strong>: ${msg}
         </span>
         <span class="muted">
             ${new Date().toLocaleString()}
@@ -807,6 +807,7 @@ function generateData() {
 	}
 	return res;
 }
+
 
 // monitor wallet balance
 function monitor_wallet_chart() {
@@ -1069,6 +1070,14 @@ function load_strategy(template){
 
 	// initialize wallet balance chart
 	_lwchart = LightweightCharts.createChart(document.getElementById('wallet_container'), {
+	        layout: {
+            background: { color: 'red' },
+            textColor: 'green',
+        },
+<!--        grid: {-->
+<!--            vertLines: { color: '#444' },-->
+<!--            horzLines: { color: '#444' },-->
+<!--        },-->
             timeScale: {
             borderColor: 'rgba(197, 203, 206, 0.8)',
             timeVisible: true,
@@ -1538,19 +1547,26 @@ $(".input_number").on('change foucusout',function(){
 
 //reset wallet
         $("#resetWallet").click(function(){
-            BootstrapDialog.confirm('Reset wallet will reset wallet gain/loss to zero. Are you sure ?', function(result){
-                if(result) {
-                    _init_wallet_amount = Number($("#sel-options").val());
-                    _wallet[user][0].free = _init_wallet_amount
-                        if(_interval_wallet > 0){
-                            clearInterval(_interval_wallet);
-                         }
-                    monitor_wallet_chart();
-                    _refresh_wallet(_init_wallet_amount);
-                    _init_user_wallet();
-                    dialog("Reset Wallet","Wallet was reset successfully to "+$("#sel-options").find("option:selected").text(),BootstrapDialog.TYPE_INFO);
-                }else{ return 0};
-		    });
+                 BootstrapDialog.confirm("Reset Wallet will reset the wallet's gain/loss to zero. Are you sure ?", function(result){
+                    if(result) {
+                            _init_wallet_amount = Number($("#sel-options").val());
+                            _wallet[user][0].free = _init_wallet_amount
+                                if(_interval_wallet > 0){
+                                    clearInterval(_interval_wallet);
+                                 }
+                                _lineSeries.update({
+                                    time: Math.round((Date.now()/1000),0),
+                                    value: _wallet[user][0].free,
+                                });
+                            $("#balance").text("$"+_init_wallet_amount);
+                            monitor_wallet_chart();
+                            //db update:
+                            _refresh_wallet(_init_wallet_amount);
+                            dialog("Reset Wallet","Wallet was reset successfully to "+$("#sel-options").find("option:selected").text(),BootstrapDialog.TYPE_INFO);
+                    }else{
+                        return 0;
+                    }
+                })
 		});
 
 //enable whatsapp

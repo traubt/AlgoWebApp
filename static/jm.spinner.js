@@ -57,3 +57,24 @@
 
 
 }(jQuery));
+
+        $("#resetWallet").click(function(){
+//            BootstrapDialog.confirm('Reset Wallet will reset the wallet's gain/loss to zero. Are you sure ?', function(result){
+//                if(result) {
+                    _init_wallet_amount = Number($("#sel-options").val());
+                    _wallet[user][0].free = _init_wallet_amount
+                        if(_interval_wallet > 0){
+                            clearInterval(_interval_wallet);
+                         }
+                        _lineSeries.update({
+                            time: Math.round((Date.now()/1000),0),
+                            value: _wallet[user][0].free,
+                        });
+                    $("#balance").text("$"+_init_wallet_amount);
+                    monitor_wallet_chart();
+                    //db update:
+                    _refresh_wallet(_init_wallet_amount);
+                    dialog("Reset Wallet","Wallet was reset successfully to "+$("#sel-options").find("option:selected").text(),BootstrapDialog.TYPE_INFO);
+//                }else{ return 0};
+//		    });
+		});
