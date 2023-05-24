@@ -971,7 +971,7 @@ function populate_strategy_rh(div_id){
         $(div_id).selectpicker('refresh');
         //populate righthand
         try{
-          $.each(_tech_indicators[_indicator].condition[1], function(index, value) {
+          $.each(eval(_tech_indicators[_indicator].condition)[1], function(index, value) {
             //Check the type of condition
             if(_tech_indicators[_indicator].condition_tp == "I"){
                 $(div_id).append("<option value="+value+">"+_tech_indicators[value].name+"</option>")
@@ -983,7 +983,7 @@ function populate_strategy_rh(div_id){
             })
         }
         catch(e){
-            dialog("Error","Error populated right hand condition "+e,BootstrapDialog.TYPE_INFO);
+            dialog("Error","Error in populating right hand condition "+e,BootstrapDialog.TYPE_INFO);
         }
 }
 
@@ -1118,9 +1118,10 @@ async function _init_indicators(){
 <!--                console.log(el);-->
                 let indicator = {};
                 indicator['name'] = el[1];
-                indicator['condition_top'] = el[2];
-                indicator['tech'] = el[3];
-                indicator['eval'] = el[4];
+                indicator['condition_tp'] = el[2];
+                indicator['condition'] = el[3];
+                indicator['tech'] = el[4];
+                indicator['eval'] = el[5];
                 _tech_indicators[el[0]] = indicator;
               //  console.log(_tech_indicators);
             });

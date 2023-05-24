@@ -954,6 +954,8 @@ def get_query():
                 sql = f"INSERT INTO user_wallet_history SELECT * from user_wallet where username='{user}';"
             case "New_Wallet":
                 sql = f"update user_wallet set wallet_ind = wallet_ind +1, init_wallet_amount = {amount}, init_wallet_date = '{formatted_date}', curr_wallet_amount = {amount}, last_wallet_date ='{formatted_date}',gain_pct=0re where username='{user}';"
+            case "Indicators":
+                sql = f"select * from indicators order by indicator;"
         conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
         cur = conn.cursor()
         count = cur.execute(sql)
