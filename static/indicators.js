@@ -41,7 +41,7 @@ function add_condition(and_or,BuySell){
 }
 
 
-var _tech_indicators = {
+var _tech_indicators_old = {
 'MACD':{
         name:'MACD',
         condition_tp:'V',

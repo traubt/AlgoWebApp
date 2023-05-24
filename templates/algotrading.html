@@ -21,6 +21,8 @@
         <script type="text/javascript" src="../static/HighChart.js" defer></script>
         <script type="text/javascript" src="../static/tv.js" defer></script>
         <script type="text/javascript" src="../static/indicators.js" defer></script>
+        <script type="text/javascript" src="../static/validate.js" defer></script>
+
 
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
@@ -56,32 +58,51 @@
 
     </head>
 
-<body data-spy="scroll" data-target=".nav" data-offset="30">
+<body data-spy="scroll" data-target=".grid-navbar" data-offset="30">
 
 <!--Define grid items-->
 <div class="grid-container">
         <div class="grid-navbar">
-            <nav class="navbar navbar-default navbar-static-top ">
+            <nav class="navbar navbar-default">
                 <div class="container">
-                    <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#algoParams" aria-expanded="false" aria-controls="collapseExample">
-                      Parameters
-                    </button>
-                    <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#algoStrategy" aria-expanded="false" aria-controls="collapseExample" >
-                      Strategy
-                    </button>
-                    <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
-                      Backtest
-                    </button>
-                    <button class="btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
-                      Alerts
-                    </button>
-                    <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
-                      API's
-                    </button>
-                    <button class="btn btn btn-info navbar-btn"  id="logout"  type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample">LOGOUT</button>
-                    <label for="url" hidden="true">URL:</label><input type="text" id="url" name="username" value="{{url}}" hidden="true">
+                    <div class="left_nav">
+                        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#algoParams" aria-expanded="false" aria-controls="collapseExample">
+                          Parameters
+                        </button>
+                        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#algoStrategy" aria-expanded="false" aria-controls="collapseExample" >
+                          Strategy
+                        </button>
+                        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
+                          Backtest
+                        </button>
+                        <button class="btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
+                          Alerts
+                        </button>
+                        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
+                          API's
+                        </button>
+<!--                        <button class="btn btn btn-info navbar-btn"  id="logout"  type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample">LOGOUT</button>-->
+                        <label for="url" hidden="true">URL:</label><input type="text" id="url" name="username" value="{{url}}" hidden="true">
+                    <!-- Button trigger modal -->
+                    </div>
+<!--                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"> Contact Us</button>-->
+
                 </div>
             </nav>
+                                <div class="right_nav">
+                        <button id="openChatRoom" type="button" class="btn btn-primary" data-toggle="tooltip" title="Enter Chatroom" data-placement="bottom">
+                            <i style='font-size:24px' class="fas fa-comments" ></i>
+                        </button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" >
+                            <i style='font-size:24px' class="fas fa-envelope" data-toggle="tooltip" title="Send us email" data-placement="bottom"></i>
+                        </button>
+                        <button type="button" class="btn btn-primary" data-toggle="tooltip" title="My Account" data-placement="bottom">
+                            <i style='font-size:24px' class='fas fa-user-cog' ></i>
+                        </button>
+                        <button type="button" id="logout"  class="btn btn-primary" data-toggle="tooltip" title="Logout" data-placement="bottom">
+                            <i style='font-size:24px' class="fas fa-sign-out-alt" ></i>
+                        </button>
+                    </div>
         </div>
         <div class="grid-collapse-params">
             <div class="collapse" id="algoParams">
@@ -216,13 +237,13 @@
                                 <option value="W">1week</option>
                             </select>
                         </div>
-                            <div class="flex-row">
-                                    <label for="color" class="flex-item">Color Theme:</label>
-                                    <select class="flex-item" id="color">
-                                        <option value="light" selected>light</option>
-                                        <option value="dark">dark</option>
-                                    </select>
-                            </div>
+<!--                            <div class="flex-row">-->
+<!--                                    <label for="color" class="flex-item">Color Theme:</label>-->
+<!--                                    <select class="flex-item" id="color">-->
+<!--                                        <option value="light" selected>light</option>-->
+<!--                                        <option value="dark">dark</option>-->
+<!--                                    </select>-->
+<!--                            </div>-->
                       </div>
                      </form>
               </div>
@@ -585,7 +606,7 @@
 </div>
 <!-- CHAT ROOM  -->
 
-<div class="message-box">
+<div class="message-box" style="visibility: hidden">
     <div id="crTitle" >
         <form id ="chatRoomForm" class="form-inline" style="margin-left:10px" >
               <div class="form-group">
@@ -598,8 +619,10 @@
                     </select>
                   <button id="joinCR" type="button" class="btn btn-success" >Join</button>
                   <button id="leaveCR" type="button" class="btn btn-danger" disabled >Leave</button>
+
                 </div>
         </form>
+        <i  style='font-size:17px' class="fa fa-window-close" ></i>
     </div>
 <!--    <h2>Chat Room: {{code}}</h2>-->
   <div class="messages" id="messages"></div>
@@ -616,6 +639,67 @@
     </button>
   </div>
 </div>
+
+
+
+<!-- Modal -->
+<form action="{{ url_for('submit') }}" method="post" role="form" class="php-email-form">
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Email to admin</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="row mt-5 justify-content-center">
+          <div class="col-lg-10">
+
+              <div class="row">
+                  <input type="text" name="user" class="form-control" id="emailUser"  value="{{current_user.username}}" style="display: none;">
+                  <input type="text" name="city" class="form-control" id="emailCity"  value="{{current_user.city}}" style="display: none;">
+                  <input type="text" name="country" class="form-control" id="emailCountry"  value="{{current_user.country}}" style="display: none;">
+                  <input type="text" name="loc" class="form-control" id="emailLoc"  value="{{current_user.loc}}" style="display: none;">
+                  <input type="text" name="ip" class="form-control" id="emailIP"  value="{{current_user.ip}}" style="display: none;">
+                  <input type="text" name="region" class="form-control" id="emailRegion"  value="{{current_user.region}}" style="display: none;">
+                  <input type="text" name="in_app" class="form-control" id="emailInApp"  value="Y" style="display: none;">
+                  <!--                  <input type="text" name="name" class="form-control" id="name"  hidden="true">-->
+<!--                  <input type="text" name="name" class="form-control" id="name"  hidden="true">-->
+<!--                  <input type="text" name="name" class="form-control" id="name"  hidden="true">-->
+<!--                  <input type="text" name="name" class="form-control" id="name"  hidden="true">-->
+                <div class="col-md-6 form-group">
+                  <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required>
+                </div>
+                <div class="col-md-6 form-group mt-3 mt-md-0">
+                  <input type="email" class="form-control" name="email" id="email" value={{current_user.email}} >
+                </div>
+              </div>
+              <div class="form-group mt-3">
+                <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" required>
+              </div>
+              <div class="form-group mt-3">
+                <textarea class="form-control" name="message" rows="5" placeholder="Message" required></textarea>
+              </div>
+              <div class="my-3">
+                <div class="error-message"></div>
+                <div  class="sent-message" hidden="true">Your message has been sent. Thank you!</div>
+              </div>
+
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id='sendEmail' type="submit" class="btn btn-primary">Send Message</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
 
 <script>
 
@@ -676,6 +760,7 @@
     var _manual_sell = true; // interupts algo buy user selling manual
     var _condition_no = 1;
     var _condition_div;
+    var _tech_indicators = {};
     var _indicators = []; // list of indicators required by the algo engine
     var _indicators_info = {}// dictionary of indicators included in the engine and their information
     var _condition;
@@ -698,8 +783,6 @@
     var fsize = ['initial','large','larger']
     var fsz =  fsize[Math.floor(Math.random()*fsize.length)];
     var style = "style = 'color:"+clr+";font-size:"+fsz+";font-weight:"+wgt+"; font-family: "+fsz+";'"
-
-
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
@@ -1023,8 +1106,34 @@ function load_strategy(template){
     }
 }
 
+async function _init_indicators(){
+    try{
+
+    let query = "Indicators";
+    let  url = _URL+'/get_query?query='+query;
+    await fetch(url)
+          .then(data => data.json())
+          .then(arr => {
+            arr.forEach(function(el){
+<!--                console.log(el);-->
+                let indicator = {};
+                indicator['name'] = el[1];
+                indicator['condition_top'] = el[2];
+                indicator['tech'] = el[3];
+                indicator['eval'] = el[4];
+                _tech_indicators[el[0]] = indicator;
+              //  console.log(_tech_indicators);
+            });
+          });
+    }
+    catch(e){
+        dialog("Error","Error initializing indicators "+e,BootstrapDialog.TYPE_INFO);
+    }
+}
+
 	//initialize
 	$(document).ready(function(){
+	_init_indicators();
     _init_user_wallet();
     init_algo_payload("system");
     get_plans();
@@ -1153,7 +1262,7 @@ async function fetch_api(url,index,total,symbol){
 
             // socket RECEIVE handler
             socket.on('my_response', function(msg) {
-                console.log("Connection message from the server:",msg.data,msg.count);
+                //console.log("Connection message from the server:",msg.data,msg.count);
                 if(!_manual_sell){
                         $('#log').append('<br>' + $('<div/>').text('#' + msg.count +': ' + msg.data).html());
                 };
@@ -1227,7 +1336,7 @@ async function fetch_api(url,index,total,symbol){
                         position: 'belowBar',
                         color: 'black',
                         shape: 'arrowUp',
-                        text: 'Algo-Engine is idle',
+                        text: 'BOT is idle',
                     };
                     _buysell_array.push(_buysell_element);
                     _lineSeries.setMarkers(_buysell_array);
@@ -1242,7 +1351,7 @@ async function fetch_api(url,index,total,symbol){
 
             // URL fetch instruction from flask
             socket.on(user, function(msg) {
-                console.log("Call "+msg.index+"/"+msg.total+"  API : "+msg.data);
+                //console.log("Call "+msg.index+"/"+msg.total+"  API : "+msg.data);
                 let progress = Number(Number(msg.index)/Number(msg.total)*100);
                 let s_progress = progress.toString()+"%";
                 // avoid progress bar flickering for single download
@@ -1260,10 +1369,10 @@ async function fetch_api(url,index,total,symbol){
 
   socket.on("message", (data) => {
     if (data.room != user) {
-    console.log("created room for:",data.room);
+    //console.log("created room for:",data.room);
     createMessage(data.name, data.message);
     }else{
-    console.log("created private socket for:",data.room);
+    //console.log("created private socket for:",data.room);
     }
   });
 
@@ -1908,6 +2017,22 @@ $("#message").keydown(function (event) {
      $('#send-chat').click();
  }
 });
+
+$(".fa-window-close").click(function(){
+    if ($('#leaveCR').prop('disabled') == true) {
+        $(".message-box").css("visibility","hidden");
+        $("#openChatRoom").prop('disabled', false);  
+    }else{
+        $('#leaveCR').trigger('click');
+        $(".message-box").css("visibility","hidden");  
+        $("#openChatRoom").prop('disabled', false);
+    }
+    });
+
+$("#openChatRoom").click(function(){
+        $(this).prop('disabled', true)
+        $(".message-box").css("visibility","visible");
+    });
 
 
 </script>

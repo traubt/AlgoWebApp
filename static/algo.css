@@ -46,7 +46,9 @@ body{
 
 /* layout */
 .grid-navbar{
-   grid-column : 1/-1
+   grid-column : 1/-1;
+   display:flex;
+   justify-content: space-between;
 }
 
 .grid-collapse-params{
@@ -239,6 +241,7 @@ h6{
   margin-top: 5px;
   margin-bottom: 5px;
 }
+
 .navbar-btn {
     float: left;
 }
@@ -543,12 +546,18 @@ input[type=number] {
   border-width: 1px;
   border-style: solid;
   border-radius: 10px;
-  background-color: #dff3ce;
-  height: 80vh;
+  background-color: #ebd8e1;
+  height: 60vh;
   display: flex;
   flex-direction: column;
-  width: 65vw;
+  width: 500px;
   align-items: stretch;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  margin-top:70px;
+  z-index:100;
+  opacity:0.85;
 }
 
 .messages {
@@ -598,6 +607,10 @@ h2 {
 #crTitle{
     display:flex;
     justify-content: space-between;
+}
+
+.fa-window-close{
+    padding:3px;
 }
 
 
