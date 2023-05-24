@@ -901,6 +901,35 @@ def get_user_info():
     conn.close()
     return json.dumps( rows )
 
+@app.route("/submit", methods=["GET","POST"])
+def submit():
+    try:
+        inApp = request.form['in_app']
+        name = request.form['name']
+        email = request.form['email']
+        subject = request.form['subject']
+        message = request.form['message']
+        if inApp == 'Y':
+            user = request.form['user']
+            city = request.form['city']
+            country = request.form['country']
+            loc = request.form['loc']
+            ip = request.form['ip']
+            region = request.form['region']
+            sql = f"INSERT INTO email_requests (info_email_add,info_ip_add,info_city,info_country,info_region,info_loc,input_email_add,input_name,input_subject,input_message,in_app)" \
+                  f"VAlUES ('{email}','{ip}','{city}','{country}','{region}','{loc}','{email}','{name}','{subject}','{message}','{inApp}');"
+        else:
+            sql = f"INSERT INTO email_requests (input_email_add,input_name,input_subject,input_message,in_app)" \
+                  f"VAlUES ('{email}','{name}','{subject}','{message}','{inApp}');"
+        cur = conn.cursor()
+        count = cur.execute(sql)
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+    except BaseException as e:
+            print(f"could not execute query: {sql}. Error: {e}")
+            return "Error"
+    return "OK"
 @app.route("/get_query", methods=["GET","POST"])
 def get_query():
     try:
