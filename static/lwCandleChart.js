@@ -255,6 +255,8 @@ const chartOptions = {
                                              });
                                        };
                                        $("#balance").html("$"+amount);
+                                       $("#today_gain").html((amount/(_user_wallet[0][4])*100-100).toFixed(2)+"%");
+                                       $("#total_gain").html((amount/(_user_wallet[0][2])*100-100).toFixed(2)+"%");
                                        amount > _init_wallet_amount ? $("#balance").css("color","#52e152"):$("#balance").css("color","#ff0000");
                                 }
                             })
@@ -452,7 +454,7 @@ const chartOptions = {
 //                                            console.log(cur_time, new Date(cur_time) +'  '+symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5)+' v: '+_candlestick.volume );
                                     }
                 // update legend
-                                firstRow.innerHTML = symbol + ' O: '+parseFloat(_candlestick.open) +' H: '+parseFloat(_candlestick.high) +' L: '+parseFloat(_candlestick.low) +' C: '+parseFloat(_candlestick.close);
+                                firstRow.innerHTML = symbol + ' O: '+parseFloat(candlestick.open) +' H: '+parseFloat(candlestick.high) +' L: '+parseFloat(candlestick.low) +' C: '+parseFloat(candlestick.close);
 //                                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ candlestick.volume.toFixed(2)+'</span></h6>'
 
                             })

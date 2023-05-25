@@ -549,10 +549,30 @@
             </div>
         </div>
         <div class="grid-balance">
-            <div class="balance-div" style="display:flex;">
-                <label for="balance" style="margin-right:5px;font-size:23px;">Balance: </label>
-                <div id="balance" ></div>
+            <div class="balance">
+                  <label>Wallet Initial</label>
+                  <div id="init_amount" class="amount">$1000</div>
             </div>
+            <div class="balance">
+                  <label>Today's Initial</label>
+                  <div id="today_init"  class="amount">$1025</div>
+            </div>
+            <div class="balance">
+                  <label>Today's gain</label>
+                  <div id="today_gain" class="amount">0.5%</div>
+            </div>
+            <div class="balance">
+                  <label>Total Gain</label>
+                  <div id="total_gain" class="amount">25.5%</div>
+            </div>
+            <div class="balance">
+                <label >Balance: </label>
+                <div id="balance" class="amount"></div>
+            </div>
+<!--            <div class="balance-div" style="display:flex;">-->
+<!--                <label for="balance" style="margin-right:5px;font-size:23px;">Balance: </label>-->
+<!--                <div id="balance" ></div>-->
+<!--            </div>-->
         </div>
         <div class="grid-transactions">
             <table id="trxTbl" class="display" style="width:100%">
@@ -605,7 +625,6 @@
         </button>
 </div>
 <!-- CHAT ROOM  -->
-
 <div class="message-box" style="visibility: hidden">
     <div id="crTitle" >
         <form id ="chatRoomForm" class="form-inline" style="margin-left:10px" >
@@ -639,9 +658,6 @@
     </button>
   </div>
 </div>
-
-
-
 <!-- Modal -->
 <form action="{{ url_for('submit') }}" method="post" role="form" class="php-email-form">
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -861,7 +877,7 @@ function add_to_log(msg){
     if (!_is_algo_mode){
         _log_no = parseInt(get_last_log_no()) + 1;
         $('#log').append('<br>' + $('<div/>').text('#' + _log_no +': --Client-- ' + msg).html());
-        $('#log').scrollTop($('#log').prop("scrollHeight"));
+<!--        $('#log').scrollTop($('#log').prop("scrollHeight"));-->
     }
 }
 
@@ -909,8 +925,8 @@ function monitor_wallet_chart() {
                     });
                 };
             };
-            $("#balance").html("$"+_init_wallet_amount);
-            _wallet[user][0].free >= _init_wallet_amount ? $("#balance").css("color","#52e152"):$("#balance").css("color","#ff0000");
+<!--            $("#balance").html("$"+_init_wallet_amount);-->
+<!--            _wallet[user][0].free >= _init_wallet_amount ? $("#balance").css("color","#52e152"):$("#balance").css("color","#ff0000");-->
           }
      },2000);  };
 
@@ -1026,11 +1042,24 @@ async function _init_user_wallet(){
    .then(response => response.json()).then(data => {
                                     _user_wallet = data;
                                     _init_wallet_amount = data[0][4];
+                                    $("#init_amount").html("$"+data[0][2]);
+                                    $("#today_init").html("$"+_init_wallet_amount);
+                                    $("#today_gain").html("0%");
+                                    $("#total_gain").html((data[0][6]).toFixed(2)+"%");
                                     $("#balance").html("$"+_init_wallet_amount);
-                                      _token = {'asset': _coin,'free':_user_wallet[0][4],'locked':0,'st_price':_user_wallet[0][4]};
-                                      _wallet[user].push(_token);
-                                      _base_coin_qty = _wallet[user][0].free
+                                    _token = {'asset': _coin,'free':_user_wallet[0][4],'locked':0,'st_price':_user_wallet[0][4]};
+                                    _wallet[user].push(_token);
+                                    _base_coin_qty = _wallet[user][0].free
+                                    // reset wallet chart
+                                    if(_interval_wallet > 0){
+                                        clearInterval(_interval_wallet);
+                                    }
+                                    _lineSeries.update({
+                                        time: Math.round((Date.now()/1000),0),
+                                        value: _wallet[user][0].free,
                                     });
+                                    monitor_wallet_chart()
+                            });
 };
 
 async function update_user_wallet(amount){
@@ -1671,15 +1700,15 @@ $(".input_number").on('change foucusout',function(){
                  BootstrapDialog.confirm("Reset Wallet will reset the wallet's gain/loss to zero. Are you sure ?", function(result){
                     if(result) {
                             _init_wallet_amount = Number($("#sel-options").val());
-                            _wallet[user][0].free = _init_wallet_amount
-                                if(_interval_wallet > 0){
-                                    clearInterval(_interval_wallet);
-                                 }
-                                _lineSeries.update({
-                                    time: Math.round((Date.now()/1000),0),
-                                    value: _wallet[user][0].free,
-                                });
-                            $("#balance").text("$"+_init_wallet_amount);
+                            _init_user_wallet();
+<!--                            _wallet[user][0].free = _init_wallet_amount-->
+<!--                                if(_interval_wallet > 0){-->
+<!--                                    clearInterval(_interval_wallet);-->
+<!--                                 }-->
+<!--                                _lineSeries.update({-->
+<!--                                    time: Math.round((Date.now()/1000),0),-->
+<!--                                    value: _wallet[user][0].free,-->
+<!--                                });-->
                             monitor_wallet_chart();
                             //db update:
                             _refresh_wallet(_init_wallet_amount);
@@ -1807,13 +1836,14 @@ $("#runAlgo").click(async function(){
                 // disable controls
                 _manual_sell = false;
                 // disable manual controls
-                $("#crytpoInfo").prop("disabled", true);
-                $("#buyOrder").prop("disabled", true);
-                $("#resetWallet").prop("disabled", true);
-                $("#runAlgo").prop("disabled", true);
-                $("#logout").prop("disabled", true);
-                $('#algoStrategy').collapse('hide');
-                $("nav").hide();
+<!--                $("#crytpoInfo").prop("disabled", true);-->
+<!--                $("#buyOrder").prop("disabled", true);-->
+<!--                $("#resetWallet").prop("disabled", true);-->
+<!--                $("#runAlgo").prop("disabled", true);-->
+<!--                $("#logout").prop("disabled", true);-->
+<!--                $('#algoStrategy').collapse('hide');-->
+<!--                $("nav").hide();-->
+                $(".grid-navbar").hide()
                 $('html, body').animate({ scrollTop: 0 }, 'slow');
                 run_bot()
           } catch (error) {
@@ -1830,7 +1860,7 @@ $("#runAlgo").click(async function(){
             // Stop websocket
                 if(_interval > 0){
         //        console.log("closing interval "+_interval);
-                clearInterval(_interval);
+        //        clearInterval(_interval);
              }
             $('.fa-circle').css({ "color": "red","font-size":"35","font-weight": "bold"});
             $('.fa-circle').text('BOT - OFF');
@@ -1849,12 +1879,13 @@ $("#runAlgo").click(async function(){
             // send request to the server to stop the engine
             stop_crypto_bot();
             // enable manual controls
-             $("#crytpoInfo").prop("disabled", false);
-            $("#buyOrder").prop("disabled", false);
-            $("#resetWallet").prop("disabled", false);
-            $("#runAlgo").prop("disabled", false);
-            $("#logout").prop("disabled", false);
-            $("nav").show();
+<!--             $("#crytpoInfo").prop("disabled", false);-->
+<!--            $("#buyOrder").prop("disabled", false);-->
+<!--            $("#resetWallet").prop("disabled", false);-->
+<!--            $("#runAlgo").prop("disabled", false);-->
+<!--            $("#logout").prop("disabled", false);-->
+<!--            $("nav").show();-->
+                $(".grid-navbar").show()
     })
 
     // rules management

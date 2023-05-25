@@ -47,7 +47,9 @@ socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
 rooms = {} #chat rooms
-sid = "" #sid for joining chatroom
+sid = "" #sid for joining chatrooms
+user_concur =0
+
 
 #chatroom
 
@@ -623,7 +625,10 @@ def my_event(message):
 
 @socketio.event
 def connect():
+    global user_concur
     print("Socket establish connection...")
+    user_concur +=1
+    print(f"Current user count: {user_concur}")
     # global thread
     # with thread_lock:
     #     if thread is None:
@@ -642,6 +647,7 @@ def on_join(data):
     if room == username:
         send({"name": username, "message": "has established private socket connection","room":username}, to=room)
         print(f"Creating private socket for: {room}")
+        print(f"user connected to {len(room) } sessions.")
     else:
         #if first joiner than create the room
         if room not in rooms:
@@ -660,12 +666,11 @@ def on_leave(data):
     # send(username + ' has left the room.', to=room)
     if room == username:
         send({"name": username, "message": "User is logged out","room":username}, to=room)
-        print(f"{username} logged out: {room}")
     else:
         send({"name": username, "message": "has left the room"}, to=room)
         leave_room(room)
         rooms[room]["members"] -= 1
-        print(f"{username} logged out: {room}")
+    print(f"{username} logged out: {room}")
 
 @app.route("/chat_room", methods=["POST", "GET"])
 def chat_room():
@@ -705,6 +710,7 @@ def message(data):
 
 @socketio.on("disconnect")
 def disconnect():
+    global user_concur
     room = session.get("room")
     name = session.get("name")
     leave_room(room)
@@ -716,6 +722,8 @@ def disconnect():
 
     send({"name": name, "message": "has left the room"}, to=room)
     print(f"{name} has left the room {room}")
+    user_concur -= 1
+    print(f"Current user count: {user_concur}")
 
 #  End chat room socket
 
@@ -953,25 +961,29 @@ def get_query():
             case "Archive_Wallet":
                 sql = f"INSERT INTO user_wallet_history SELECT * from user_wallet where username='{user}';"
             case "New_Wallet":
-                sql = f"update user_wallet set wallet_ind = wallet_ind +1, init_wallet_amount = {amount}, init_wallet_date = '{formatted_date}', curr_wallet_amount = {amount}, last_wallet_date ='{formatted_date}',gain_pct=0re where username='{user}';"
+                sql = f"update user_wallet set wallet_ind = wallet_ind +1, init_wallet_amount = {amount}, init_wallet_date = '{formatted_date}', curr_wallet_amount = {amount}, last_wallet_date ='{formatted_date}',gain_pct=0 where username='{user}';"
             case "Indicators":
                 sql = f"select * from indicators order by indicator;"
         conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
         cur = conn.cursor()
-        count = cur.execute(sql)
-        rows = cur.fetchall()
+        check_code = cur.execute(sql)
+        if check_code:
+            rows = cur.fetchall()
         cur.close()
         conn.close()
-        if not rows[0][0]:
-            ret = "0"
-            return ret
-        elif len(rows[0]) == 1:
-            ret = str(rows[0][0])
-            return ret
-        elif len(rows[0]) > 1:
-            return jsonify( rows )
+        if check_code:
+            if not rows[0][0]:
+                ret = "0"
+                return ret
+            elif len(rows[0]) == 1:
+                ret = str(rows[0][0])
+                return ret
+            elif len(rows[0]) > 1:
+                return jsonify( rows )
+            else:
+                return "Error"
         else:
-            return "Error"
+                return "OK"
     except BaseException as e:
             print(f"could not execute query: {sql}. Error: {e}")
             return "Error"
