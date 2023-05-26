@@ -647,7 +647,6 @@ def on_join(data):
     if room == username:
         send({"name": username, "message": "has established private socket connection","room":username}, to=room)
         print(f"Creating private socket for: {room}")
-        print(f"user connected to {len(room) } sessions.")
     else:
         #if first joiner than create the room
         if room not in rooms:
@@ -967,27 +966,22 @@ def get_query():
         conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
         cur = conn.cursor()
         check_code = cur.execute(sql)
-        if check_code:
-            rows = cur.fetchall()
+        rows = cur.fetchall()
         cur.close()
         conn.close()
-        if check_code:
-            if not rows[0][0]:
-                ret = "0"
-                return ret
-            elif len(rows[0]) == 1:
-                ret = str(rows[0][0])
-                return ret
-            elif len(rows[0]) > 1:
-                return jsonify( rows )
-            else:
-                return "Error"
+        if not rows[0][0]:
+            ret = "0"
+            return ret
+        elif len(rows[0]) == 1:
+            ret = str(rows[0][0])
+            return ret
+        elif len(rows[0]) > 1:
+            return jsonify( rows )
         else:
-                return "OK"
+            return "Error"
     except BaseException as e:
             print(f"could not execute query: {sql}. Error: {e}")
             return "Error"
-
 
 '''   ---------------------------    END MOVE of routes_tbd.py --------------------------------------'''
 

@@ -191,6 +191,8 @@ class crypto_bot:
           self.pairs = crypto_list.crypto_pairs
           #remove UP symbols
           self.pairs = sorted([i for i in self.pairs if 'UP' not in i])[:150]
+          self.pairs = sorted([i for i in self.pairs if 'DOWN'
+                                                        '' not in i])[:150]
       else:
           stockList = []
           pairs = []
@@ -539,7 +541,14 @@ class crypto_bot:
 
   def _run_algo(self):
       #Engine:
-      while True:
+      run = True
+      while run:
+          engine_status = os.environ["algo_engine"]
+          self.printf(f"\n{self._now()}: Engine status. : {engine_status}", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
+          if engine_status == 'stop':
+              self.printf(f"\n{self._now()}: Stop Algo engine was was received. Exiting Algo. ", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
+              run = False
+              break
           self._cycle += 1
           self.printf(f"\n{self._now()}: Running algo cycle {self._cycle} : ",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
           self.printf(f"{self._now()}: Wallet balance: ${self._wallet._get_base_coin_balance()}",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
@@ -563,11 +572,11 @@ class crypto_bot:
           self.filter_top_traders = self._top_volume_trades(50)
           #reset list of symbols
           self.pairs = self.filter_top_traders
-          engine_status = os.environ["algo_engine"]
-          self.printf(f"\n{self._now()}: Engine status. : {engine_status}", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
-          if engine_status == 'stop':
-              self.printf(f"\n{self._now()}: Stop Algo engine was was received. Exiting Algo. ", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
-              break
+          # engine_status = os.environ["algo_engine"]
+          # self.printf(f"\n{self._now()}: Engine status. : {engine_status}", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
+          # if engine_status == 'stop':
+          #     self.printf(f"\n{self._now()}: Stop Algo engine was was received. Exiting Algo. ", {self._now()}, "NA", "NA","NA","NA","NA","NA","NA","NA","NA")
+          #     break
           # print(f"{self._now()}: Get top gainers in the last minutes.")
           self.printf(f"{self._now()}: Get top gainers in the last minutes", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA")
           self._top_gainers_last_min()
