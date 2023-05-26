@@ -115,12 +115,12 @@ def _send_whatsapp_msg(c,k,p):
     return status
 
 #set user amount
-def _init_user_wallet_test(user,amount):
-    wallet[user] = []
-    token = {'asset': coin, 'free': '1000.00000000', 'locked': '0.00000000', 'st_price': 1000}
-    wallet[user].append(token)
-
-    return None
+# def _init_user_wallet_test(user,amount):
+#     wallet[user] = []
+#     token = {'asset': coin, 'free': '1000.00000000', 'locked': '0.00000000', 'st_price': 1000}
+#     wallet[user].append(token)
+#
+#     return None
 
 # def _transaction_order_test(ord_type, token, qty):
 #     price = float(client.get_symbol_ticker(symbol=token + coin)['price'])

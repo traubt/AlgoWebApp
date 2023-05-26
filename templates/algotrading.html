@@ -925,8 +925,6 @@ function monitor_wallet_chart() {
                     });
                 };
             };
-<!--            $("#balance").html("$"+_init_wallet_amount);-->
-<!--            _wallet[user][0].free >= _init_wallet_amount ? $("#balance").css("color","#52e152"):$("#balance").css("color","#ff0000");-->
           }
      },2000);  };
 
@@ -1034,18 +1032,18 @@ async function _refresh_wallet(amount){
     await fetch(url);
 }
 
-async function _init_user_wallet(method){
+async function _init_user_wallet(){
     let query = "User_Wallet";
     let  url = _URL+'/get_query?query='+query+'&user='+user;
     _wallet[user] = [];
     await fetch(url)
    .then(response => response.json()).then(data => {
                                     _user_wallet = data;
-                                    method == "init" ? _init_wallet_amount = data[0][4] : _init_wallet_amount = Number($("#sel-options").val());
-                                    $("#init_amount").html(method == "init" ? "$"+data[0][2] : _init_wallet_amount );
+                                    _init_wallet_amount = data[0][4];
+                                    $("#init_amount").html("$"+data[0][2]);
                                     $("#today_init").html("$"+_init_wallet_amount);
                                     $("#today_gain").html("0%");
-                                    $("#total_gain").html( method == "init" ?  (data[0][6]).toFixed(2)+"%" : "0%"   );
+                                    $("#total_gain").html( (data[0][6]).toFixed(2)+"%");
                                     $("#balance").html("$"+_init_wallet_amount);
                                     _token = {'asset': _coin,'free':_init_wallet_amount,'locked':0,'st_price':_init_wallet_amount};
                                     _wallet[user].push(_token);
@@ -1164,7 +1162,7 @@ async function _init_indicators(){
 	//initialize
 	$(document).ready(function(){
 	_init_indicators();
-    _init_user_wallet("init");
+    _init_user_wallet();
     init_algo_payload("system");
     get_plans();
 
@@ -1708,7 +1706,14 @@ $(".input_number").on('change foucusout',function(){
                     if(result) {
                             clearInterval(_interval_wallet);
                             _init_wallet_amount = Number($("#sel-options").val());
-                            _init_user_wallet("reset");
+                            $("#init_amount").html("$"+_init_wallet_amount );
+                            $("#today_init").html("$"+_init_wallet_amount);
+                            $("#today_gain").html("0%");
+                            $("#balance").html("$"+_init_wallet_amount);
+                            _wallet[user][0].free = _init_wallet_amount;
+                            _wallet[user][0].st_price = _init_wallet_amount;
+                            _base_coin_qty = _init_wallet_amount
+                            monitor_wallet_chart()
                             //db update:
                             _refresh_wallet(_init_wallet_amount);
                             dialog("Reset Wallet","Wallet was reset successfully to "+$("#sel-options").find("option:selected").text(),BootstrapDialog.TYPE_INFO);
@@ -1841,6 +1846,7 @@ $("#runAlgo").click(async function(){
                 $("#runAlgo").prop("disabled", true);
                 $("#logout").prop("disabled", true);
                 $('#algoStrategy').collapse('hide');
+                $('#algoParams').collapse('hide');
                 $("#myAccount").prop("disabled", true);
                 $("nav").hide();
                 $('html, body').animate({ scrollTop: 0 }, 'slow');
