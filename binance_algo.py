@@ -244,6 +244,10 @@ class crypto_bot:
               for ind in self._indicators.keys():
                   if ind == "MACD":
                     quotes[["MACD","HISTO","SIGNAL"]] = eval(self._indicators[ind]['tech'])
+                  elif ind in [ "BOLLINGER_LOW","BOLLINGER_MID","BOLLINGER_UP" ]:
+                      quotes[["BB_LOW", "BB_MID", "BB_UP", "BB_BW", "BB_PCT"]] = pd.DataFrame(quotes["Close"]).ta.bbands()
+                  elif ind in [ "STOCH_K","STOCH_D" ]:
+                      quotes[["STOCH_K", "STOCH_D"]] = pd.DataFrame(quotes["Close"]).ta.stoch()
                   else:
                     quotes[ind] = eval(self._indicators[ind]['tech'])
           else:
@@ -284,7 +288,8 @@ class crypto_bot:
           # std = quotes[pair].Change.rolling(44).std() * np.sqrt(244)
           # quotes[pair]['Sharpe'] = (ret - 0.02) / std
       except BaseException as e:
-          print(" Add indicators failed.", e)
+          print(f"{self._now()}: Add indicators error:{pair}, {e}")
+          self.printf(f"{self._now()}: Add indicators error:{pair}, {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
           err += 1
           # continue
       # print(f"{self._now()} Number of errors add indicators: {err}")
@@ -357,7 +362,7 @@ class crypto_bot:
                   m.append(r)
               top_traders = [x[0] for x in sorted(m, key=lambda a: a[1], reverse=True)[:filter_trades]]
       except BaseException as e:
-          print(f"Error find asset: {e}")
+          print(f"Error find asset. Length of {x} {len(self.market_prices[x])} error: {e}")
           self.printf(f"{self._now()}: Error in top volume trades. Could not process symbol {x}. Error: {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
           pass
 
@@ -417,7 +422,7 @@ class crypto_bot:
               # self.printf(f"{self.now} Breakout: {token} , Current price: {price}, Open: {open}, Break history at: {idx}, {last} minutes ago",{self.now},{price},"NA"  ,"NA","NA","NA","NA","NA","NA","NA")
       except BaseException as e:
           print(f"Error find asset: {e}")
-          self.printf(f"{self._now()}: Error in find asset module. {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+          self.printf(f"{self._now()}: Error in find asset module.{token} {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
           None
       return found
 
@@ -444,7 +449,7 @@ class crypto_bot:
       rsn = "IN"
       max_ret = 0
       max_date = self._now()
-      secure_ret = 0
+      secure_ret =  0
       # print(f"\n{self._now()} {pair} Check exit: check price action every second.")
       t_interval = 1 # sleep time every 1 sec
       count_sec = 0
@@ -467,7 +472,7 @@ class crypto_bot:
                          + str( round(max_ret, 3)) + "%, Secure Return: " + str(secure_ret) + "%." + monitor_indicators
               # logging.info(txt)
               #     print(txt)
-              self.printi(f"{self._now()}  Token: {pair}  Price:  {str(round(df.Close[-1], 10))} ,  Previous Open: {str(round(df.Open[-2],6))}, Stop-Loss:  {str(stop_loss)}, Profit: {str(round(g, 3))} %, Max Return:{str(round(max_ret,6))}, Secure Profit:{str(round(secure_ret,6))} ,{monitor_indicators}",
+              self.printi(f"{self._now()}  Token: {pair}  Price:  {str(round(df.Close[-1], 8))} ,  Previous Open: {str(round(df.Open[-2],6))}, Stop-Loss:  {str(stop_loss)}, Profit: {str(round(g, 3))} %, Max Return:{str(round(max_ret,3))}, Secure Profit:{str(round(secure_ret,3))} ,{monitor_indicators}",
                      {self._now()},
                      {str(round(df.Close[-1], 10))},
                      {str(round(g, 3))},
@@ -478,26 +483,31 @@ class crypto_bot:
                   max_ret = g
                   max_date = self._now()
               # Secure max return in stages
-              elif (g > max_ret) and (g > self._secure_profit*8):
-                  max_ret = g
-                  secure_ret = round(g * (1 + self._secure_profit)*8, 2)
-                  max_date = self._now()
-              elif (g > max_ret) and (g > self._secure_profit*4):
-                  max_ret = g
-                  secure_ret = round(g * (1 + self._secure_profit)*4, 2)
-                  max_date = self._now()
-              elif (g > max_ret) and (g > self._secure_profit*2):
-                  max_ret = g
-                  secure_ret = round(g * (1 + self._secure_profit)*2, 2)
-                  max_date = self._now()
-              elif (g > max_ret) and (g > self._secure_profit):
-                  max_ret = g
-                  secure_ret = round(g * (1 + self._secure_profit), 2)
-                  max_date = self._now()
+              if (g > self._secure_profit*16 and (self._secure_profit*16) > secure_ret):
+                  secure_ret = self._secure_profit*16
+
+              if (g > self._secure_profit*8 and (self._secure_profit*8) > secure_ret):
+                  secure_ret = self._secure_profit*8
+
+              if (g > self._secure_profit*4 and (self._secure_profit*4) > secure_ret):
+                  secure_ret = self._secure_profit*4
+
+              if (g > self._secure_profit*2 and (self._secure_profit*2) > secure_ret):
+                  secure_ret = self._secure_profit*2
+
+              if (g > self._secure_profit and self._secure_profit > secure_ret):
+                  secure_ret = self._secure_profit
+
 
               ######### EXIT FROM POSITION #########
               # No movement
-              if (count_sec > self._no_movement) and (secure_ret == 0):
+              # if algo_engine
+              if os.environ["algo_engine"] == 'stop':
+                  sell = True
+                  rsn = "STOP_BOT"
+                  return sell, rsn, max_ret, max_date
+
+              elif (count_sec > self._no_movement) and (secure_ret == 0):
                   # print(f"{self._now()}:Trigger {self._no_movement} seconds no growth for {pair}")
                   sell = True
                   rsn = "No_Growth"
@@ -536,7 +546,7 @@ class crypto_bot:
   def _get_entry_strategy_match(self):
       self.top_gainers = []
       for pair in self.market_prices.keys():
-          if self._find_asset(self.market_prices[pair], pair):
+          if  (self._find_asset(self.market_prices[pair], pair)):
               self.top_gainers.append(pair)
 
   def _run_algo(self):
@@ -651,7 +661,7 @@ class crypto_bot:
                   pass
               # print(f"{self._now()}: Monitor symbol: {pair}. Add indicators...")
               self.printf(f"{self._now()}: Monitor symbol: {pair}. Add indicators...",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
-              self.market_prices = self._add_indicators(self.market_prices,pair)
+              self.market_prices = self._add_indicators(self.market_prices[pair],pair)
 
               # Get symbol buying quotes
               st_price = self._wallet._get_token_st_price(pair)
@@ -662,7 +672,7 @@ class crypto_bot:
                   f"{self._now()} Symbol: {pair}. Start Price: {round(st_price, 7)}.  Current Price: {current_price}. Current PNL: {round(self._get_pair_price(pair) / st_price * 100 - 100, 2)}% ",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
 
               # Check Exit Position
-              trigger_sell, sell_rsn, max_ret, max_date = self._check_exit(pair, self.market_prices[pair], st_price)
+              trigger_sell, sell_rsn, max_ret, max_date = self._check_exit(pair, self.market_prices, st_price)
 
               if trigger_sell:
                   pair_price = self._get_pair_price(pair)

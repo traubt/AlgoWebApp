@@ -78,8 +78,11 @@
                         <button class="btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
                           Alerts
                         </button>
-                        <button class="btn btn btn-default navbar-btn" type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample" disabled>
-                          API's
+                        <button class="btn btn btn-default navbar-btn btn-success" type="button" data-toggle="collapse" data-target="#partners" aria-expanded="false" aria-controls="collapseExample" >
+                          Connect to a Partner
+                        </button>
+                        <button class="btn btn btn-default navbar-btn btn-warning" type="button" data-toggle="collapse" data-target="#leaderBoard" aria-expanded="false" aria-controls="collapseExample" >
+                          Leader Board
                         </button>
 <!--                        <button class="btn btn btn-info navbar-btn"  id="logout"  type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample">LOGOUT</button>-->
                         <label for="url" hidden="true">URL:</label><input type="text" id="url" name="username" value="{{url}}" hidden="true">
@@ -281,7 +284,7 @@
                                     <select class="form-control" id="template_strategy" title="Timeframe">
                                         <option value="_template_momentum" selected>Momentum</option>
                                         <option value="_template_pressure">Buy/Volume Pressure</option>
-                                        <option value="_template_breakout" >Breakout After Sleep</option>
+                                        <option value="_template_breakout" >Breakout</option>
                                         <option value="_template_recovery">Recovery From Deep</option>
                                     </select>
                                 </div>
@@ -446,14 +449,6 @@
                                 <label for="secure_profit">Secure profit if profit more than (%):</label>
                                   <input class = "form-control input_number" id = "secure_profit" type="number" min="0.1" max="20" step="0.1" value="0.2" >
                                   <div class="invalid-feedback" hidden="true"> Please enter a valid number.  </div>
-<!--                                    <select class="form-control" id="secure_profit" title="Stop Loss">-->
-<!--                                        <option value="0.2">0.2%</option>-->
-<!--                                        <option value="0.5"  >0.5%</option>-->
-<!--                                        <option value="0.7">0.7%</option>-->
-<!--                                         <option value="1" selected>1%</option>-->
-<!--                                        <option value="2"  >2%</option>-->
-<!--                                         <option value="3">3%</option>-->
-<!--                                    </select>-->
                                 </div>
                         </form>
                   </div>
@@ -468,6 +463,19 @@
         </div>
 
 </div>
+        </div>
+        <div class="grid-collapse-leader">
+            <div class="collapse" id="leaderBoard">
+                <h1>Leader Board</h1>
+                <table id="topLeader"></table>
+                <table id="strategyLeader"></table>
+            </div>
+        </div>
+        <div class="grid-collapse-partners">
+            <div class="collapse" id="partners">
+                <img id="excellence_logo" src="static/assets/img/excellence.jpg" class="partners">
+                <img id="discount_logo" src="static/assets/img/discount.jpg" class="partners">
+            </div>
         </div>
         <div class="grid-start-stop-btn" >
                 <div id="engineButtons">
@@ -554,11 +562,11 @@
                   <div id="init_amount" class="amount">$1000</div>
             </div>
             <div class="balance">
-                  <label>Today's Initial</label>
+                  <label>Run Initial</label>
                   <div id="today_init"  class="amount">$1025</div>
             </div>
             <div class="balance">
-                  <label>Today's gain</label>
+                  <label>Run Gain</label>
                   <div id="today_gain" class="amount">0.5%</div>
             </div>
             <div class="balance">
@@ -761,7 +769,7 @@
     var _walletChart;
     var _highChart_val_a=18; //sharpe value of main symbol factor to 0-100
     var _highChart_val_b=0;  ////sharpe value of benchmark symbol factor to 0-100
-    var _trx_table;
+    var _trx_table, _leader_table,  _st_leader_table;
     var _wallet_chart_time_interval = 2000; //refresh wallet chart
     var _current_algo_symbol_price;
     var _is_algo_mode = 0;
@@ -1210,6 +1218,33 @@ async function _init_indicators(){
         fixedColumns: true
 	});
 
+	// initialize leaderboard table
+
+	query = "leaders";
+    url = _URL+'/get_query?query='+query;
+    fetch(url)
+    .then(data => data.json())
+    .then(rows => {
+        console.log(rows);
+            _leader_table = $('#topLeader').DataTable({
+                                            data: rows,
+                                            columns: [
+                                                { title: "User" },
+                                                { title: "Start Amount" },
+                                                { title: "Start Date" },
+                                                { title: "End Amount" },
+                                                { title: "End Date" },
+                                                { title: "Profit(%)" },
+                                                {
+                                                  "data": null,
+                                                  "defaultContent": "<button>Wallet Chart</button>"
+                                                }
+                                            ],
+                                            order: [[5, 'desc']],
+                                            "autoWidth": false,
+                                        });
+    });
+
 	// initialize wallet balance chart
 	_lwchart = LightweightCharts.createChart(document.getElementById('wallet_container'), {
           layout: {
@@ -1520,6 +1555,13 @@ $("#send-chat").click(function(){
 
 	///////////////////////////////////// CONTROLS //////////////////////////////////////
 
+$('#excellence_logo').click(function() {
+    window.open('https://lp.xnes.co.il/bursa_xnes_trade/?utm_source=xnes_web&utm_medium=content&utm_campaign=article_open_trading_account&utm_term=xnes_web_article_open_trading_account_top_link&utm_content=xnes_web_article_open_trading_account_top_link', '_blank');
+  });
+$('#discount_logo').click(function() {
+    window.open('https://www.discountbank.co.il/DB/private/open_account/private-clients', '_blank');
+  });
+
 $("#logout").click(function(){
         BootstrapDialog.confirm('You are about to logout from algotrading. Are you sure ?', function(result){
             if(result) {
@@ -1709,9 +1751,12 @@ $(".input_number").on('change foucusout',function(){
                             $("#init_amount").html("$"+_init_wallet_amount );
                             $("#today_init").html("$"+_init_wallet_amount);
                             $("#today_gain").html("0%");
+                            $("#total_gain").html("0%");
                             $("#balance").html("$"+_init_wallet_amount);
                             _wallet[user][0].free = _init_wallet_amount;
                             _wallet[user][0].st_price = _init_wallet_amount;
+                            _user_wallet[0][4] = _init_wallet_amount; // overriding database info for run bot.
+                            _user_wallet[0][2] = _init_wallet_amount; // overriding database info for run bot.
                             _base_coin_qty = _init_wallet_amount
                             monitor_wallet_chart()
                             //db update:

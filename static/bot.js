@@ -184,8 +184,9 @@ function update_algorun_db(){
 				  url: _URL+"/update_algorun_db",
 				})
 		 .done(function(data) {
-		    console.log("Record was updated successfully.")
+//		    console.log("Record was updated successfully.")
 		  }) // end successful ajax .done
+
   }
   catch(e){
 		dialog('Error', e ,BootstrapDialog.TYPE_DANGER);

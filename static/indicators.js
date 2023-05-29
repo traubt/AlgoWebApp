@@ -149,32 +149,6 @@ var _tech_indicators_old = {
     },
 }
 
-/*
-'MA10':'Moving Average 10 periods',
-'MA25':'Moving Average 25 periods',
-'MA50':'Moving Average 50 periods',
-'MA75':'Moving Average 75 periods',
-'MA100':'Moving Average 100 periods',
-'RSI': 'Current RSI',
-'P_RSI': 'Previous RSI',
-'VOLUME': 'Volume',
-'OPEN':'Open Price',
-'HIGH':'Highest Price',
-'LOW' :'Lowest Price',
-'CLOSE':'Close Price',
-'UPBOL' : 'Bollinger Upper Band',
-'MIDBOL' : 'Bollinger Middle Band',
-'LOWBOL' : 'Bollinger Lower Band',
-'EMA10':'Exponential Moving Average 10 periods',
-'EMA25':'Exponential Moving Average 25 periods',
-'EMA50':'Exponential Moving Average 50 periods',
-'EMA75':'Exponential Moving Average 75 periods',
-'EMA100':'Exponential Moving Average 100 periods',
-'ATR' : 'Average True Range',
-};
-
-*/
-
 var _template_momentum = {
     count_buy_rules : 3,
     buy_rule_1:{
@@ -189,7 +163,7 @@ var _template_momentum = {
         right:'70'
     },
     buy_rule_3:{
-        and_or:"or",
+        and_or:"and",
         left:"CLOSE",
         comp:"gt",
         right:'P_OPEN'
@@ -209,11 +183,17 @@ var _template_momentum = {
 };
 
 var _template_pressure = {
-    count_buy_rules : 1,
+    count_buy_rules : 2,
     buy_rule_1:{
         left:"RSI",
         comp:"gt",
         right:'60'
+    },
+     buy_rule_2:{
+        and_or:"and",
+        left:"VOLUME",
+        comp:"gt",
+        right:'AVG_VOL_10'
     },
     count_sell_rules : 1,
     sell_rule_1:{
@@ -221,4 +201,70 @@ var _template_pressure = {
         comp:"lt",
         right:'40'
     }
-}
+};
+
+var _template_breakout = {
+    count_buy_rules : 3,
+    buy_rule_1:{
+        left:"CLOSE",
+        comp:"gt",
+        right:'MA100'
+    },
+    buy_rule_2:{
+        and_or:"and",
+        left:"VOLUME",
+        comp:"gt",
+        right:'AVG_VOL_50'
+    },
+    buy_rule_3:{
+        and_or:"and",
+        left:"RSI",
+        comp:"gt",
+        right:'70'
+    },
+    count_sell_rules : 2,
+    sell_rule_1:{
+        left:"RSI",
+        comp:"lt",
+        right:'50'
+    },
+    sell_rule_2:{
+        and_or:"and",
+        left:"CLOSE",
+        comp:"lt",
+        right:'P_OPEN'
+    }
+};
+
+var _template_recovery = {
+    count_buy_rules : 3,
+    buy_rule_1:{
+        left:"CLOSE",
+        comp:"gt",
+        right:'MA100'
+    },
+    buy_rule_2:{
+        and_or:"and",
+        left:"P_OPEN",
+        comp:"lt",
+        right:'MA100'
+    },
+    buy_rule_3:{
+        and_or:"and",
+        left:"AVG50",
+        comp:"lt",
+        right:"MA100"
+    },
+    count_sell_rules : 2,
+    sell_rule_1:{
+        left:"RSI",
+        comp:"lt",
+        right:'50'
+    },
+    sell_rule_2:{
+        and_or:"and",
+        left:"CLOSE",
+        comp:"lt",
+        right:'P_OPEN'
+    }
+};
