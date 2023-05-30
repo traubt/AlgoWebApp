@@ -411,9 +411,7 @@ class crypto_bot:
           max_ratio = price / history_max_price
           min_ratio = open / history_max_price
           max_avg_ratio = price / history_avg_price
-          # if (max_ratio > 1) and (min_ratio < 1) and (max_avg_ratio < 1.04):
-          #if max_avg_ratio > 1:
-          #print("RSI:",df["RSI"][-1])
+
           if eval(self._buy_rule):
             found = True
 

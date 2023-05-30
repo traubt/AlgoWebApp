@@ -1014,4 +1014,4 @@ if __name__ == '__main__':
     # # Replace print statements with logger calls
     # # print('This is a message')
 
-    socketio.run(app,allow_unsafe_werkzeug=True,debug=True, use_reloader=False)
+    socketio.run(app,host="0.0.0.0",allow_unsafe_werkzeug=True,debug=True, use_reloader=False)
