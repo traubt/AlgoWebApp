@@ -416,10 +416,7 @@ class crypto_bot:
           #print("RSI:",df["RSI"][-1])
           if eval(self._buy_rule):
             found = True
-              # idx = df.loc[:].loc[(df['Close'] > open) & (df['Close'] < price)].index[-1]
-              # last = len(df) - df[:].index.get_loc(idx)
-              # print(f"{self.now} Breakout: {token} , Current price: {price}, Open: {open}, Break history at: {idx}, {last} minutes ago")
-              # self.printf(f"{self.now} Breakout: {token} , Current price: {price}, Open: {open}, Break history at: {idx}, {last} minutes ago",{self.now},{price},"NA"  ,"NA","NA","NA","NA","NA","NA","NA")
+
       except BaseException as e:
           print(f"Error find asset: {e}")
           self.printf(f"{self._now()}: Error in find asset module.{token} {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
