@@ -639,3 +639,8 @@ h2 {
   margin: 10px;
   border-radius: 5px;
 }
+
+.right_nav, .left_nav{
+    display:flex;
+    gap:2px;
+}

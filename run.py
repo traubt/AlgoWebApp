@@ -159,7 +159,7 @@ def get_historical_klines(symbol, interval='15m'):
         df = pd.DataFrame(data)
         df.columns = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume',
                                                                 'close_time', 'qav', 'num_trades',
-                                                                'taker_base_vol', 'taker_quote_vol', 'ignore'                                                  ]
+                                                                'taker_base_vol', 'taker_quote_vol', 'ignore']
         # for line in df:
         #     del line[6:]
         # Add indicators
@@ -318,7 +318,7 @@ def pipe():
 
 @app.route('/portfolio_manager')
 def portfolio_manager():
-    return render_template("portfolio_manager.html")
+    return render_template("portfolio_manager.html",url=public_url)
 
 @app.route('/algotrading')
 def algotrading():
@@ -491,6 +491,29 @@ def binancePairHistory():
         processed_candlesticks.append(candlestick)
     return json.dumps(processed_candlesticks)
 
+# @app.route('/binancePairHistorySec')
+# def binancePairHistorySec():
+#     query = request.args.get('symbol')
+#     interval = request.args.get('interval')
+#     candlesticks = get_historical_klines(query, interval)
+#     candlestick = []
+#     processed_candlesticks = []
+#     # for data in candlesticks:
+#     for index, data in candlesticks.iterrows():
+#         candlestick = {
+#             "time": int(index.value/1000000000),
+#             "open": float(data[0]),
+#             "high": float(data[1]),
+#             "low": float(data[2]),
+#             "close": float(data[3]),
+#             "volume": float(data[4]),
+#             "rsi": data[11],
+#             "ma10": data[12],
+#             "sharpe": data[13]
+#         }
+#         processed_candlesticks.append(candlestick)
+#     return json.dumps(processed_candlesticks)
+
 @app.route('/yfStockHistory')
 def yfStockHistory():
     candlesticks = pd.DataFrame()
@@ -503,14 +526,12 @@ def yfStockHistory():
     candlesticks['MA10'] = candlesticks['Close'].rolling(10).mean()
     # candlesticks['MA5'] = candlesticks['Close'].rolling(5).mean()
     candlesticks.fillna('',inplace=True)
-
-
     candlestick = []
     processed_candlesticks = []
     for index,row in candlesticks.iterrows():
         candlestick = {
             "time": int(index.value/1000000000),
-            "open": float(row['Open']),
+            "open": row['Open'],
             "high": row['High'],
             "low": row['Low'],
             "close": row['Close'],
@@ -520,6 +541,35 @@ def yfStockHistory():
         }
         processed_candlesticks.append(candlestick)
     return json.dumps(processed_candlesticks)
+
+
+# @app.route('/yfStockHistorySec')
+# def yfStockHistorySec():
+#     candlesticks = pd.DataFrame()
+#     query = request.args.get('symbol')
+#     interval = request.args.get('interval')
+#     period = request.args.get('period')
+#     print("yfinance:",interval,period)
+#     candlesticks = yf.download(tickers=query, interval=interval, period=period, show_errors=False)
+#     candlesticks['RSI'] = pd.DataFrame(candlesticks['Close']).ta.rsi(length=14)
+#     candlesticks['MA10'] = candlesticks['Close'].rolling(10).mean()
+#     # candlesticks['MA5'] = candlesticks['Close'].rolling(5).mean()
+#     candlesticks.fillna('',inplace=True)
+#     candlestick = []
+#     processed_candlesticks = []
+#     for index,row in candlesticks.iterrows():
+#         candlestick = {
+#             "time": int(index.value/1000000000),
+#             "open": row['Open'],
+#             "high": row['High'],
+#             "low": row['Low'],
+#             "close": row['Close'],
+#             "volume": row['Volume'],
+#             "rsi" : row['RSI'],
+#             "ma10": row['MA10']
+#         }
+#         processed_candlesticks.append(candlestick)
+#     return json.dumps(processed_candlesticks)
 
 @app.route('/test_twilio')
 def test_twilio():

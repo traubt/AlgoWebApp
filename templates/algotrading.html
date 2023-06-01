@@ -92,20 +92,35 @@
 
                 </div>
             </nav>
+
+            <nav class="navbar navbar-default">
+
                     <div class="right_nav">
+
+                        <div class="dropdown">
+                          <a  class="dropdown-toggle btn btn-primary" data-toggle="dropdown" title="My Account" data-placement="bottom">
+                            <i style='font-size:24px' class="fa fa-user"></i>
+                          </a>
+                          <ul  class="dropdown-menu">
+                            <li><a id="profile">Profile</a></li>
+                              <li role="separator" class="divider"></li>
+                               <li><a href="#">Settings</a></li>
+                              <li><a href="#">Billing</a></li>
+                              <li><a href="#">Upgrade</a></li>
+                              <li role="separator" class="divider"></li>
+                              <li><a href="#">History</a></li>
+                              <li role="separator" class="divider"></li>
+                              <li><a id="logout">Logout</a></li>
+                          </ul>
+                        </div>
                         <button id="openChatRoom" type="button" class="btn btn-primary" data-toggle="tooltip" title="Enter Chatroom" data-placement="bottom">
                             <i style='font-size:24px' class="fas fa-comments" ></i>
                         </button>
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" >
                             <i style='font-size:24px' class="fas fa-envelope" data-toggle="tooltip" title="Send us email" data-placement="bottom"></i>
                         </button>
-                        <button type="button" id="myAccount" class="btn btn-primary" data-toggle="tooltip" title="My Account" data-placement="bottom">
-                            <i style='font-size:24px' class='fas fa-user-cog' ></i>
-                        </button>
-                        <button type="button" id="logout"  class="btn btn-primary" data-toggle="tooltip" title="Logout" data-placement="bottom">
-                            <i style='font-size:24px' class="fas fa-sign-out-alt" ></i>
-                        </button>
                     </div>
+            </nav>
         </div>
         <div class="grid-collapse-params">
             <div class="collapse" id="algoParams">
@@ -566,7 +581,11 @@
                   <div id="today_init"  class="amount"></div>
             </div>
             <div class="balance">
-                  <label>Run Gain</label>
+                  <label>Asset Gain</label>
+                  <div id="asset_gain" class="amount"></div>
+            </div>
+            <div class="balance">
+                  <label>Strategy Gain</label>
                   <div id="today_gain" class="amount"></div>
             </div>
             <div class="balance">
@@ -646,11 +665,12 @@
                     </select>
                   <button id="joinCR" type="button" class="btn btn-success" >Join</button>
                   <button id="leaveCR" type="button" class="btn btn-danger" disabled >Leave</button>
-
+                <hr>
                 </div>
         </form>
         <i  style='font-size:17px' class="fa fa-window-close" ></i>
     </div>
+
 <!--    <h2>Chat Room: {{code}}</h2>-->
   <div class="messages" id="messages"></div>
   <div class="inputs">
@@ -736,6 +756,7 @@
 	var _klinedata = {};
 	var _binanceSocket = {};
 	var _candleseries,__candleseries; // Websocket candle sticks
+	var _lastChartTime, _lastChartSecTime; // holds the last update time
 	var _sma_series,__sma_series;
 	var _rsi_series;
 	var _volumeSeries,__volumeSeries;
@@ -759,6 +780,7 @@
 	var _theme = "light";
 	var _symbol = 'ETHUSDT';
 	var _binanceSocket = {};
+	var _period,_round;
 	var _b_time_res = {"1":"1m","5":"5m","15":"15m","30":"30m","60":"1h","120":"2h","240":"4h","D":"1d","W":"1w"};  // map td timeframe to binance timeframe
     var _asset = 'crypto'; // user selection of platform
     var _asset_list = [];
@@ -770,7 +792,7 @@
     var _highChart_val_a=18; //sharpe value of main symbol factor to 0-100
     var _highChart_val_b=0;  ////sharpe value of benchmark symbol factor to 0-100
     var _trx_table, _leader_table,  _st_leader_table;
-    var _wallet_chart_time_interval = 2000; //refresh wallet chart
+<!--    var _wallet_chart_time_interval = 2000; //refresh wallet chart-->
     var _current_algo_symbol_price;
     var _is_algo_mode = 0;
     var _trx_time;
@@ -1050,6 +1072,7 @@ async function _init_user_wallet(){
                                     _init_wallet_amount = data[0][4];
                                     $("#init_amount").html("$"+data[0][2]);
                                     $("#today_init").html("$"+_init_wallet_amount);
+                                    $("#asset_gain").html("0%");
                                     $("#today_gain").html("0%");
                                     $("#total_gain").html( (data[0][6]).toFixed(2)+"%");
                                     $("#balance").html("$"+_init_wallet_amount);
@@ -1181,6 +1204,7 @@ async function _init_indicators(){
 	//populate strategy left hand side - attirube 1
     init_strategy();
 
+
     //populate right hand condition
     $('#buy_strategy_attr_lh_1.selectpicker').on('change', function() {
             _indicator = this.value;
@@ -1194,9 +1218,18 @@ async function _init_indicators(){
     });
 
 
+$(".dropdown").on("show.bs.dropdown", function() {
+  $('.grid-sharpe-chart').hide();
+});
+$(".dropdown").on("hide.bs.dropdown", function() {
+  $('.grid-sharpe-chart').show();
+});
+
 	// render default chart
-	renderChart(_asset,_symbol,_time_res,_theme);
-	renderChartSecondary(_asset,_symbol,"1",_theme);
+    $("#chart").empty();
+    $("#chart_secondary").empty();
+	renderChart(_asset,_symbol);
+	renderChartSecondary(_asset,_symbol);
 	renderHighChart(_symbol,"tickerHC");
     renderHighChart('BTCUSDT',"benchmarkHC");
 
@@ -1341,8 +1374,8 @@ async function fetch_api(url,index,total,symbol){
                     $("#chart_symbol").text(msg.symbol);
                     $("#chart").empty();
                     $("#chart_secondary").empty();
-                    renderChart(_asset,msg.symbol,_time_res,_theme);
-                    renderChartSecondary(_asset,msg.symbol,"1",_theme);
+                    renderChart(_asset,msg.symbol);
+                    renderChartSecondary(_asset,msg.symbol);
                     Highcharts.charts[0].setTitle({ text: msg.symbol });
                     //set market in wallet chart
                     _buysell_element = { time: Math.round((Date.now()/1000),0),
@@ -1384,6 +1417,7 @@ async function fetch_api(url,index,total,symbol){
                     icon_set('.fa-coffee');
                     //console.log('symbol: '+msg.symbol+' price: '+msg.price+' amount: '+msg.amount+' qty: '+msg.qty);
                     if (msg.price > 0){ // avoiding binary messages _|--|__
+                        $("#asset_gain").html(Number(msg.grow).toFixed(2)+"%");
                         _current_algo_symbol_price = msg.price;
                        }
 
@@ -1518,6 +1552,10 @@ $("#send-chat").click(function(){
 
     // user select platform
     $('input[type=radio][name="TradingPlatformOption"]').change(function() {
+    //stop intervals
+    if(_interval > 0){clearInterval(_interval);};
+    if(_interval_highchart > 0){clearInterval(_interval_highchart);};
+    if(_intervalSec > 0){clearInterval(_intervalSec);};
     if (this.value == '3'){
         _asset = 'crypto';
         _symbol = 'ETHUSDT';
@@ -1531,8 +1569,8 @@ $("#send-chat").click(function(){
     populate_tickers_dropdown()
     $("#chart").empty();
     $("#chart_secondary").empty();
-    renderChart(_asset,_symbol,_time_res,_theme);
-    renderChartSecondary(_asset,_symbol,"1",_theme);
+    renderChart(_asset,_symbol);
+    renderChartSecondary(_asset,_symbol);
     Highcharts.charts[0].setTitle({ text: _symbol });
     })
 
@@ -1615,8 +1653,8 @@ $(".input_number").on('change foucusout',function(){
         $('#tf option[value='+button_ts+']').prop('selected', true);
         $("#chart").empty();
         $("#chart_secondary").empty();
-        renderChart(_asset,$("#chart_symbol").text(),_time_res,_theme);
-        renderChartSecondary(_asset,$("#chart_symbol").text(),"1",_theme);
+        renderChart(_asset,$("#chart_symbol").text());
+        renderChartSecondary(_asset,$("#chart_symbol").text());
         //Highcharts.charts[0].setTitle({ text: _symbol });
 
     });
@@ -1624,14 +1662,8 @@ $(".input_number").on('change foucusout',function(){
     $(document).on('change', '#tfChart', function() {
           _time_res_scnd = $(this).children('option:selected').val();
         $("#chart_secondary").empty();
-        renderChartSecondary(_asset,_symbol,_time_res_scnd ,_theme);
+        renderChartSecondary(_asset,_symbol);
    });
-
-<!--    $('#tfChart').change(function() {-->
-<!--        _time_res_scnd = $(this).children('option:selected').val();-->
-<!--        $("#chart_secondary").empty();-->
-<!--        renderChartSecondary(_asset,_symbol,_time_res_scnd ,_theme);-->
-<!--    });-->
 
  // Display token chart
 		$("#crytpoInfo").click(function(){
@@ -1651,8 +1683,8 @@ $(".input_number").on('change foucusout',function(){
                 $('#tr_div label[data-value='+_time_res+']').addClass('active');
                 if($("#select_symbols").find("option:selected").val() !== '')
                 $("#chart_symbol").html('<h3>'+$("#select_symbols").find("option:selected").text()+'</h3>')
-                renderChart(_asset,_symbol,_time_res,_theme);
-                renderChartSecondary(_asset,_symbol,"1",_theme);
+                renderChart(_asset,_symbol);
+                renderChartSecondary(_asset,_symbol);
                 Highcharts.charts[0].setTitle({ text: _symbol });
             }else{
                   alert("Plesae select symbol from the list");
@@ -1750,6 +1782,7 @@ $(".input_number").on('change foucusout',function(){
                             _init_wallet_amount = Number($("#sel-options").val());
                             $("#init_amount").html("$"+_init_wallet_amount );
                             $("#today_init").html("$"+_init_wallet_amount);
+                            $("#asset_gain").html("0%");
                             $("#today_gain").html("0%");
                             $("#total_gain").html("0%");
                             $("#balance").html("$"+_init_wallet_amount);

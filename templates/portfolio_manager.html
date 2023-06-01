@@ -66,26 +66,7 @@
     </head>
 	<body data-spy="scroll" data-target=".navbar" data-offset="50">
 
-<!--<?php-->
-
-<!--// Set session variables-->
-<!--//$_SESSION["user"] = 'traubt';-->
-<!--//print_r($_SESSION);-->
-
-<!--// init stripe-->
-
-<!--//require_once('vendor\autoload.php');-->
-<!--require_once('vendor/stripe/stripe-php/init.php');-->
-
-<!--$stripe  = [-->
-<!--	'publishable' => 'pk_test_2a2xAELM6ClF3lkWXCpH2mCh',-->
-<!--	'private'	=> 'sk_test_vMa7e6IvrLlQowG1I7NL9EsO'-->
-<!--];-->
-
-<!--\Stripe\Stripe::setApiKey('sk_test_vMa7e6IvrLlQowG1I7NL9EsO');-->
-
-<!--?>-->
-
+		<label for="url" hidden="true">URL:</label><input type="text" id="url" name="username" value="{{url}}" hidden="true">
 
 		<nav class="navbar navbar-default" data-spy="affix" data-offset-top="150" >
 			  <div class="container-fluid">
@@ -799,6 +780,7 @@ For example, the price correlation between a given stock and itself, is 1. <br>
 <!-- ?></div>-->
 
 		<script>
+		    var _URL = $("#url").val();
 			var ticker_arr = []; // contain list of tickers selected by the user
 			var slice_ticker_arr = []; // contains subset of history quote with the relevant ticker
 			var ticker_list_arr = []; // contain list of tickers which contains actual quotes.

@@ -167,7 +167,7 @@ class crypto_bot:
         return None
 
   def _now(self):
-      return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+      return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
   def _get_broker(self):
       if self.market == 'crypto':
@@ -226,15 +226,17 @@ class crypto_bot:
                     self.pairs.remove(token)
                     continue
           # remove tickers which are not traded recently
-          max_dateTime = max([self.market_prices[i].index[-1] for i in self.pairs])
+          max_dateTime = max([self.market_prices[i].index[-1] for i in self.pairs if isinstance(self.market_prices[i].index[-1], datetime) ])
           for token in self.pairs:
-              if self.market_prices[token].index[-1] != max_dateTime:
+              if (self.market_prices[token].index[-1] != max_dateTime) \
+                or (not isinstance(self.market_prices[token].index[-1], datetime))\
+                 or (((datetime.strptime(self._now(), '%Y-%m-%d %H:%M:%S') - self.market_prices[token].index[-1]).seconds) > 36000):
+                  self.printf(f"{self._now()}: Token {token} Not valid last trading date: {self.market_prices[token].index[-1]}. Token will be removed.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
                   # print("removing symbol not recently traded:",token)
                   self.market_prices.pop(token)
                   self.pairs.remove(token)
       except BaseException as e:
-          self.printf(f"{self._now()}: Error in remove not active tokens: {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA",
-                 "NA", "NA", "NA", "NA")
+          self.printf(f"{self._now()}: Error in remove not active tokens: {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
       return None
 
   def _add_indicators(self,quotes,pair):

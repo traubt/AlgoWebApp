@@ -1,3 +1,5 @@
+
+
 function darkMode(chart){
     let darkMode = {
         width: $(chart).width() -10,
@@ -50,15 +52,25 @@ const chartOptions = {
 };
 
 
-
- renderChart = async (market, symbol,rs,theme) => {
+ renderChart = async (market, symbol) => {
     var end_point;
     var priceFormatted = '';
     _symbol = symbol;
-    let current_chart = ".grid-symbol-chart"
-    // convert time scale for binance
+    let current_chart = ".grid-symbol-chart";
+    let yahoo_time_period = {"1m":"1d","5m":"5d"};
 
-    market == 'crypto' ? rs = _b_time_res[rs] : rs;
+
+    // convert time scale for binance
+//    market == 'crypto' ? rs = _b_time_res[rs] : rs;
+    //set interval
+    const rs = _b_time_res[_time_res];
+    //get period for yahoo finanace
+    market == 'crypto' ? _period = "NONE" : _period = yahoo_time_period[rs];
+    market == 'crypto' ? _round = 2 : _round = 2;
+
+
+    console.log("rendering chart with",market,symbol,_b_time_res[_time_res],_period);
+
     // kill websocket
     if(_interval > 0){
 //        console.log("closing interval "+_interval);
@@ -118,7 +130,6 @@ const chartOptions = {
         legend.appendChild(secondRow);
 
         chart.subscribeCrosshairMove(param => {
-//            priceFormatted = ' O: '+_candlestick.open.toFixed(2) +' H: '+_candlestick.high.toFixed(2) +' L: '+_candlestick.low.toFixed(2) +' C: '+_candlestick.close.toFixed(2);
             if (param.time) {
                 const data = param.seriesPrices.get(_candleseries);
                 const open = data.value !== undefined ? data.value : data.open.toFixed(2);
@@ -128,7 +139,6 @@ const chartOptions = {
                 priceFormatted = ' O: '+open +' H: '+high +' L: '+low +' C: '+close;
             }
             firstRow.innerHTML = `${symbolName} ${priceFormatted}`;
-//            $("#firstRow").innerHTML = `${symbolName} <strong>${priceFormatted}</strong>`;
         });
 
         chart.timeScale().fitContent();
@@ -136,19 +146,22 @@ const chartOptions = {
      _candleseries = chart.addCandlestickSeries( candleStickColors );
 
 //    console.log("fetch symbol history");
-
     market == 'stocks' ?  end_point = 'yfStockHistory' :  end_point = 'binancePairHistory';
     add_to_log(get_current_date()+' Fetch symbol '+symbol+' quotes');
-    fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+rs)//+'&period=10d')
+    fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+_b_time_res[_time_res]+'&period='+_period)
         .then((r) => r.json())
-        .then((response) => {
-//            console.log(response)
-            _candleseries.setData(response);
+        .then((responseA) => {
+        //initialize chart
+            _candleseries.setData([]);
+            _candleseries.setData(responseA);
+            // keep the last date in case of changing time scale
+
               //SMA
               _sma_series = chart.addLineSeries({ color: '#08f9ee', lineWidth: 1 });
-              const sma_data = response
+              const sma_data = responseA
                 .filter((d) => d.ma10)
                 .map((d) => ({ time: d.time, value: d.ma10 }));
+                _sma_series.setData([]);
               _sma_series.setData(sma_data);
                 // VOLUME
                 _volumeSeries = chart.addHistogramSeries({
@@ -169,9 +182,10 @@ const chartOptions = {
                             bottom: 0,
                         },
                     });
-                      const vol_data = response
+                      const vol_data = responseA
                         .filter((d) => d.volume)
                         .map((d) => ({ time: d.time, value: d.volume,color: d.close > d.open ? '#4bffb5' : '#ff4976'}));
+                        _volumeSeries.setData([]);
                       _volumeSeries.setData(vol_data);
                 //RSI
                    _rsi_series = chart.addLineSeries({
@@ -179,9 +193,10 @@ const chartOptions = {
                     lineWidth: 1,
                     pane: 1,
                   });
-                  const rsi_data = response
+                  const rsi_data = responseA
                     .filter((d) => d.rsi)
                     .map((d) => ({ time: d.time, value: d.rsi }));
+                    _rsi_series.setData([]);
                   _rsi_series.setData(rsi_data);
               })
 
@@ -190,57 +205,56 @@ const chartOptions = {
 //        if (market == 'stocks'){
      // create a virtual websocket for symbol
                   _interval = setInterval(function() {
-                 // close binance socket
-//                 		if (Object(_binanceSocket).toString() !== '[object Object]'){
-//		                _binanceSocket.close();
-//		                };
-
-                        fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+rs)
+                        console.log("updating main chart with",market,symbol,_b_time_res[_time_res],_period);
+                        fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+_b_time_res[_time_res]+'&period='+_period)
                         .then((r) => r.json())
-                        .then((response) => {
+                        .then((responseB) => {
+                              try{
 //                            console.log("yahoo web socket is running...");
-                             _candlestick = response[response.length - 1];
-                             if (market == 'stocks'){
-                                     _candleseries.update({
-                                        time: _candlestick.time,
-                                        open: _candlestick.open,
-                                        high: _candlestick.high,
-                                        low: _candlestick.low,
-                                        close: _candlestick.close,
-                                        volume: _candlestick.volume,
-                                        rsi: _candlestick.rsi,
-                                        ma10: _candlestick.ma10,
-                                      })
-                             }else{
-                                                let cur_time = _candlestick.time * 1000
-                                                _candleseries.update({
+                             _candlestick = responseB[responseB.length - 1];
+                                     if (market == 'stocks'){
+                                             _candleseries.update({
                                                 time: _candlestick.time,
-                                                    "open": _candlestick.open,
-                                                    "high": _candlestick.high,
-                                                    "low": _candlestick.low,
-                                                    "close": _candlestick.close
-                                                   })
-                                                _volumeSeries.update({
-                                                time: _candlestick.time,
-                                                value : _candlestick.volume,
-                                                color: _candlestick.close > _candlestick.open ? '#4bffb5' : '#ff4976'
-                                                   })
-                                                _sma_series.update({
-                                                time: _candlestick.time,
-                                                value : _candlestick.ma10,
-                                                   })
-                                                _rsi_series.update({
-                                                time: _candlestick.time,
-                                                value : _candlestick.rsi,
-                                                   })
-//                                            console.log(cur_time, new Date(cur_time) +'  '+symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5)+' v: '+_candlestick.volume );
-                                    }
+                                                open: _candlestick.open,
+                                                high: _candlestick.high,
+                                                low: _candlestick.low,
+                                                close: _candlestick.close,
+                                                volume: _candlestick.volume,
+                                                rsi: _candlestick.rsi,
+                                                ma10: _candlestick.ma10,
+                                              })
+                                     }else{
+                                                        let cur_time = _candlestick.time * 1000
+                                                        _candleseries.update({
+                                                        time: _candlestick.time,
+                                                            "open": _candlestick.open,
+                                                            "high": _candlestick.high,
+                                                            "low": _candlestick.low,
+                                                            "close": _candlestick.close
+                                                           })
+                                                        _volumeSeries.update({
+                                                        time: _candlestick.time,
+                                                        value : _candlestick.volume,
+                                                        color: _candlestick.close > _candlestick.open ? '#4bffb5' : '#ff4976'
+                                                           })
+                                                        _sma_series.update({
+                                                        time: _candlestick.time,
+                                                        value : _candlestick.ma10,
+                                                           })
+                                                        _rsi_series.update({
+                                                        time: _candlestick.time,
+                                                        value : _candlestick.rsi,
+                                                           })
+        //                                            console.log(cur_time, new Date(cur_time) +'  '+symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5)+' v: '+_candlestick.volume );
+                                            }
                 // update legend
-                                firstRow.innerHTML = symbol + ' O: '+parseFloat(_candlestick.open) +' H: '+parseFloat(_candlestick.high) +' L: '+parseFloat(_candlestick.low) +' C: '+parseFloat(_candlestick.close)+'  ('+$("#tf").find("option:selected").text()+')';
+                                firstRow.innerHTML = symbol + ' O: '+parseFloat(_candlestick.open).toFixed(_round) +' H: '+parseFloat(_candlestick.high).toFixed(_round) +' L: '+parseFloat(_candlestick.low).toFixed(_round) +' C: '+parseFloat(_candlestick.close).toFixed(_round)+'  ('+$("#tf").find("option:selected").text()+')';
                                 secondRow.innerHTML = '<h6><span style="color:#08f9ee">SMA(10): '+_candlestick.ma10.toFixed(2)+'</span><span style="color:white" >&emsp;Vol: '+ _candlestick.volume.toFixed(2)+'</span><span style="color:#ccf102" >&emsp;RSI: '+ _candlestick.rsi.toFixed(2)+'</span></h6>'
                                 //update SHARPE chart
                                _highChart_val_a  = parseFloat(_candlestick.sharpe);
-
+                                } catch (error) {
+                                    console.log("Could not update Chart",error);
+                                }
 
                    //update wallet chart
                                 if(_inPosition)  {
@@ -267,18 +281,24 @@ const chartOptions = {
 
 //////////////////////////////////    SECONDARY CHART ////////////////////////////////////////////
 
- renderChartSecondary = async (market, symbol,rs,theme) => {
+ renderChartSecondary = async (market, symbol) => {
     let end_point;
     let priceFormatted = '';
     _symbol = symbol;
-    let origRs = rs;
     // convert time scale for binance
     let current_chart = ".grid-symbol-chart-secondary"
+    let yahoo_time_period = {"1m":"1d","5m":"5d"};
 
-    market == 'crypto' ? rs = _b_time_res[rs] : rs;
+//    market == 'crypto' ? rs = _b_time_res[rs] : rs;
+    const rs = _b_time_res[_time_res_scnd];
+    //get period for yahoo finanace
+    market == 'crypto' ? _period = "NONE" : _period = yahoo_time_period[rs];
+    market == 'crypto' ? _round = 2 : _round = 2;
+
+    console.log("rendering secondary chart with",market,symbol,_b_time_res[_time_res_scnd], _period);
+
     // kill websocket
     if(_intervalSec > 0){
-//        console.log("closing interval "+_interval);
         clearInterval(_intervalSec);
      }
 
@@ -335,7 +355,7 @@ const chartOptions = {
         legend.appendChild(secondRow);
         //append time frame
         $("#chart_secondary").append(_time_frame);
-        $("#tfChart").val(origRs);
+        $("#tfChart").val(_time_res_scnd);
         $('#chart_secondary').css({'position': 'relative'});
         $('#tfChart').css({
             'position': 'absolute',
@@ -367,19 +387,21 @@ const chartOptions = {
      __candleseries = chartSec.addCandlestickSeries( candleStickColors );
 
 //    console.log("fetch symbol history");
-
     market == 'stocks' ?  end_point = 'yfStockHistory' :  end_point = 'binancePairHistory';
     add_to_log(get_current_date()+' Fetch symbol '+symbol+' quotes');
-    fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+rs)//+'&period=10d')
+    fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+_b_time_res[_time_res_scnd]+'&period='+_period)
         .then((r) => r.json())
-        .then((response) => {
-//            console.log(response)
-            __candleseries.setData(response);
+        .then((responseC) => {
+//            console.log(responseC)
+            // initialize chart
+            __candleseries.setData([]);
+            __candleseries.setData(responseC);
               //SMA
               __sma_series = chartSec.addLineSeries({ color: '#08f9ee', lineWidth: 1 });
-              const sma_data = response
+              const sma_data = responseC
                 .filter((d) => d.ma10)
                 .map((d) => ({ time: d.time, value: d.ma10 }));
+                __sma_series.setData([]);
                __sma_series.setData(sma_data);
                 // VOLUME
                  __volumeSeries = chartSec.addHistogramSeries({
@@ -400,61 +422,59 @@ const chartOptions = {
                             bottom: 0,
                         },
                     });
-                      const vol_data = response
+                      const vol_data = responseC
                         .filter((d) => d.volume)
                         .map((d) => ({ time: d.time, value: d.volume,color: d.close > d.open ? '#4bffb5' : '#ff4976'}));
+
+                       __volumeSeries.setData([]);
                       __volumeSeries.setData(vol_data);
 
               })
 
-// run websockets
-
-//        if (market == 'stocks'){
-     // create a virtual websocket for symbol
                   _intervalSec = setInterval(function() {
-                 // close binance socket
-//                 		if (Object(_binanceSocket).toString() !== '[object Object]'){
-//		                _binanceSocket.close();
-//		                };
-
-                        fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+rs)
+                       console.log("update secondary with interval",_b_time_res[_time_res_scnd],_period)
+                        fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+_b_time_res[_time_res_scnd]+'&period='+_period)
                         .then((r) => r.json())
-                        .then((response) => {
+                        .then((responseD) => {
+                             try{
 //                            console.log("yahoo web socket is running...");
-                             candlestick = response[response.length - 1];
-                             if (market == 'stocks'){
-                                     __candleseries.update({
-                                        time: candlestick.time,
-                                        open: candlestick.open,
-                                        high: candlestick.high,
-                                        low: candlestick.low,
-                                        close: candlestick.close,
-                                        volume: candlestick.volume,
-                                        rsi: candlestick.rsi,
-                                        ma10: candlestick.ma10,
-                                      })
-                             }else{
-                                                let cur_time = candlestick.time * 1000
-                                                __candleseries.update({
+                             candlestick = responseD[responseD.length - 1];
+                                     if (market == 'stocks'){
+                                             __candleseries.update({
                                                 time: candlestick.time,
-                                                    "open": candlestick.open,
-                                                    "high": candlestick.high,
-                                                    "low": candlestick.low,
-                                                    "close": candlestick.close
-                                                   })
-                                                __volumeSeries.update({
-                                                time: candlestick.time,
-                                                value : candlestick.volume,
-                                                color: candlestick.close > candlestick.open ? '#4bffb5' : '#ff4976'
-                                                   })
-                                                __sma_series.update({
-                                                time: candlestick.time,
-                                                value : candlestick.ma10,
-                                                   })
-//                                            console.log(cur_time, new Date(cur_time) +'  '+symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5)+' v: '+_candlestick.volume );
-                                    }
+                                                open: candlestick.open,
+                                                high: candlestick.high,
+                                                low: candlestick.low,
+                                                close: candlestick.close,
+                                                volume: candlestick.volume,
+                                                rsi: candlestick.rsi,
+                                                ma10: candlestick.ma10,
+                                              })
+                                     }else{
+                                                        let cur_time = candlestick.time * 1000
+                                                        __candleseries.update({
+                                                        time: candlestick.time,
+                                                            "open": candlestick.open,
+                                                            "high": candlestick.high,
+                                                            "low": candlestick.low,
+                                                            "close": candlestick.close
+                                                           })
+                                                        __volumeSeries.update({
+                                                        time: candlestick.time,
+                                                        value : candlestick.volume,
+                                                        color: candlestick.close > candlestick.open ? '#4bffb5' : '#ff4976'
+                                                           })
+                                                        __sma_series.update({
+                                                        time: candlestick.time,
+                                                        value : candlestick.ma10,
+                                                           })
+        //                                            console.log(cur_time, new Date(cur_time) +'  '+symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5)+' v: '+_candlestick.volume );
+                                            }
+                                  }catch (error){
+                                    console.log("Could not update secondary chart",error);
+                                  }
                 // update legend
-                                firstRow.innerHTML = symbol + ' O: '+parseFloat(candlestick.open) +' H: '+parseFloat(candlestick.high) +' L: '+parseFloat(candlestick.low) +' C: '+parseFloat(candlestick.close);
+                                firstRow.innerHTML = symbol + ' O: '+parseFloat(candlestick.open).toFixed(_round) +' H: '+parseFloat(candlestick.high).toFixed(_round) +' L: '+parseFloat(candlestick.low).toFixed(_round) +' C: '+parseFloat(candlestick.close).toFixed(_round);
 //                                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ candlestick.volume.toFixed(2)+'</span></h6>'
 
                             })
