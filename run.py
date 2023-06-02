@@ -30,6 +30,7 @@ from binance import Client, ThreadedWebsocketManager, ThreadedDepthCacheManager
 from binance.enums import *
 from twilio.rest import Client as WA
 import pandas as pd
+import pandas_ta
 from wallet import wallet
 from order import order
 from binance_algo import crypto_bot as bot
@@ -467,6 +468,29 @@ def calc_sharpe():
                    float(pd.DataFrame([float(i[4]) for i in data[-51:]]).pct_change().std())*100,2)
     # print("Benchmark sharpe:",sharpe)
     return str(sharpe)
+
+@app.route('/calc_indicators', methods=['POST'])
+def calc_indicators():
+    o_indicators = {}
+    data = request.json
+    #convert to dataframe
+    datadf = pd.DataFrame(data)
+    indicators = request.args.get('indicators')
+    for indicator in json.loads(indicators):
+        if indicator == "SMA10":
+            res  = pd.DataFrame({'Numbers':[i['close'] for i in data]}).rolling(10).mean()
+            res.fillna('', inplace=True)
+            datadf['ma10'] = list(res['Numbers'])
+        elif indicator == "SMA100":
+            res  = pd.DataFrame({'Numbers':[i['close'] for i in data]}).rolling(100).mean()
+            res.fillna('', inplace=True)
+            datadf['ma100'] = list(res['Numbers'])
+        elif indicator == "RSI":
+            res = pd.DataFrame({'Numbers': [i['close'] for i in data]}).ta.rsi(length=14)
+            res = pd.DataFrame( {'rsi': list(pandas_ta.rsi(res['Numbers'], window=14))})
+            res.fillna('', inplace=True)
+            datadf['rsi'] = list(res['rsi'])
+    return jsonify(datadf.to_dict())
 
 @app.route('/binancePairHistory')
 def binancePairHistory():
