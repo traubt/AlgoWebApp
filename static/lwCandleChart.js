@@ -282,7 +282,7 @@ const chartOptions = {
                                 firstRow.innerHTML = symbol + ' O: '+parseFloat(indicator_object.open[last]).toFixed(_round) +' H: '+parseFloat(indicator_object.high[last]).toFixed(_round) +' L: '+parseFloat(indicator_object.low[last]).toFixed(_round) +' C: '+parseFloat(indicator_object.close[last]).toFixed(_round)+'  ('+$("#tf").find("option:selected").text()+')';
                                 secondRow.innerHTML = '<h6 style="margin-left:5px"><span style="color:#08f9ee">SMA(10): '+indicator_object.ma10[last].toFixed(2)+'</span><span style="color:yellow">&emsp;SMA(100): '+indicator_object.ma100[last].toFixed(2)+'</span><span style="color:white" >&emsp;Vol: '+ indicator_object.volume[last].toFixed(2)+'</span><span style="color:#ccf102" >&emsp;RSI: '+ indicator_object.rsi[last].toFixed(2)+'</span></h6>'
 //                                //update SHARPE chart
-//                               _highChart_val_a  = parseFloat(_candlestick.sharpe);
+                               _highChart_val_a  = indicator_object.sharpe[last];
 //                   //update wallet chart
                                 if(_inPosition)  {
                                        let qty = _wallet[user].find(x => x.asset === symbol).free;
