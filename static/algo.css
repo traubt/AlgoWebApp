@@ -40,15 +40,25 @@ body{
   text-align: start;
   padding: 1px 0;
   font-size: 12px;
-  border: solid 0.5px lightblue;
+  border: solid 0.5px #eee;
   border-radius:5px;
 }
 
 /* layout */
 .grid-navbar{
-   grid-column : 1/-1;
+   grid-column : 1/17;
    display:flex;
    justify-content: space-between;
+}
+
+.grid-navbar-right{
+   grid-column : 19/-1;
+   display:flex;
+   justify-content: space-between;
+}
+
+#collapse{
+    grid-area: 2/1/3/-1
 }
 
 .grid-collapse-params{
