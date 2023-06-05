@@ -23,8 +23,6 @@
         <script type="text/javascript" src="../static/indicators.js" defer></script>
         <script type="text/javascript" src="../static/validate.js" defer></script>
 
-
-
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
         <script type="text/javascript" http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'" src="https://s3.tradingview.com/tv.js"></script>
@@ -979,9 +977,11 @@ function update_stats_table(){
     _stat_table.row.add(['Profit(%):',(((_wallet[user][0].free - _init_wallet_amount)/_init_wallet_amount)*100).toFixed(2)+'%']);
     _stat_table.row.add(['No. Transactions:',_trx_table.column(0).data().length]);
     _algorun["num_trx"] = _trx_table.column(0).data().length;
+    $("#title_transaction").text((Number(_user_info[0].total_transaction)+Number(_algorun["num_trx"]))+"/"+_plans[_user_info[0][2]][1]);
     _stat_table.row.add(['Avg. Profit:',(_trx_table.column( 11 ).data().reduce(function (a, b) { return a + b; })/_trx_table.column(0).data().length).toFixed(2)]);
     _stat_table.row.add(['Holding Duration:',msToHMS(_trx_table.column( 9 ).data().reduce(function (a, b) { return a + b; })*1000)]);
     _algorun["duration"] = _trx_table.column( 9 ).data().reduce(function (a, b) { return a + b; })*1000;
+    $("#title_duration").text((Number(_user_info[0].total_duration)+Number(_algorun["duration"]))/1000+"/"+Number(_plans[_user_info[0][2]][2])/1000 +" sec.");
     _stat_table.row.add(['Biggest Winner:',_trx_table.cell(_trx_table.column(11).data().indexOf(Math.max.apply(Math,_trx_table.column(11).data())), 5).data()]);
     _stat_table.row.add(['Max gain:',Math.max.apply(Math,_trx_table.column(11).data())]);
     _stat_table.row.add(['Biggest Loser:',_trx_table.cell(_trx_table.column(11).data().indexOf(Math.min.apply(Math,_trx_table.column(11).data())), 5).data()]);
@@ -1911,7 +1911,7 @@ $("#runAlgo").click(async function(){
             };
             _query_output = await response.json();
 <!--            console.log("query output user limit duration : " + _query_output+ " Plan duration : "+plan_duration_limit);-->
-            if (Number(_query_output) > Number(plan_transactions_limit)){
+            if (Number(_query_output) > Number(plan_duration_limit)){
                 dialog('AlgoRun Duration Limit', 'You have exceeded Algorun time : '+_query_output+' seconds, which is above the plan limit allocation of:'+plan_duration_limit+' seconds.<br>Please consider upgrading your plan.' ,BootstrapDialog.TYPE_INFO);
                 return 0;
             }
@@ -1986,6 +1986,9 @@ $("#runAlgo").click(async function(){
                 $("#collapse").hide();
                 $(".grid-algo-title").show();
                 $("#title_plan").text(_user_info[0][2]);
+                $("#title_transaction").text(_user_info[0].total_transaction+"/"+_plans[_user_info[0][2]][1]);
+                $("#title_duration").text(Number(_user_info[0].total_duration)/1000+"/"+Number(_plans[_user_info[0][2]][2])/1000 +" sec.");
+                $("#title_runs").text(_user_info[0].total_runs+"/"+_plans[_user_info[0][2]][3]);
                 $('html, body').animate({ scrollTop: 0 }, 'slow');
                 run_bot()
           } catch (error) {
@@ -2017,16 +2020,11 @@ $("#runAlgo").click(async function(){
                                 };
                 _buysell_array.push(_buysell_element);
                 _lineSeries.setMarkers(_buysell_array);
+                $("#title_runs").text((Number(_user_info[0].total_runs)+1)+"/"+_plans[_user_info[0][2]][3]);
             };
             // send request to the server to stop the engine
             stop_crypto_bot();
-            // enable manual controls
-<!--             $("#crytpoInfo").prop("disabled", false);-->
-<!--            $("#buyOrder").prop("disabled", false);-->
-<!--            $("#resetWallet").prop("disabled", false);-->
-<!--            $("#runAlgo").prop("disabled", false);-->
-<!--            $("#logout").prop("disabled", false);-->
-<!--            $("nav").show();-->
+
     })
 
     // rules management

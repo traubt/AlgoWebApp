@@ -146,6 +146,8 @@ body{
     grid-column : 8/17;
     justify-content: space-evenly;
     margin-top: -87px;
+    background-color: #18189ae3;
+    color: white;
 }
 .grid-transactions{
     grid-column : 1/21;
