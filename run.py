@@ -1031,6 +1031,8 @@ def get_query():
                 sql = f"SELECT sum(duration) from user_algorun where username='{user}' and run_date = '{today}';"
             case "Total_Transactions":
                 sql = f"SELECT sum(num_trx) from user_algorun where username='{user}' and run_date = '{today}';"
+            case "Total_Runs":
+                sql = f"SELECT count(1) from user_algorun where username='{user}' and run_date = '{today}';"
             case "User_Wallet":
                 sql = f"SELECT * from user_wallet where username='{user}';"
             case "Update_Wallet":

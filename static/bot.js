@@ -171,7 +171,6 @@ function stop_crypto_bot(){
   }
 }
 
-
 function update_algorun_db(){
   try
   {

@@ -51,6 +51,11 @@ body{
    justify-content: space-between;
 }
 
+.grid-algo-title{
+   grid-column : 1/17;
+   height: 26px;
+}
+
 .grid-navbar-right{
    grid-column : 19/-1;
    display:flex;
@@ -83,18 +88,20 @@ body{
     grid-column: 1/8;
     justify-self: start;
     align-self:start;
-
+    margin-top: -25px;
 }
 .grid-chart-info{
     grid-area : 4/1/5/8;
     justify-self: start;
     align-self:end;
+    margin-top: -80px;
 }
 .grid-wallet_progress{
     /rid-area : 4/10/5/14;
     display:flex;
     grid-column : 8/17;
     padding: 6px 70px;
+    margin-top: -25px;
 }
 .grid-sharpe-title{
     grid-column : 16/20;
@@ -653,4 +660,12 @@ h2 {
 .right_nav, .left_nav{
     display:flex;
     gap:2px;
+}
+
+#algo_info{
+    font-size:14px;
+}
+
+#algo_info label{
+    margin-left:10px
 }

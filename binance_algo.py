@@ -78,8 +78,6 @@ class crypto_bot:
         self._no_movement = 60
         self._secure_profit = 1
 
-
-
     # handle user socket messages
     @socket.on(self.user)
     def handle_message(msg):
@@ -213,22 +211,29 @@ class crypto_bot:
           self.pairs = sorted(stockList)[0:100]
 
   def remove_non_active_tokens(self):
-      # or (not isinstance(self.market_prices[token].index[-1], datetime)) \
       try:
           #sync self.pairs with quotes
           self.pairs = sorted(list(self.market_prices.keys()))
           # Remove empty quotes
-          max_dateTime = max([self.market_prices[i].index[-1] for i in self.pairs if isinstance(self.market_prices[i].index[-1], datetime)])
           for token in self.pairs:
-                if (len(self.market_prices[token])) \
-                        or (self.market_prices[token].index[-1] != max_dateTime) \
-                        or (((datetime.strptime(self._now(), '%Y-%m-%d %H:%M:%S') - self.market_prices[token].index[-1]).seconds) > int(self._interval) * 60):
+                try:
+                    if (self.market_prices[token].index[-1]) and (isinstance(self.market_prices[token].index[-1],pd.Timestamp)):
+                      continue
+                except BaseException as e:
+                    print(f"Removing token {token} : {e}")
                     self.market_prices.pop(token)
                     self.pairs.remove(token)
+                    continue
+          # remove tickers which are not traded recently
+          max_dateTime = max([self.market_prices[i].index[-1] for i in self.pairs if isinstance(self.market_prices[i].index[-1],pd.Timestamp)])
+          for token in self.pairs:
+              if self.market_prices[token].index[-1] != max_dateTime:
+                  self.printf(f"{self._now()}: Removing token: {token}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+                  self.market_prices.pop(token)
+                  self.pairs.remove(token)
       except BaseException as e:
           self.printf(f"{self._now()}: Error in remove not active tokens: {e}", {self._now()}, "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA", "NA")
       return None
-
   def _add_indicators(self,quotes,pair):
       err = 0
       try:
