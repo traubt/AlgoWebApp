@@ -1,3 +1,46 @@
+async function get_tv_symbol_code(){
+    let code = "0000";
+    let search_url = "https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/search?limit=30&query="+_symbol+"&type=&exchange=";
+    const response1 = await fetch(search_url);
+    const data = await response1.json();
+    const exchange = data[0].exchange;
+    const code_url = "https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/symbols?symbol="+exchange+"%20%3A"+_symbol;
+    const response2 = await fetch(code_url);
+    const data2 = await response2.json();
+//    console.log(data2);
+    _symbol_code = data2.ticker;
+}
+
+function mapMarketData(market,data){
+    try{
+        var quotes = [];
+        if(market == 'crypto'){
+                  quotes =   data.map((d) => ({
+                  time: d[0] / 1000,
+                  open: d[1] * 1,
+                  high: d[2] * 1,
+                  low: d[3] * 1,
+                  close: d[4] * 1,
+                  volume: d[5] * 1,
+                }));
+        }else{ // td quotes
+                for (let i = 0; i < data.c.length; i++) {
+                      let quote = {};
+                      quote.time = data.t[i];
+                      quote.open = data.o[i];
+                      quote.high = data.h[i];
+                      quote.low = data.l[i];
+                      quote.close = data.c[i];
+                      quote.volume = data.v[i]
+                      quotes.push(quote);
+                    }
+        }
+    }catch(e){
+        dialog("Error","Error in mapping market data"+e,BootstrapDialog.TYPE_INFO);
+    }
+    return quotes;
+}
+
 function generateChartData(time,indicator) {
   const timeSeries = [];
   let dataPoint = {}
@@ -66,18 +109,16 @@ const chartOptions = {
     let current_chart = ".grid-symbol-chart";
     let yahoo_time_period = {"1m":"1d","5m":"5d"};
 
-
-    // convert time scale for binance
-//    market == 'crypto' ? rs = _b_time_res[rs] : rs;
     //set interval
     const rs = _b_time_res[_time_res];
     //get period for yahoo finanace
     market == 'crypto' ? _period = "NONE" : _period = yahoo_time_period[rs];
     market == 'crypto' ? _round = 2 : _round = 2;
-
-
-//    console.log("rendering chart with",market,symbol,_b_time_res[_time_res],_period);
-
+    // get symbol code for td symbols
+    if(market !== 'crypto'){
+        await get_tv_symbol_code();
+//        console.log(`symbol ${_symbol} code is: ${_symbol_code}`)
+    }
     // kill websocket
     if(_interval > 0){
 //        console.log("closing interval "+_interval);
@@ -112,11 +153,11 @@ const chartOptions = {
         });
 
         const areaSeries = chart.addAreaSeries({
-	topColor: '#2962FF',
-	bottomColor: 'rgba(41, 98, 255, 0.28)',
-	lineColor: '#2962FF',
-	lineWidth: 2,
-	crossHairMarkerVisible: false,
+            topColor: '#2962FF',
+            bottomColor: 'rgba(41, 98, 255, 0.28)',
+            lineColor: '#2962FF',
+            lineWidth: 2,
+            crossHairMarkerVisible: false,
         });
 
         const symbolName = symbol;
@@ -151,29 +192,22 @@ const chartOptions = {
 
         chart.timeScale().fitContent();
 
-     _candleseries = chart.addCandlestickSeries( candleStickColors );
+        _candleseries = chart.addCandlestickSeries( candleStickColors );
 
 //    History
-    market == 'stocks' ?  end_point = 'yfStockHistory' :  end_point = 'https://api.binance.com/api/v1/klines?symbol=';
+    market == 'stocks' ?  end_point = `https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/history?symbol=${_symbol_code}&resolution=${_time_res}&from=1685536315&to=1685562899` :  end_point = `https://api.binance.com/api/v1/klines?symbol=${_symbol}&interval=${_b_time_res[_time_res]}`;
     add_to_log(get_current_date()+' Fetch symbol '+symbol+' quotes');
-//    fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+_b_time_res[_time_res]+'&period='+_period)
-    fetch(end_point+symbol+'&interval='+_b_time_res[_time_res])
+    fetch(end_point)
         .then((r) => r.json())
         .then(data => {
-                         let chartData =   data.map((d) => ({
-                              time: d[0] / 1000,
-                              open: d[1] * 1,
-                              high: d[2] * 1,
-                              low: d[3] * 1,
-                              close: d[4] * 1,
-                              volume: d[5] * 1,
-                            }));
-                            _candleseries.setData(chartData)
+                         let chartData = mapMarketData(market,data)
+                         _candleseries.setData(chartData)
                 // VOLUME
                 _volumeSeries = chart.addHistogramSeries({
                         color: '#26a69a',
                         priceFormat: {
                             type: 'volume',
+                                pane: 2,
                         },
                         priceScaleId: '', // set as an overlay by setting a blank priceScaleId
                         // set the positioning of the volume series
@@ -215,7 +249,7 @@ const chartOptions = {
                      const sma100_data = generateChartData(chartData.indicators.time,chartData.indicators.ma100)
                       _sma100_series.setData(sma100_data);
 //                //RSI
-                    _rsi_series = chart.addLineSeries({color: '#ccf102',lineWidth: 1, pane: 1,});
+                    _rsi_series = chart.addLineSeries({color: '#ccf102',lineWidth: 1, pane: 2,});
                     const rsi_data = generateChartData(chartData.indicators.time,chartData.indicators.rsi)
                     _rsi_series.setData(rsi_data);
 
@@ -229,18 +263,10 @@ const chartOptions = {
 //     // create a virtual websocket for symbol
                   _interval = setInterval(function() {
 //                        console.log("updating main chart with",market,symbol,_b_time_res[_time_res],_period);
-                            fetch(end_point+symbol+'&interval='+_b_time_res[_time_res])
+                            fetch(end_point)
                             .then((r) => r.json())
                             .then(data => {
-                                              let chartData =   data.map((d) => ({
-                                              time: d[0] / 1000,
-                                              open: d[1] * 1,
-                                              high: d[2] * 1,
-                                              low: d[3] * 1,
-                                              close: d[4] * 1,
-                                              volume: d[5] * 1,
-                                            }));
-                                            // add rest of indicators
+                                              let chartData = mapMarketData(market,data);
                                             fetch(_URL+'/calc_indicators?indicators='+JSON.stringify(_chart_indicators), {
                                                                   method: 'POST',
                                                                   headers: {
@@ -321,7 +347,10 @@ const chartOptions = {
     market == 'crypto' ? _period = "NONE" : _period = yahoo_time_period[rs];
     market == 'crypto' ? _round = 2 : _round = 2;
 
-//    console.log("rendering secondary chart with",market,symbol,_b_time_res[_time_res_scnd], _period);
+    if(market !== 'crypto'){
+        await get_tv_symbol_code();
+//        console.log(`symbol ${_symbol} code is: ${_symbol_code}`)
+    }
 
     // kill websocket
     if(_intervalSec > 0){
@@ -411,24 +440,18 @@ const chartOptions = {
             __candleseries = chartSec.addCandlestickSeries( candleStickColors );
 
 //    History
-    market == 'stocks' ?  end_point = 'yfStockHistory' :  end_point = 'https://api.binance.com/api/v1/klines?symbol=';
-    fetch(end_point+symbol+'&interval='+_b_time_res[_time_res_scnd])
+    market == 'stocks' ?  end_point = `https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/history?symbol=${_symbol_code}&resolution=${_time_res_scnd}&from=1685536315&to=1685562899` :  end_point = `https://api.binance.com/api/v1/klines?symbol=${_symbol}&interval=${_b_time_res[_time_res_scnd]}`;
+    fetch(end_point)
         .then((r) => r.json())
         .then(data => {
-                         let chartData =   data.map((d) => ({
-                              time: d[0] / 1000,
-                              open: d[1] * 1,
-                              high: d[2] * 1,
-                              low: d[3] * 1,
-                              close: d[4] * 1,
-                              volume: d[5] * 1,
-                            }));
-                            __candleseries.setData(chartData)
+                         let chartData =  mapMarketData(market,data);
+                         __candleseries.setData(chartData)
                 // VOLUME
                 __volumeSeries = chartSec.addHistogramSeries({
                         color: '#26a69a',
                         priceFormat: {
                             type: 'volume',
+                            pane: 1,
                         },
                         priceScaleId: '', // set as an overlay by setting a blank priceScaleId
                         // set the positioning of the volume series
@@ -477,162 +500,54 @@ const chartOptions = {
                      })
         })
 
-
-// run websockets
-
-//        if (market == 'stocks'){
-//     // create a virtual websocket for symbol
-                  _intervalSec = setInterval(function() {
-//                        console.log("updating main chart with",market,symbol,_b_time_res[_time_res_scnd],_period);
-                            fetch(end_point+symbol+'&interval='+_b_time_res[_time_res_scnd])
-                            .then((r) => r.json())
-                            .then(data => {
-                                              let chartData =   data.map((d) => ({
-                                              time: d[0] / 1000,
-                                              open: d[1] * 1,
-                                              high: d[2] * 1,
-                                              low: d[3] * 1,
-                                              close: d[4] * 1,
-                                              volume: d[5] * 1,
-                                            }));
-                                            // add rest of indicators
-                                            fetch(_URL+'/calc_indicators?indicators='+JSON.stringify(_chart_indicators), {
-                                                                  method: 'POST',
-                                                                  headers: {
-                                                                    'Content-Type': 'application/json',
-                                                                  },
-                                                                  body: JSON.stringify(chartData),
-                                                                })
-                                            .then(data => data.json())
-                                            .then(indicator_object =>{
-                                                chartData.indicators =  indicator_object;
-                                                const last = Object.keys(indicator_object.time).length-1
-//                                                console.log("closing price:",indicator_object.close[last])
-//                                                console.log("volume prices:",indicator_object.volume[last])
-                                                    __candleseries.update({
-                                                    time: indicator_object.time[last],
-                                                    open: indicator_object.open[last],
-                                                    high: indicator_object.high[last],
-                                                    low: indicator_object.low[last],
-                                                    close: indicator_object.close[last],
-                                                    })
-                                                    __volumeSeries.update({
-                                                        time:indicator_object.time[last],
-                                                        value : indicator_object.volume[last],
-                                                        color: indicator_object.close[last] > indicator_object.open[last] ? '#4bffb5' : '#ff4976'
-                                                           })
-                                                        __sma_series.update({
-                                                        time: indicator_object.time[last],
-                                                        value : indicator_object.ma10[last],
-                                                           })
-//                                                        _sma100_series.update({
-//                                                        time: indicator_object.time[last],
-//                                                        value : indicator_object.ma100[last],
-//                                                           })
-//                                                        _rsi_series.update({
-//                                                        time:indicator_object.time[last],
-//                                                        value : indicator_object.rsi[last],
-//                                                           })
-//                // update legend
-                                firstRow.innerHTML = symbol + ' O: '+parseFloat(indicator_object.open[last]).toFixed(_round) +' H: '+parseFloat(indicator_object.high[last]).toFixed(_round) +' L: '+parseFloat(indicator_object.low[last]).toFixed(_round) +' C: '+parseFloat(indicator_object.close[last]).toFixed(_round);
-                                })
-                            })
-                }, 2000);
-
-//    console.log("fetch symbol history");
-//    market == 'stocks' ?  end_point = 'yfStockHistory' :  end_point = 'binancePairHistory';
-//    add_to_log(get_current_date()+' Fetch symbol '+symbol+' quotes');
-//    fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+_b_time_res[_time_res_scnd]+'&period='+_period)
-//        .then((r) => r.json())
-//        .then((responseC) => {
-////            console.log(responseC)
-//            // initialize chart
-//            __candleseries.setData([]);
-//            __candleseries.setData(responseC);
-//              //SMA
-//              __sma_series = chartSec.addLineSeries({ color: '#08f9ee', lineWidth: 1 });
-//              const sma_data = responseC
-//                .filter((d) => d.ma10)
-//                .map((d) => ({ time: d.time, value: d.ma10 }));
-//                __sma_series.setData([]);
-//               __sma_series.setData(sma_data);
-//                // VOLUME
-//                 __volumeSeries = chartSec.addHistogramSeries({
-//                        color: '#26a69a',
-//                        priceFormat: {
-//                            type: 'volume',
-//                        },
-//                        priceScaleId: '', // set as an overlay by setting a blank priceScaleId
-//                        // set the positioning of the volume series
-//                        scaleMargins: {
-//                            top: 0.7, // highest point of the series will be 70% away from the top
-//                            bottom: 0,
-//                        },
-//                    });
-//                    __volumeSeries.priceScale().applyOptions({
-//                        scaleMargins: {
-//                            top: 0.7, // highest point of the series will be 70% away from the top
-//                            bottom: 0,
-//                        },
-//                    });
-//                      const vol_data = responseC
-//                        .filter((d) => d.volume)
-//                        .map((d) => ({ time: d.time, value: d.volume,color: d.close > d.open ? '#4bffb5' : '#ff4976'}));
-//
-//                       __volumeSeries.setData([]);
-//                      __volumeSeries.setData(vol_data);
-//
-//              })
-
-//                  _intervalSec = setInterval(function() {
-//                       console.log("update secondary with interval",_b_time_res[_time_res_scnd],_period)
-//                        fetch(_URL+'/'+end_point+'?symbol='+symbol+'&interval='+_b_time_res[_time_res_scnd]+'&period='+_period)
-//                        .then((r) => r.json())
-//                        .then((responseD) => {
-//                             try{
-////                            console.log("yahoo web socket is running...");
-//                             candlestick = responseD[responseD.length - 1];
-//                                     if (market == 'stocks'){
-//                                             __candleseries.update({
-//                                                time: candlestick.time,
-//                                                open: candlestick.open,
-//                                                high: candlestick.high,
-//                                                low: candlestick.low,
-//                                                close: candlestick.close,
-//                                                volume: candlestick.volume,
-//                                                rsi: candlestick.rsi,
-//                                                ma10: candlestick.ma10,
-//                                              })
-//                                     }else{
-//                                                        let cur_time = candlestick.time * 1000
-//                                                        __candleseries.update({
-//                                                        time: candlestick.time,
-//                                                            "open": candlestick.open,
-//                                                            "high": candlestick.high,
-//                                                            "low": candlestick.low,
-//                                                            "close": candlestick.close
-//                                                           })
-//                                                        __volumeSeries.update({
-//                                                        time: candlestick.time,
-//                                                        value : candlestick.volume,
-//                                                        color: candlestick.close > candlestick.open ? '#4bffb5' : '#ff4976'
-//                                                           })
-//                                                        __sma_series.update({
-//                                                        time: candlestick.time,
-//                                                        value : candlestick.ma10,
-//                                                           })
-//        //                                            console.log(cur_time, new Date(cur_time) +'  '+symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5)+' v: '+_candlestick.volume );
-//                                            }
-//                                  }catch (error){
-//                                    console.log("Could not update secondary chart",error);
-//                                  }
-//                // update legend
-//                                firstRow.innerHTML = symbol + ' O: '+parseFloat(candlestick.open).toFixed(_round) +' H: '+parseFloat(candlestick.high).toFixed(_round) +' L: '+parseFloat(candlestick.low).toFixed(_round) +' C: '+parseFloat(candlestick.close).toFixed(_round);
-////                                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ candlestick.volume.toFixed(2)+'</span></h6>'
-//
-//                            })
-////                firstRow.innerHTML = symbol + ' O: '+_candlestick.open.toFixed(5) +' H: '+_candlestick.high.toFixed(5) +' L: '+_candlestick.low.toFixed(5) +' C: '+_candlestick.close.toFixed(5);
-////                secondRow.innerHTML = '<h6><span style="color:blue">SMA(10): '+_candlestick.ma10.toFixed(2)+'</span><span style="color:black" >&emsp;Vol: '+ _candlestick.volume.toFixed(2)+'</span><span style="color:#ccf102" >&emsp;RSI: '+ _candlestick.rsi.toFixed(2)+'</span></h6>'
-//                }, 2000);
+          _intervalSec = setInterval(function() {
+    //                        console.log("updating main chart with",market,symbol,_b_time_res[_time_res_scnd],_period);
+                    fetch(end_point)
+                    .then((r) => r.json())
+                    .then(data => {
+                                      let chartData =   mapMarketData(market,data);
+                                    // add rest of indicators
+                                    fetch(_URL+'/calc_indicators?indicators='+JSON.stringify(_chart_indicators), {
+                                                          method: 'POST',
+                                                          headers: {
+                                                            'Content-Type': 'application/json',
+                                                          },
+                                                          body: JSON.stringify(chartData),
+                                                        })
+                                    .then(data => data.json())
+                                    .then(indicator_object =>{
+                                        chartData.indicators =  indicator_object;
+                                        const last = Object.keys(indicator_object.time).length-1
+    //                                                console.log("closing price:",indicator_object.close[last])
+    //                                                console.log("volume prices:",indicator_object.volume[last])
+                                            __candleseries.update({
+                                            time: indicator_object.time[last],
+                                            open: indicator_object.open[last],
+                                            high: indicator_object.high[last],
+                                            low: indicator_object.low[last],
+                                            close: indicator_object.close[last],
+                                            })
+                                            __volumeSeries.update({
+                                                time:indicator_object.time[last],
+                                                value : indicator_object.volume[last],
+                                                color: indicator_object.close[last] > indicator_object.open[last] ? '#4bffb5' : '#ff4976'
+                                                   })
+                                                __sma_series.update({
+                                                time: indicator_object.time[last],
+                                                value : indicator_object.ma10[last],
+                                                   })
+    //                                                        _sma100_series.update({
+    //                                                        time: indicator_object.time[last],
+    //                                                        value : indicator_object.ma100[last],
+    //                                                           })
+    //                                                        _rsi_series.update({
+    //                                                        time:indicator_object.time[last],
+    //                                                        value : indicator_object.rsi[last],
+    //                                                           })
+    //                // update legend
+                        firstRow.innerHTML = symbol + ' O: '+parseFloat(indicator_object.open[last]).toFixed(_round) +' H: '+parseFloat(indicator_object.high[last]).toFixed(_round) +' L: '+parseFloat(indicator_object.low[last]).toFixed(_round) +' C: '+parseFloat(indicator_object.close[last]).toFixed(_round);
+                        })
+                    })
+        }, 2000);
 };
 

@@ -837,6 +837,7 @@
     var fsz =  fsize[Math.floor(Math.random()*fsize.length)];
     var style = "style = 'color:"+clr+";font-size:"+fsz+";font-weight:"+wgt+"; font-family: "+fsz+";'"
     var _chart_indicators = ["SMA10","SMA100","RSI","SHARPE"];
+    var _symbol_code;
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
@@ -1185,7 +1186,7 @@ async function _init_user_plan(){
           return 0
         };
         _query_output = await response.json();
-        console.log("User total duration:",_query_output);
+<!--        console.log("User total duration:",_query_output);-->
         _user_info[0]["total_duration"]=_query_output;
 
         query = "Total_Transactions";
@@ -1197,7 +1198,7 @@ async function _init_user_plan(){
           return 0
         };
         _query_output = await response.json();
-        console.log("User total transactions:",_query_output);
+<!--        console.log("User total transactions:",_query_output);-->
         _user_info[0]["total_transaction"]=_query_output;
 
         query = "Total_Runs";
@@ -1209,7 +1210,7 @@ async function _init_user_plan(){
           return 0
         };
         _query_output = await response.json();
-        console.log("User total runs:",_query_output);
+<!--        console.log("User total runs:",_query_output);-->
         _user_info[0]["total_runs"]=_query_output;
 
     }catch(e){
@@ -1618,7 +1619,7 @@ $("#send-chat").click(function(){
         $("#ticker_type").text("Select Crypto USDT token:")
     }else{
         _asset = 'stocks';
-        _symbol = 'AAPL'
+        _symbol = 'SPY'
         $("#ticker_type").text("Select default symbol (S&P 500)")
     }
 

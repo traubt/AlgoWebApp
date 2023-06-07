@@ -22,6 +22,7 @@ body{
     padding-left:10px;
     height: 98vh;
     width: 98vw;
+    background-color: #4ace76f5;
 }
 
 /*******************************  GRID LAYOUT ***********************************/
@@ -63,7 +64,8 @@ body{
 }
 
 #collapse{
-    grid-area: 2/1/3/-1
+    grid-area: 2/1/3/-1;
+    margin-bottom: 15px;
 }
 
 .grid-collapse-params{
@@ -102,6 +104,8 @@ body{
     grid-column : 8/17;
     padding: 6px 70px;
     margin-top: -25px;
+    background-color: #18189ae3;
+    color: white;
 }
 .grid-sharpe-title{
     grid-column : 16/20;
@@ -666,6 +670,8 @@ h2 {
 
 #algo_info{
     font-size:14px;
+    background-color: #18bb05e3;
+    color: white;
 }
 
 #algo_info label{
