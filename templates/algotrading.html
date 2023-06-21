@@ -80,7 +80,7 @@
                           Connect to a Partner
                         </button>
                         <button class="btn btn btn-default navbar-btn btn-warning" type="button" data-toggle="collapse" data-target="#leaderBoard" aria-expanded="false" aria-controls="collapseExample" >
-                          Leader Board
+                          Leaderboard
                         </button>
 <!--                        <button class="btn btn btn-info navbar-btn"  id="logout"  type="button" data-toggle="collapse" data-target="#advance" aria-expanded="false" aria-controls="collapseExample">LOGOUT</button>-->
                         <label for="url" hidden="true">URL:</label><input type="text" id="url" name="username" value="{{url}}" hidden="true">
@@ -487,7 +487,7 @@
             </div>
             <div class="grid-collapse-leader">
                 <div class="collapse" id="leaderBoard">
-                    <h1>Leader Board</h1>
+                    <h1>Leaderboard</h1>
                     <table id="topLeader"></table>
                     <table id="strategyLeader"></table>
                 </div>
@@ -768,7 +768,8 @@
 	var _rsi_series;
 	var _volumeSeries,__volumeSeries;
 	var _message = {};  // latest price object
-    var _candlestick ; // latest price candlestick
+<!--    var _candlestick ; // latest price candlestick-->
+    var _closingPrice ; // latest price candlestick
     var _interval = 0; // holds the "websocket" interval of yfinance
     var _intervalSec = 0; // holds the "websocket" interval of secondary
     var _interval_highchart = 0;
@@ -1768,7 +1769,7 @@ $(".input_number").on('change foucusout',function(){
                 _is_algo_mode = 0; // manual transaction indicator
                 _inPosition = 1;
                 var token = _symbol;
-                price =  _candlestick.close ;
+                price =  _closingPrice ;
                 var qty =  _wallet[user][0].free / price;
                 _order_type = "BUY";
                 let diffTime = -1; // if -1 then manual calculation else Algo calculation
@@ -1798,7 +1799,7 @@ $(".input_number").on('change foucusout',function(){
                     $("#stopAlgo").click();
                 };
                 _is_algo_mode = 0;
-                price =  _candlestick.close ;
+                price =  _closingPrice ;
                 var qty = _wallet[user].find(x => x.asset === token).free;
                 _order_type = "SELL";
                 _transaction_order_demo(token, price, qty,"Manual");
@@ -1983,7 +1984,7 @@ $("#runAlgo").click(async function(){
                 $("#logout").prop("disabled", true);
                 $("#myAccount").prop("disabled", true);
                 $(".grid-navbar").hide();
-                $("#algoStrategy").hide()
+<!--                $("#algoStrategy").hide()-->
                 $("#collapse").hide();
                 $(".grid-algo-title").show();
                 $("#title_plan").text(_user_info[0][2]);

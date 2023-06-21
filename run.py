@@ -1045,7 +1045,7 @@ def get_query():
                 sql = f"select * from indicators order by name;"
             case "leaders":
                 sql = f"select a.username, a.init_wallet_amount, DATE_FORMAT(a.init_wallet_date, '%Y-%m-%d %H:%i'), a.curr_wallet_amount,DATE_FORMAT(a.last_wallet_date, '%Y-%m-%d %H:%i'), round(a.gain_pct,2)\
-                 from (SELECT * FROM `user_wallet`  UNION  select * from user_wallet_history) a where a.gain_pct > 0 order by a.gain_pct desc;"
+                 from (SELECT * FROM `user_wallet`  UNION  select * from user_wallet_history) a  order by a.gain_pct desc;"
         conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
         cur = conn.cursor()
         check_code = cur.execute(sql)

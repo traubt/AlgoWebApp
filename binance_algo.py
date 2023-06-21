@@ -59,6 +59,9 @@ class crypto_bot:
     self._default_amount = float(payload["walletInitBalance"])
     self._wallet = wallet(self._base_coin, self._default_amount)
     self._strategy = payload["strategy"]
+    self._stop_loss = float(payload["stopLoss"])
+    self._no_movement = int(payload["sellNoMovement"])
+    self._secure_profit = float(payload["secureProfit"])
     if self._strategy == 'DIY':
         # print(f"Strategy: {self._strategy}")
         self._interval = payload["interval"]
@@ -66,17 +69,14 @@ class crypto_bot:
         self._indicators = payload["indicators"]
         self._buy_rule = payload["buyRule"]
         self._sell_rule = payload["sellRule"]
-        self._stop_loss = float(payload["stopLoss"])
-        self._no_movement = int(payload["sellNoMovement"])
-        self._secure_profit = float(payload["secureProfit"])
     else: #"SYSTEM"
         # print(f"Strategy: {self._strategy}")
         self._time_scale = "5m"
-        self._buy_rule = "(max_ratio > 1)" #  and (min_ratio < 1) and (max_avg_ratio < 1.04)"
-        self._sell_rule = "(df.Close[-1] < df.Open[-2])"
-        self._stop_loss = 2
-        self._no_movement = 60
-        self._secure_profit = 1
+        # self._buy_rule = "(max_ratio > 1)" #  and (min_ratio < 1) and (max_avg_ratio < 1.04)"
+        # self._sell_rule = "(df.Close[-1] < df.Open[-2])"
+        # self._stop_loss = 2
+        # self._no_movement = 60
+        # self._secure_profit = 1
 
     # handle user socket messages
     @socket.on(self.user)
@@ -373,13 +373,6 @@ class crypto_bot:
 
   def _top_gainers_last_min(self):
       l = []
-      # self._time_scale = '1m'
-      ## No need to download prices again as performance in websocket is good
-      # self.period = '2d'
-      # self._wait = True
-      # self._get_market_data()
-      # while self._wait:
-      #     pass
       for x in self.market_prices.keys():
           try:
               d = [0] * 3
@@ -408,6 +401,11 @@ class crypto_bot:
           max_ratio = price / history_max_price
           min_ratio = open / history_max_price
           max_avg_ratio = price / history_avg_price
+          return_50 = df['Close'][-1]/df['Close'][-50]*100-100
+          return_5 = df['Close'][-1]/df['Close'][-5]*100-100
+          if self._strategy == "DIY":
+              self._buy_rule = "(return_5 > 0.5) and (return_50 > 1.5)"
+              self._sell_rule = "df.RSI[-1] < 40"
 
           if eval(self._buy_rule):
             found = True
