@@ -1,14 +1,27 @@
-async function get_tv_symbol_code(){
+function get_unix_dates(timeframe){
+
+    try{
+        var unix_date = {};
+        unix_date["To"] = Math.floor(Date.now() / 1000) + 120;
+        unix_date["From"] = Math.floor(Date.now() / 1000) - (timeframe * 86400);
+        }catch(e){
+        dialog("Error","Error in mapping market data"+e,BootstrapDialog.TYPE_INFO);
+    }
+
+    return unix_date;
+}
+
+async function get_tv_symbol_code(ticker){
     let code = "0000";
-    let search_url = "https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/search?limit=30&query="+_symbol+"&type=&exchange=";
+    let search_url = "https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/search?limit=30&query="+ticker+"&type=&exchange=";
     const response1 = await fetch(search_url);
     const data = await response1.json();
     const exchange = data[0].exchange;
-    const code_url = "https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/symbols?symbol="+exchange+"%20%3A"+_symbol;
+    const code_url = "https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/symbols?symbol="+exchange+"%20%3A"+ticker;
     const response2 = await fetch(code_url);
     const data2 = await response2.json();
-//    console.log(data2);
     _symbol_code = data2.ticker;
+    return _symbol_code;
 }
 
 function mapMarketData(market,data){
@@ -53,8 +66,10 @@ function generateChartData(time,indicator) {
 
 function darkMode(chart){
     let darkMode = {
-        width: $(chart).width() -10,
-        height: $(chart).height() -10,
+//        width: $(chart).width() -10,
+        width: 525,
+//        height: $(chart).height() -10,
+        height:300,
           layout: {
         backgroundColor: '#253248',
         textColor: 'rgba(255, 255, 255, 0.9)',
@@ -116,7 +131,7 @@ const chartOptions = {
     market == 'crypto' ? _round = 2 : _round = 2;
     // get symbol code for td symbols
     if(market !== 'crypto'){
-        await get_tv_symbol_code();
+        await get_tv_symbol_code(symbol);
 //        console.log(`symbol ${_symbol} code is: ${_symbol_code}`)
     }
     // kill websocket
@@ -164,7 +179,7 @@ const chartOptions = {
         const container = document.getElementById('chart');
         // create ohlc legend
         const legend = document.createElement('div');
-        legend.style = `z-index: 12; font-size: 13px; font-family: sans-serif; line-height: 18px; font-weight: 300;`;
+        legend.style = `margin-left:10px; z-index: 12; font-size: 13px; font-family: sans-serif; line-height: 18px; font-weight: 300;`;
         container.appendChild(legend);
 
         const firstRow = document.createElement('div');
@@ -195,7 +210,10 @@ const chartOptions = {
         _candleseries = chart.addCandlestickSeries( candleStickColors );
 
 //    History
-    market == 'stocks' ?  end_point = `https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/history?symbol=${_symbol_code}&resolution=${_time_res}&from=1685536315&to=1685562899` :  end_point = `https://api.binance.com/api/v1/klines?symbol=${_symbol}&interval=${_b_time_res[_time_res]}`;
+    let from = get_unix_dates(_time_res)["From"];
+    let to = get_unix_dates(_time_res)["To"];
+//    market == 'stocks' ?  end_point = `https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/history?symbol=${_symbol_code}&resolution=${_time_res}&from=1685536315&to=1685562899` :  end_point = `https://api.binance.com/api/v1/klines?symbol=${_symbol}&interval=${_b_time_res[_time_res]}`;
+    market == 'stocks' ?  end_point = `https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/history?symbol=${_symbol_code}&resolution=${_time_res}&from=${from}&to=${to}` :  end_point = `https://api.binance.com/api/v1/klines?symbol=${_symbol}&interval=${_b_time_res[_time_res]}`;
     add_to_log(get_current_date()+' Fetch symbol '+symbol+' quotes');
     fetch(end_point)
         .then((r) => r.json())
@@ -259,7 +277,6 @@ const chartOptions = {
 
 // run websockets
 
-//        if (market == 'stocks'){
 //     // create a virtual websocket for symbol
                   _interval = setInterval(function() {
 //                        console.log("updating main chart with",market,symbol,_b_time_res[_time_res],_period);
@@ -350,7 +367,7 @@ const chartOptions = {
     market == 'crypto' ? _round = 2 : _round = 2;
 
     if(market !== 'crypto'){
-        await get_tv_symbol_code();
+        await get_tv_symbol_code(symbol);
 //        console.log(`symbol ${_symbol} code is: ${_symbol_code}`)
     }
 
@@ -398,7 +415,7 @@ const chartOptions = {
         const container = document.getElementById('chart_secondary');
         // create ohlc legend
         const legend = document.createElement('div');
-        legend.style = `z-index: 12; font-size: 13px; font-family: sans-serif; line-height: 18px; font-weight: 300;`;
+        legend.style = `margin-left:10px; z-index: 12; font-size: 13px; font-family: sans-serif; line-height: 18px; font-weight: 300;`;
         container.appendChild(legend);
 
         const firstRow = document.createElement('div');
@@ -442,7 +459,10 @@ const chartOptions = {
             __candleseries = chartSec.addCandlestickSeries( candleStickColors );
 
 //    History
-    market == 'stocks' ?  end_point = `https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/history?symbol=${_symbol_code}&resolution=${_time_res_scnd}&from=1685536315&to=1685562899` :  end_point = `https://api.binance.com/api/v1/klines?symbol=${_symbol}&interval=${_b_time_res[_time_res_scnd]}`;
+    let from = get_unix_dates(_time_res)["From"];
+    let to = get_unix_dates(_time_res)["To"];
+//    market == 'stocks' ?  end_point = `https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/history?symbol=${_symbol_code}&resolution=${_time_res_scnd}&from=1685536315&to=1685562899` :  end_point = `https://api.binance.com/api/v1/klines?symbol=${_symbol}&interval=${_b_time_res[_time_res_scnd]}`;
+    market == 'stocks' ?  end_point = `https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/history?symbol=${_symbol_code}&resolution=${_time_res_scnd}&from=${from}&to=${to}` :  end_point = `https://api.binance.com/api/v1/klines?symbol=${_symbol}&interval=${_b_time_res[_time_res_scnd]}`;
     fetch(end_point)
         .then((r) => r.json())
         .then(data => {

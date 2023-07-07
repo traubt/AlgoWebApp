@@ -232,6 +232,8 @@ function get_user_info(){
 //		    let plans = JSON.parse(data)
 //		    console.log(JSON.stringify(data))
 		    _user_info = JSON.parse(JSON.parse(JSON.stringify(data)))
+		    $("#regDate").text(_user_info[0][3]);
+		    $("#lastVisitDate").text(_user_info[0][4]);
 		  }) // end successful ajax .done
   }
   catch(e){

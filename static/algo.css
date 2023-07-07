@@ -22,6 +22,7 @@ body{
     padding-left:10px;
     height: 98vh;
     width: 98vw;
+    background-color: #e2e2e29c;
 }
 
 /*******************************  GRID LAYOUT ***********************************/
@@ -40,7 +41,7 @@ body{
   text-align: start;
   padding: 1px 0;
   font-size: 12px;
-  border: solid 0.5px #eee;
+  border: solid 0.5px #eee0;
   border-radius:5px;
 }
 
@@ -118,8 +119,12 @@ body{
     margin-top: -50px;
     height:300px;
     margin-top: -38px;
+    position: relative;
+    top: -18px;
 }
 .grid-wallet-chart{
+    position: relative;
+    top: -7px;
     grid-column : 8/17;
     justify-self: strech;
     align-self:strech;
@@ -138,6 +143,8 @@ body{
     margin-top: -231px;
     margin-left: 10px;
     height:300px;
+    position: relative;
+    top: -17px;
 }
 .grid-chart_buy-sell_buttons{
     grid-column : 1/8;
@@ -151,6 +158,8 @@ body{
     margin-top: -87px;
     background-color: #18189ae3;
     color: white;
+    padding: 6px 0px;
+    height: 76px;
 }
 .grid-transactions{
     grid-column : 1/21;
@@ -207,6 +216,10 @@ body{
 .progress{
     width:25%;
     margin-bottom:1px;
+}
+
+.progress-bar-color{
+    background-color: #26ff2ce3 !important;
 }
 
 #chart{
@@ -341,6 +354,8 @@ table.tv-lightweight-charts {
 */
 .well{
     position:relative;
+    width : 80%;
+    background: ghostwhite;
 }
 
 .icon {
@@ -469,7 +484,7 @@ height: 34px;
 }
 
 .strategy,.strategy_p{
-    width: 90vw;
+    width: auto;
     min-height: 80px;
     background: white;
     border: solid 0.5px grey;
@@ -676,3 +691,4 @@ h2 {
 #algo_info label{
     margin-left:10px
 }
+

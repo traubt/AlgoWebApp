@@ -24,7 +24,7 @@ renderHighChart = async (symbol,hc_div) => {
     },
 
     title: {
-        text: symbol
+        text: symbol == 'BTCUSDT' ? "Market" : symbol,
     },
 
     pane: {
@@ -119,7 +119,7 @@ renderHighChart = async (symbol,hc_div) => {
                         var sharpe_15,sharpe_5;
                         let myHeaders = new Headers();
                         myHeaders.append('Content-Type', 'application/json');
-                        fetch('https://api.binance.com/api/v1/klines?symbol=ETHUSDT&interval='+rs)
+                        fetch('https://api.binance.com/api/v1/klines?symbol=BTCUSDT&interval='+rs)
                          .then(response => response.json())
                           .then(data => fetch(_URL+'/calc_sharpe' ,{
                                                                                         method : 'POST',

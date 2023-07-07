@@ -95,6 +95,7 @@
                 <label for="title_plan">Plan:</label><div id="title_plan"></div>
                 <label for="title_ip">IP Address:</label><div id="title_ip">{{current_user.ip}}</div>
                 <label for="title_strategy">Strategy Name:</label><div id="title_strategy">system</div>
+                <label for="title_market">Market:</label><div id="title_market">Crypto</div>
                 <label for="title_transaction">Today Transactions:</label><div id="title_transaction"></div>
                 <label for="title_duration">Today Duration:</label><div id="title_duration"></div>
                 <label for="title_runs">Today Runs:</label><div id="title_runs"></div>
@@ -108,13 +109,13 @@
                             <i style='font-size:24px' class="fa fa-user"></i>
                           </a>
                           <ul  class="dropdown-menu">
-                            <li><a id="profile">Profile</a></li>
+                            <li><a a data-toggle="collapse" data-target="#user_info" aria-expanded="false" aria-controls="collapseExample">Profile</a></li>
                               <li role="separator" class="divider"></li>
-                               <li><a href="#">Settings</a></li>
+                               <li><a data-toggle="collapse" data-target="#algoParams" aria-expanded="false" aria-controls="collapseExample">Setting</a></li>
                               <li><a href="#">Billing</a></li>
                               <li><a href="#">Upgrade</a></li>
                               <li role="separator" class="divider"></li>
-                              <li><a href="#">History</a></li>
+                              <li><a data-toggle="collapse" data-target="#user_history" aria-expanded="false" aria-controls="collapseExample">History</a></li>
                               <li role="separator" class="divider"></li>
                               <li><a id="logout">Logout</a></li>
                           </ul>
@@ -273,6 +274,40 @@
               </div>
           </div>
         </div>
+
+             <div class="grid-collapse-history">
+                 <div class="collapse" id="user_history">
+                     <div class="well">
+                        <h3>Algo-Run History</h3>
+                         <table id="userHistory"></table>
+                    </div>
+                 </div>
+             </div>
+
+             <div class="grid-collapse-history">
+                 <div class="collapse" id="user_info">
+                     <div class="well">
+                        <h3>{{current_user.username}}</h3>
+                         <hr>
+                         <p>Registration Date: <span id="regDate"></span></p>
+                         <p>Last Visit Date : <span id="lastVisitDate"></span></p>
+                         <p>Email: <span id="userEmail">{{current_user.email}}</span></p>
+                         <p>IP Address: <span id="userIp">{{current_user.ip}}</span></p>
+                         <p>City: <span id="userCity">{{current_user.city}}</span></p>
+                         <p>Country: <span id="userCountry">{{current_user.country}}</span></p>
+                         <p>Region: <span id="userRegion">{{current_user.region}}</span></p>
+                         <p>Timezone: <span id="userTz">{{current_user.timezone}}</span></p>
+                         <hr>
+                         <h3>Price Plan</h3>
+                         <p>Plan: <span id="userPlan">SILVER</span></p>
+                         <p>Renewal Date: <span id="planRenewDate">2023-08-07</span></p>
+                         <p>Auto Renewal: <span id="AutoRenew">Yes</span></p>
+                         <button>Change Plan</button>
+
+                    </div>
+                 </div>
+             </div>
+
         </div>
             <div class="grid-collapse-strategy">
                 <div class="collapse" id="algoStrategy">
@@ -346,41 +381,41 @@
                             </form>
 
                       </div>
-                      <div class="strategy strategy_candidates">
-                          <div class="title"><label>Find Candidates criteria</label></div>
-                                 <form class="form-inline" style="margin-left:10px">
-                                  <div class="form-group">
-                                    <label for="candidate_filter">Narrow the list of symbols with attribute :</label>
-                                      <select class="selectpicker"  id="candidate_filter" data-width="fit" name="showHide"  multiple data-container="body" title="Attribute:">
-                                          <option value="top_vol"selected>Top Volume</option>
-                                          <option value="top_gain">Top Gainers</option>
-                                          <option value="top_eff">Top Efficient</option>
-                                    </select>
-                                  </div>
-                                  <div class="form-group">
-                                    <label for="Total">to maximum of :</label>
-    <!--                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">-->
-                                      <select class="form-control" id="Total" title="Count">
-                                          <option value="20">20</option>
-                                          <option value="50">50</option>
-                                          <option value="100">100</option>
-                                          <option value="1000">All</option>
-                                    </select>
-                                  </div>
+<!--                      <div class="strategy strategy_candidates" >-->
+<!--                          <div class="title"><label>Find Candidates criteria</label></div>-->
+<!--                                 <form class="form-inline" style="margin-left:10px">-->
+<!--                                  <div class="form-group">-->
+<!--                                    <label for="candidate_filter">Narrow the list of symbols with attribute :</label>-->
+<!--                                      <select class="selectpicker"  id="candidate_filter" data-width="fit" name="showHide"  multiple data-container="body" title="Attribute:">-->
+<!--                                          <option value="top_vol"selected>Top Volume</option>-->
+<!--                                          <option value="top_gain">Top Gainers</option>-->
+<!--                                          <option value="top_eff">Top Efficient</option>-->
+<!--                                    </select>-->
+<!--                                  </div>-->
+<!--                                  <div class="form-group">-->
+<!--                                    <label for="Total">to maximum of :</label>-->
+<!--    &lt;!&ndash;                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">&ndash;&gt;-->
+<!--                                      <select class="form-control" id="Total" title="Count">-->
+<!--                                          <option value="20">20</option>-->
+<!--                                          <option value="50">50</option>-->
+<!--                                          <option value="100">100</option>-->
+<!--                                          <option value="1000">All</option>-->
+<!--                                    </select>-->
+<!--                                  </div>-->
 
-                                  <div class="form-group">
-                                    <label for="periods">for the last :</label>
-    <!--                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">-->
-                                        <select class="form-control" id="periods" title="Periods">
-                                            <option value="1">1 period</option>
-                                            <option value="2">2 periods</option>
-                                            <option value="3" selected>3 periods</option>
-                                            <option value="4">4 periods</option>
-                                        </select>
-                                  </div>
-                              </form>
+<!--                                  <div class="form-group">-->
+<!--                                    <label for="periods">for the last :</label>-->
+<!--    &lt;!&ndash;                                        <input type="email" class="form-control" id="candidate_count" placeholder="Total">&ndash;&gt;-->
+<!--                                        <select class="form-control" id="periods" title="Periods">-->
+<!--                                            <option value="1">1 period</option>-->
+<!--                                            <option value="2">2 periods</option>-->
+<!--                                            <option value="3" selected>3 periods</option>-->
+<!--                                            <option value="4">4 periods</option>-->
+<!--                                        </select>-->
+<!--                                  </div>-->
+<!--                              </form>-->
 
-                      </div>
+<!--                      </div>-->
                       <div id="buy_conditions" class="strategy strategy_buy">
                           <div class="title">
                               <label>Buy Asset criteria</label>
@@ -446,6 +481,7 @@
                                             <option value="60" selected >60sec</option>
                                             <option value="90">90sec</option>
                                              <option value="120">120sec</option>
+                                             <option value="84000">Sell Manually</option>
                                         </select>
                                     </div>
                             </form>
@@ -487,17 +523,25 @@
             </div>
             <div class="grid-collapse-leader">
                 <div class="collapse" id="leaderBoard">
-                    <h1>Leaderboard</h1>
-                    <table id="topLeader"></table>
-                    <table id="strategyLeader"></table>
+                    <div class="well">
+                            <h3>Leaderboard overall</h3>
+                            <table id="topLeader"></table>
+                        <hr>
+                        <h3>Leaderboard strategy</h3>
+                            <table id="strategyLeader"></table>
+                    </div>
                 </div>
             </div>
-            <div class="grid-collapse-partners">
-                <div class="collapse" id="partners">
-                    <img id="excellence_logo" src="static/assets/img/excellence.jpg" class="partners">
-                    <img id="discount_logo" src="static/assets/img/discount.jpg" class="partners">
+
+                <div class="grid-collapse-partners">
+                    <div class="collapse" id="partners">
+                                    <div class="well">
+                        <img id="excellence_logo" src="static/assets/img/excellence.jpg" class="partners">
+                        <img id="discount_logo" src="static/assets/img/discount.jpg" class="partners">
+                                    </div>
+                    </div>
                 </div>
-            </div>
+
         </div>
         <div class="grid-start-stop-btn" >
                 <div id="engineButtons">
@@ -548,7 +592,7 @@
                     <li><i class="far fa-money-bill-alt"></i><br>Sell Asset</li>
                 </div>
                 <div class="progress">
-                  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 0em;">
+                  <div class="progress-bar progress-bar-color" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 0em;">
                   </div>
                 </div>
             </div>
@@ -563,7 +607,7 @@
             </div>
         </div>
         <div class="grid-sharpe-chart">
-            <div id="sharpe_title">Ticker / Benchmark Performance</div>
+            <div id="sharpe_title">Ticker / Market Performance</div>
             <figure class="highcharts-figure">
                 <div id="tickerHC"></div>
                 <div id="benchmarkHC"></div>
@@ -609,7 +653,10 @@
 <!--            </div>-->
         </div>
         <div class="grid-transactions">
+            <div class="well">
             <table id="trxTbl" class="display" style="width:100%">
+
+                <h3 >Transactions:</h3>
                 <thead>
                     <tr>
                         <th>Datetime</th>
@@ -630,7 +677,9 @@
                 </thead>
                 <tbody>
                 </tbody>
+
             </table>
+            </div>
         </div>
         <div class="grid-log">
             <h3 >Server Log:</h3>
@@ -1314,7 +1363,7 @@ $(".dropdown").on("hide.bs.dropdown", function() {
     fetch(url)
     .then(data => data.json())
     .then(rows => {
-        console.log(rows);
+       // console.log(rows);
             _leader_table = $('#topLeader').DataTable({
                                             data: rows,
                                             columns: [
@@ -1326,7 +1375,7 @@ $(".dropdown").on("hide.bs.dropdown", function() {
                                                 { title: "Profit(%)" },
                                                 {
                                                   "data": null,
-                                                  "defaultContent": "<button>Wallet Chart</button>"
+                                                  "defaultContent": "<button>View Chart</button>"
                                                 }
                                             ],
                                             order: [[5, 'desc']],
@@ -1334,21 +1383,79 @@ $(".dropdown").on("hide.bs.dropdown", function() {
                                         });
     });
 
+    query = "strategyLeaders";
+    url = _URL+'/get_query?query='+query;
+    fetch(url)
+    .then(data => data.json())
+    .then(rows => {
+       // console.log(rows);
+            _leader_table = $('#strategyLeader').DataTable({
+                                            data: rows,
+                                            columns: [
+                                                { title: "User" },
+                                                { title: "Start Date" },
+                                                { title: "End Date" },
+                                                { title: "Duration" },
+                                                { title: "No. Transactions" },
+                                                { title: "Start Balance" },
+                                                { title: "End Balance" },
+                                                { title: "Profit" },
+                                                { title: "Profit %" },
+                                                { title: "Total Fee" },
+                                                {
+                                                  "data": null,
+                                                  "defaultContent": "<button>View Chart</button>"
+                                                }
+                                            ],
+                                            order: [[8, 'desc']],
+                                            "autoWidth": false,
+                                        });
+    });
+
+    query = "userHistory";
+    url = _URL+'/get_query?query='+query+'&user='+user;
+    fetch(url)
+    .then(data => data.json())
+    .then(rows => {
+       // console.log(rows);
+            _leader_table = $('#userHistory').DataTable({
+                                            data: rows,
+                                            columns: [
+                                                { title: "Start Date" },
+                                                { title: "End Date" },
+                                                { title: "Strategy Name" },
+                                                { title: "Duration" },
+                                                { title: "No. Transactions" },
+                                                { title: "Start Balance" },
+                                                { title: "End Balance" },
+                                                { title: "Profit" },
+                                                { title: "Profit %" },
+                                                { title: "Total Fee" },
+                                                {
+                                                  "data": null,
+                                                  "defaultContent": "<button>View Chart</button>"
+                                                }
+                                            ],
+                                            order: [[1, 'desc']],
+                                            "autoWidth": false,
+                                        });
+    });
+
 	// initialize wallet balance chart
 	_lwchart = LightweightCharts.createChart(document.getElementById('wallet_container'), {
           layout: {
-        backgroundColor: '#eee',
+        backgroundColor: 'lightyellow',
 <!--        textColor: 'rgba(255, 255, 255, 0.9)',-->
         textColor: 'green',
               },
-            grid: {
-        vertLines: {
-          color: '#334158',
-        },
-        horzLines: {
-          color: '#334158',
-        },
-      },
+<!--            grid: {-->
+<!--        vertLines: {-->
+<!--          color: '#334158',-->
+<!--        },-->
+<!--        horzLines: {-->
+<!--          color: '#334158',-->
+<!--        },-->
+<!--      },-->
             timeScale: {
             borderColor: 'rgba(197, 203, 206, 0.8)',
             timeVisible: true,
@@ -1397,7 +1504,10 @@ async function fetch_api(url,index,total,symbol){
     }
     })
  .then(response => response.json())
- .then(json => socket.emit(user, {"data": JSON.stringify(json), "symbol":symbol, "count": total}))
+     .then(json => {
+      //console.log(JSON.stringify(json));
+      socket.emit(user, {"data": JSON.stringify(json), "symbol":symbol, "count": total})
+  })
 //.then(data => console.log(JSON.stringify(data)))
 }
 
@@ -1421,12 +1531,12 @@ async function fetch_api(url,index,total,symbol){
 <!--                $('#log').scrollTop($('#log').prop("scrollHeight"));-->
                 //console.log(msg.date, msg.price, msg.grow,msg.type,msg.symbol,msg.qty,msg.amt,msg.sell_rsn,msg.time_lapse,msg.fee);
                 _order_type = msg.type;
-                _symbol = msg.symbol;
 
                 // execute transaction
                 if (_order_type == 'BUY'){
                     _inPosition = 1;
                     icon_set('.fa-flag');
+                    _symbol = msg.symbol;
                     $("#chart_symbol").text(msg.symbol);
                     $("#chart").empty();
                     $("#chart_secondary").empty();
@@ -1444,6 +1554,7 @@ async function fetch_api(url,index,total,symbol){
                     _lineSeries.setMarkers(_buysell_array);
                     }
                 if (_order_type == 'BUY' || _order_type == 'SELL' ){
+
                     if(!_manual_sell){
                        // console.log("Executing "+_order_type+" transaction.");
                         $('#orderAlert').show().delay(8000).fadeOut('fast');
@@ -1513,18 +1624,34 @@ async function fetch_api(url,index,total,symbol){
             })
 
             // URL fetch instruction from flask
-            socket.on(user, function(msg) {
-                //console.log("Call "+msg.index+"/"+msg.total+"  API : "+msg.data);
+            socket.on(user, async function(msg) {
+                //console.log("Call "+msg.index+"/"+msg.total+"  API : "+msg.data)
                 let progress = Number(Number(msg.index)/Number(msg.total)*100);
                 let s_progress = progress.toString()+"%";
-                // avoid progress bar flickering for single download
+                // get stock code from tv
+                if(_asset !== 'crypto'){
+                    await get_tv_symbol_code(msg.symbol)
+                    .then(response => {
+                        if(response !== "undefined") {
+                            let to = Math.round((Date.now()/1000),0) + 1000;
+                            let from = to - (parseInt(msg.timeframe) * 864000); // 10 days x timescale ;
+                            let uri = msg.data + '?symbol=' + response + '&resolution=' + parseInt(msg.timeframe) +  '&from=' + from +'&to=' + to;
+                           //console.log(uri);
+                            fetch_api(uri,msg.index,msg.total,msg.symbol);
+                            }
+                    })
+                }
+                else{ // Binance
+                    let uri = msg.data;
+                   // console.log(uri);
+                    fetch_api(uri,msg.index,msg.total,msg.symbol);
+                }
+            // avoid progress bar flickering for single download
                 if ( Number(msg.total) > 2 ){
                     $(".progress-bar").css('width', s_progress)
                 }else{
                     $(".progress-bar").css('width', "0%")
                 }
-<!--                $(".progress-bar").html(s_progress);-->
-                fetch_api(msg.data,msg.index,msg.total,msg.symbol);
             })
 
 //// chat room socket
@@ -1618,9 +1745,11 @@ $("#send-chat").click(function(){
         _asset = 'crypto';
         _symbol = 'ETHUSDT';
         $("#ticker_type").text("Select Crypto USDT token:")
+        $("#title_market").text("Crypto")
     }else{
         _asset = 'stocks';
         _symbol = 'SPY'
+        $("#title_market").text("Equity")
         $("#ticker_type").text("Select default symbol (S&P 500)")
     }
 
@@ -1948,16 +2077,19 @@ $("#runAlgo").click(async function(){
             }
 
             _init_user_plan();
+            let ruleName = "";
+            $("#rule_name").val()==""? ruleName = 'system' : ruleName = $("#rule_name").val();
+            init_algo_payload(ruleName);
 
             // check if market is open
-                   if(_asset == 'stocks'){
-                        await is_market_open();
-                        console.log("market open: " + _market_open_ind);
-                        if(!(_market_open_ind)){
-                            alert(_asset + " market is closed");
-                            return 0;
-                        }
-                    }
+<!--                   if(_asset == 'stocks'){-->
+<!--                        await is_market_open();-->
+<!--                        console.log("market open: " + _market_open_ind);-->
+<!--                        if(!(_market_open_ind)){-->
+<!--                            alert(_asset + " market is closed");-->
+<!--                            return 0;-->
+<!--                        }-->
+<!--                    }-->
                              // update progress in chart
                      _buysell_element = { time: Math.round((Date.now()/1000),0),
                         position: 'belowBar',

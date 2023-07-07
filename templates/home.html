@@ -5,10 +5,11 @@
 {% for post in posts %}
         <article class="media content-section">
           <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="#">{{ post.author }}</a>
-              <small class="text-muted">{{ post.date_posted }}</small>
-            </div>
+<!--            <div class="article-metadata">-->
+<!--              <a class="mr-2" href="#">{{ post.author }}</a>-->
+<!--                <p class="mr-2" >{{ post.author }}</p>-->
+<!--              <small class="text-muted">{{ post.date_posted }}</small>-->
+<!--            </div>-->
             <h2><a class="article-title" href="#">{{ post.title }}</a></h2>
             <p class="article-content">{{ post.content }}</p>
           </div>
@@ -16,4 +17,21 @@
     {% endfor %}
             <br><br>
             <p>* Press the links in the navigation bar above to access the applications.</p>
+
+<script>
+<!--    Click event -->
+    $(document).ready(function(){
+      $("article a").click(function(){
+        let selected_app = $(this).text();
+        if(selected_app == "Algo-Trading BOT"){
+<!--            alert("Text selected: "+$(this).text());-->
+            window.location.href = "{{ url_for('algotrading') }}";
+        }else{
+<!--            alert("Text selected: "+$(this).text());-->
+            window.location.href = "{{ url_for('portfolio_manager') }}";
+        }
+      });
+    });
+</script>
+
 {% endblock content %}

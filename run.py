@@ -980,7 +980,7 @@ def get_user_info():
     conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
     user = current_user.username
     cur = conn.cursor()
-    cur.execute(f"select username,email,plan,convert(last_login_date,CHAR),city from user where username = '{user}'")
+    cur.execute(f"select username,email,plan,convert(creation_date,CHAR),convert(last_login_date,CHAR),city,country,region,timezone from user where username = '{user}'")
     rows = cur.fetchall()
     cur.close()
     conn.close()
@@ -1046,6 +1046,12 @@ def get_query():
             case "leaders":
                 sql = f"select a.username, a.init_wallet_amount, DATE_FORMAT(a.init_wallet_date, '%Y-%m-%d %H:%i'), a.curr_wallet_amount,DATE_FORMAT(a.last_wallet_date, '%Y-%m-%d %H:%i'), round(a.gain_pct,2)\
                  from (SELECT * FROM `user_wallet`  UNION  select * from user_wallet_history) a  order by a.gain_pct desc;"
+            case "strategyLeaders":
+                sql = f"select username, DATE_FORMAT(start_date, '%Y-%m-%d %H:%i'),  DATE_FORMAT(end_date, '%Y-%m-%d %H:%i' ), \
+                             round(duration/1000,0), num_trx, start_bal, end_bal, round(end_bal-start_bal,2) as profit, round(end_bal/start_bal*100-100,2) as profit_pct, tot_fee from user_algorun where duration is not null order by profit_pct desc ;"
+            case "userHistory":
+                sql = f"select DATE_FORMAT(start_date, '%Y-%m-%d %H:%i'),  DATE_FORMAT(end_date, '%Y-%m-%d %H:%i' ), strategy_name,\
+                 round(duration/1000,0), num_trx, start_bal, end_bal, round(end_bal-start_bal,2), round(end_bal/start_bal*100-100,2), tot_fee from user_algorun where username = '{user}' and duration is not null order by start_date desc ;"
         conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
         cur = conn.cursor()
         check_code = cur.execute(sql)

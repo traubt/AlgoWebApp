@@ -73,7 +73,8 @@ class crypto_bot:
         # print(f"Strategy: {self._strategy}")
         self._time_scale = "5m"
         # self._buy_rule = "(max_ratio > 1)" #  and (min_ratio < 1) and (max_avg_ratio < 1.04)"
-        # self._sell_rule = "(df.Close[-1] < df.Open[-2])"
+        self._buy_rule = ""  # will be set in find asset
+        self._sell_rule = "" # will be set in find asset
         # self._stop_loss = 2
         # self._no_movement = 60
         # self._secure_profit = 1
@@ -84,24 +85,35 @@ class crypto_bot:
         cnt_err = 0
         try:
             self.quote_df = pd.DataFrame()
-            self.quote_df = pd.DataFrame(json.loads(msg["data"]), columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume',
-                                                'close_time', 'qav', 'num_trades',
-                                                'taker_base_vol', 'taker_quote_vol', 'ignore'
-                                                ]).astype(float)
-            self.quote_df['Date'] = pd.to_datetime(self.quote_df['Date'], unit='ms')
+            if self.market == 'crypto':
+                self.quote_df = pd.DataFrame(json.loads(msg["data"]), columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume',
+                                                    'close_time', 'qav', 'num_trades',
+                                                    'taker_base_vol', 'taker_quote_vol', 'ignore'
+                                                    ]).astype(float)
+                self.quote_df['Date'] = pd.to_datetime(self.quote_df['Date'], unit='ms')
+            else:
+                print(f" symbol: {msg['symbol']}, status: {json.loads(msg['data'])['s']}, length: {len(json.loads(msg['data'])['t'])} ")
+                if json.loads(msg["data"])["s"] == "ok" and len(json.loads(msg["data"])["t"]) > 50:
+                    self.quote_df = pd.DataFrame({
+                        'Date' : json.loads(msg["data"])["t"],
+                        'Open': json.loads(msg["data"])["o"],
+                        'High': json.loads(msg["data"])["h"],
+                        'Low': json.loads(msg["data"])["l"],
+                        'Close': json.loads(msg["data"])["c"],
+                        'Volume': json.loads(msg["data"])["v"]
+                    })
+                self.quote_df['Date'] = pd.to_datetime(self.quote_df['Date'], unit='s')
             self.quote_df.set_index('Date', inplace=True)
             self.quotes[msg["symbol"]] = self.quote_df
             self.market_prices = self.quotes
             self.count_msg_processed +=1
         except BaseException as e:
             self.count_msg_error +=1
-        # print("Total handled",self.count_msg_processed + self.count_msg_error ," out of: " ,int(msg["count"]))
+            # print(f"Error in handle msg quotes: {e}.symbol: {msg['symbol']} , Number of errors {self.count_msg_error}")
         if (self.count_msg_processed + self.count_msg_error == int(msg["count"])):
             self._wait = False
         else:
             self._wait = True
-
-
 
   def printf(self,msg, msg_date, msg_price, msg_grow, order_type, msg_symbol, msg_qty, msg_amt, msg_sellRsn, msg_timeLapse,msg_fee):
         try:
@@ -208,7 +220,7 @@ class crypto_bot:
           #data cleaning
           pairs = [i for i in stockList if i]
           stockList = list(set(pairs))
-          self.pairs = sorted(stockList)[0:100]
+          self.pairs = sorted(stockList)[0:20]
 
   def remove_non_active_tokens(self):
       try:
@@ -294,13 +306,14 @@ class crypto_bot:
 
 #this is a test of github
   def downloadHistoryPrices(self, symbol,i, total):
-      root_url = 'https://api.binance.com/api/v1/klines'
-      url = root_url + '?symbol=' + symbol + '&interval=' + self._time_scale
-      emit(self.user, {'data': url, 'symbol':symbol, 'index':i, 'total':total}, namespace='/',room=self.user)
-      return None
+      if self.market == 'crypto':
+        root_url = 'https://api.binance.com/api/v1/klines'
+        url = root_url + '?symbol=' + symbol + '&interval=' + self._time_scale
+      else:
+        root_url = 'https://tvc6.investing.com/b9ac59d9a030d2ca1174e92423e21bf5/1685991455/1/1/8/history'
+        url = root_url #+ '?symbol=' + symbol + '&resolution=' + self._time_scale + '&from=1685536315&to=1685562899'
 
-  def downloadHistoryPricesNyse(self,stock):
-      self.quote_df  =   yf.download(tickers=stock, interval=self._time_scale ,period = self.period, show_errors=False,progress=False)
+      emit(self.user, {'data': url, 'symbol':symbol, 'index':i,'timeframe':self._time_scale, 'total':total}, namespace='/',room=self.user)
       return None
 
   def _get_market_data(self):
@@ -316,10 +329,10 @@ class crypto_bot:
       for pair in tqdm(self.pairs, disable=True):
           try:
               i = i + 1
-              if self.market == 'crypto':
-                  self.downloadHistoryPrices(pair,i,symbol_cnt )
-              else:
-                  self.downloadHistoryPricesNyse(pair)
+              # if self.market == 'crypto':
+              self.downloadHistoryPrices(pair,i,symbol_cnt )
+              # else:
+              #     self.downloadHistoryPricesNyse(pair)
               # avoid max api rate
               t.sleep(0.1)
           except BaseException as e:
@@ -403,11 +416,14 @@ class crypto_bot:
           max_avg_ratio = price / history_avg_price
           return_50 = df['Close'][-1]/df['Close'][-50]*100-100
           return_5 = df['Close'][-1]/df['Close'][-5]*100-100
-          if self._strategy == "DIY":
-              self._buy_rule = "(return_5 > 0.5) and (return_50 > 1.5)"
+          if self._strategy == "SYSTEM":
+              # self._buy_rule = "(return_5 > 0.5) and (return_50 > 1.5) and (max_ratio > 1)"
+              self._buy_rule = "(max_ratio > 1)"
               self._sell_rule = "df.RSI[-1] < 40"
 
           if eval(self._buy_rule):
+            self.printf(f"{self._now()}: Buy Rule: {self._buy_rule}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
+            self.printf(f"{self._now()}: price: {round(df['Close'][-1],6)} price[-5]: {round(df['Close'][-5],6)} return_5: {return_5}, return_50: {return_50}, max_ration: {max_ratio}", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA","NA", "NA", "NA")
             found = True
 
       except BaseException as e:
@@ -550,7 +566,8 @@ class crypto_bot:
               run = False
               break
           self._cycle += 1
-          self.printf(f"\n{self._now()}: Running algo cycle {self._cycle} : ",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
+          self.printf(f"\n=========================", {self._now()}, "NA", "NA", "NA", "NA",  "NA", "NA", "NA", "NA", "NA")
+          self.printf(f"\n{self._now()}: Running Cycle {self._cycle} : ",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
           self.printf(f"{self._now()}: Wallet balance: ${self._wallet._get_base_coin_balance()}",{self._now()},"NA","NA","NA","NA","NA","NA","NA","NA","NA")
           # get list of symbols to work on
           self.printf(f"{self._now()}: Fetch market {self.market} symbols.", {self._now()}, "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA")
