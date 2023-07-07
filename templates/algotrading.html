@@ -848,7 +848,7 @@
     var _walletChart;
     var _highChart_val_a=18; //sharpe value of main symbol factor to 0-100
     var _highChart_val_b=0;  ////sharpe value of benchmark symbol factor to 0-100
-    var _trx_table, _leader_table,  _st_leader_table;
+    var _trx_table, _leader_table,  _st_leader_table, _user_history_table;
 <!--    var _wallet_chart_time_interval = 2000; //refresh wallet chart-->
     var _current_algo_symbol_price;
     var _is_algo_mode = 0;
@@ -1375,7 +1375,7 @@ $(".dropdown").on("hide.bs.dropdown", function() {
                                                 { title: "Profit(%)" },
                                                 {
                                                   "data": null,
-                                                  "defaultContent": "<button>View Chart</button>"
+                                                  "defaultContent": "<button class='leaderChart'>View Chart</button>"
                                                 }
                                             ],
                                             order: [[5, 'desc']],
@@ -1389,7 +1389,7 @@ $(".dropdown").on("hide.bs.dropdown", function() {
     .then(data => data.json())
     .then(rows => {
        // console.log(rows);
-            _leader_table = $('#strategyLeader').DataTable({
+            _st_leader_table = $('#strategyLeader').DataTable({
                                             data: rows,
                                             columns: [
                                                 { title: "User" },
@@ -1404,7 +1404,7 @@ $(".dropdown").on("hide.bs.dropdown", function() {
                                                 { title: "Total Fee" },
                                                 {
                                                   "data": null,
-                                                  "defaultContent": "<button>View Chart</button>"
+                                                  "defaultContent": "<button class='leaderChart'>View Chart</button>"
                                                 }
                                             ],
                                             order: [[8, 'desc']],
@@ -1418,7 +1418,7 @@ $(".dropdown").on("hide.bs.dropdown", function() {
     .then(data => data.json())
     .then(rows => {
        // console.log(rows);
-            _leader_table = $('#userHistory').DataTable({
+            _user_history_table = $('#userHistory').DataTable({
                                             data: rows,
                                             columns: [
                                                 { title: "Start Date" },
@@ -1433,7 +1433,7 @@ $(".dropdown").on("hide.bs.dropdown", function() {
                                                 { title: "Total Fee" },
                                                 {
                                                   "data": null,
-                                                  "defaultContent": "<button>View Chart</button>"
+                                                  "defaultContent": "<button class='userHistory'>View Chart</button>"
                                                 }
                                             ],
                                             order: [[1, 'desc']],
@@ -2341,6 +2341,24 @@ $("#openChatRoom").click(function(){
         $(".message-box").css("visibility","visible");
     });
 
+// view charts functionality
+//1. overall leaders
+$('#topLeader').on('click', '.leaderChart', function () {
+    var data = _leader_table.row($(this).parents('tr')).data()
+    alert('button clicked'+data);
+});
+
+//2. strategy leader
+$('#strategyLeader').on('click', '.leaderChart', function () {
+    var data = _st_leader_table.row($(this).parents('tr')).data()
+    alert('button clicked'+data);
+});
+
+//3. user history run _user_history_table
+$('#userHistory').on('click', '.userHistory', function () {
+    var data = _user_history_table.row($(this).parents('tr')).data()
+    alert('button clicked'+data);
+});
 
 </script>
 <!--{% for msg in messages %}-->
