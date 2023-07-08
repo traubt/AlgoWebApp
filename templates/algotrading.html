@@ -2343,9 +2343,17 @@ $("#openChatRoom").click(function(){
 
 // view charts functionality
 //1. overall leaders
-$('#topLeader').on('click', '.leaderChart', function () {
+$('#topLeader').on('click', '.leaderChart', async function () {
     var data = _leader_table.row($(this).parents('tr')).data()
     alert('button clicked'+data);
+    let i_user = data[0]
+    let from_date = data[2];
+    let to_date = data[4];
+    let query = "userAlgoRun";
+    let  url = _URL+'/get_query?query='+query+'&user='+i_user+'&start_date='+from_date+'&end_date='+to_date;
+    await fetch(url)
+    .then(response => response.json())
+    .then(data => console.log(data))
 });
 
 //2. strategy leader
@@ -2355,9 +2363,16 @@ $('#strategyLeader').on('click', '.leaderChart', function () {
 });
 
 //3. user history run _user_history_table
-$('#userHistory').on('click', '.userHistory', function () {
-    var data = _user_history_table.row($(this).parents('tr')).data()
-    alert('button clicked'+data);
+$('#userHistory').on('click', '.userHistory', async function () {
+    var data = _user_history_table.row($(this).parents('tr')).data();
+    let from_date = data[0];
+    let to_date = data[1];
+<!--    alert('button clicked'+data);-->
+    let query = "userAlgoRun";
+    let  url = _URL+'/get_query?query='+query+'&user='+user+'&start_date='+from_date+'&end_date='+to_date;
+    await fetch(url)
+    .then(response => response.json())
+    .then(data => console.log(data))
 });
 
 </script>

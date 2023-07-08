@@ -1026,6 +1026,8 @@ def get_query():
         query = request.args.get('query')
         user = request.args.get('user')
         amount = request.args.get('amount')
+        start_date = request.args.get('start_date');
+        end_date = request.args.get('end_date');
         match query:
             case "Total_Duration":
                 sql = f"SELECT sum(duration) from user_algorun where username='{user}' and run_date = '{today}';"
@@ -1052,6 +1054,9 @@ def get_query():
             case "userHistory":
                 sql = f"select DATE_FORMAT(start_date, '%Y-%m-%d %H:%i'),  DATE_FORMAT(end_date, '%Y-%m-%d %H:%i' ), strategy_name,\
                  round(duration/1000,0), num_trx, start_bal, end_bal, round(end_bal-start_bal,2), round(end_bal/start_bal*100-100,2), tot_fee from user_algorun where username = '{user}' and duration is not null order by start_date desc ;"
+            case "userAlgoRun":
+                sql = f"SELECT * from user_algorun where username='{user}' and DATE_FORMAT(start_date, '%Y-%m-%d %H:%i') >='{start_date}' and DATE_FORMAT(end_date, '%Y-%m-%d %H:%i') <= '{end_date}';"
+
         conn = pymysql.connect(host='localhost', user='root', password="", db='algo_tt', )
         cur = conn.cursor()
         check_code = cur.execute(sql)
