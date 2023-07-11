@@ -801,6 +801,26 @@
 </div>
 </form>
 
+<!--modal for algorun charts-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="algoChart"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 
 <!--console.log("Connecting to URL:"+{{url}});-->
@@ -845,7 +865,7 @@
     var _plans;
     var _user_info;
     var price = 0 ; //latest price of asset
-    var _walletChart;
+<!--    var _walletChart;-->
     var _highChart_val_a=18; //sharpe value of main symbol factor to 0-100
     var _highChart_val_b=0;  ////sharpe value of benchmark symbol factor to 0-100
     var _trx_table, _leader_table,  _st_leader_table, _user_history_table;
@@ -1433,7 +1453,7 @@ $(".dropdown").on("hide.bs.dropdown", function() {
                                                 { title: "Total Fee" },
                                                 {
                                                   "data": null,
-                                                  "defaultContent": "<button class='userHistory'>View Chart</button>"
+                                                  "defaultContent": "<button class='userHistory'><i class='fa fa-chart-bar'></i></button>"
                                                 }
                                             ],
                                             order: [[1, 'desc']],
@@ -2372,7 +2392,53 @@ $('#userHistory').on('click', '.userHistory', async function () {
     let  url = _URL+'/get_query?query='+query+'&user='+user+'&start_date='+from_date+'&end_date='+to_date;
     await fetch(url)
     .then(response => response.json())
-    .then(data => console.log(data))
+    .then(data => {
+        let x = [];
+        x = JSON.parse(data[0][14]);
+        // Extract the dates from the array
+        let i_date =  $.map(x, function(row) {return row[0];});
+        // Extract the values from the array
+        let i_val =  $.map(x, function(row) {return row[8];});
+        // Extract transaction
+        const i_trx =  $.map(x, function(row) {return row[3]+'('+row[4][0]+') '+row[2]+' '+row[5];});
+        console.log(i_date,i_val,i_trx);
+        const mergedArray = [];
+        for (let i = 0; i < i_val.length; i++) {
+          const object = {};
+          object.y = i_val[i];
+          object.custom = i_trx[i];
+          mergedArray.push(object);
+        }
+        console.log(mergedArray) ;
+        $('#myModal').modal('show');
+            // Create the Highcharts graph
+            var chart = new Highcharts.Chart({
+              chart: {
+                renderTo: 'algoChart',
+                type: 'line',
+              },
+              title: {
+                text: 'Algo Run '+user,
+              },
+              xAxis: {
+                categories: i_date
+              },
+              yAxis: {
+                title: {
+                  text: 'Wallet ($)'
+                }
+              },
+             tooltip: {
+      // This is the custom tooltip text
+<!--                  headerFormat: "Custom Tooltip: ",-->
+                  pointFormat: 'Wallet balance: <b>{point.y}</b><br>{point.custom}'
+                },
+              series: [{
+                name: 'Wallet Balance',
+                data: mergedArray
+              }]
+            });
+    })
 });
 
 </script>
