@@ -113,7 +113,7 @@
                               <li role="separator" class="divider"></li>
                                <li><a data-toggle="collapse" data-target="#algoParams" aria-expanded="false" aria-controls="collapseExample">Setting</a></li>
                               <li><a href="#">Billing</a></li>
-                              <li><a href="#">Upgrade</a></li>
+                              <li><a data-toggle="collapse" data-target="#change_plan" aria-expanded="false" aria-controls="collapseExample">Upgrade</a></li>
                               <li role="separator" class="divider"></li>
                               <li><a data-toggle="collapse" data-target="#user_history" aria-expanded="false" aria-controls="collapseExample">History</a></li>
                               <li role="separator" class="divider"></li>
@@ -280,6 +280,36 @@
                      <div class="well">
                         <h3>Algo-Run History</h3>
                          <table id="userHistory"></table>
+                    </div>
+                 </div>
+             </div>
+
+             <div class="grid-collapse-history">
+                 <div class="collapse" id="change_plan">
+                     <div class="well">
+                         <div class="title"><label>Change Plan</label></div>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label class="radio-inline">
+                              <input type="radio" name="change_package" value="SILVER" >SILVER - Free Plan
+                            </label>
+                            <label class="radio-inline">
+                              <input type="radio" name="change_package" value="GOLD">GOLD - $15 per/month
+                            </label>
+                            <label class="radio-inline">
+                              <input type="radio" name="change_package" value="PLATINUM">PLATINUM - $300 per/month
+                            </label>
+                        </div>
+                         <div>
+                             <br><br>
+                            <label >
+                              <input id="autoRenewal" type="checkbox" name="autoRenew" >&nbsp&nbspAuto Renew Indicator
+                            </label>
+                         </div>
+                        <br><br>
+                        <button type="button" id="change_package_btn" class="btn btn-info">Update Plan</button>
+                    </form>
+
                     </div>
                  </div>
              </div>
@@ -861,6 +891,7 @@
 	var _b_time_res = {"1":"1m","5":"5m","15":"15m","30":"30m","60":"1h","120":"2h","240":"4h","D":"1d","W":"1w"};  // map td timeframe to binance timeframe
     var _asset = 'crypto'; // user selection of platform
     var _asset_list = [];
+    var _user_plan = [];
     var _quote = {} ; // holds latest quote data
     var _plans;
     var _user_info;
@@ -908,6 +939,7 @@
     var style = "style = 'color:"+clr+";font-size:"+fsz+";font-weight:"+wgt+"; font-family: "+fsz+";'"
     var _chart_indicators = ["SMA10","SMA100","RSI","SHARPE"];
     var _symbol_code;
+    var _auto_renew;
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
@@ -1019,6 +1051,15 @@ function generateData() {
 	return res;
 }
 
+function diffDate(d1,d2){
+    let diffInMs = d2 - d1;
+    let diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    return diffInDays;
+}
+
+function do_payment(amount){
+    return true;
+}
 
 // monitor wallet balance
 function monitor_wallet_chart() {
@@ -1244,6 +1285,24 @@ function load_strategy(template){
             dialog("Upload Strategy","Could not load strategy <br>" + e,BootstrapDialog.TYPE_INFO);
     }
 }
+async function _get_user_plan(){
+    try{
+        let query = "User_Plan";
+        let url = _URL+'/get_query?query='+query+'&user='+user;
+        response = await fetch(url);
+        if (!response.ok) {
+          dialog('Database Error', 'Can not fetch user_plan from database',BootstrapDialog.TYPE_DANGER);
+          throw new Error(`HTTP error: ${response.status}`);
+          return 0
+        };
+        _user_plan = await response.json();
+        _user_plan[0][6] == 'Y' ? ($('#autoRenewal').prop('checked', true), _auto_renew = true) : ($('#autoRenewal').prop('checked', false), _auto_renew = false);
+        $(`input[type=radio][value=${_user_plan[0][1]}]`).prop('checked', true);
+        console.log(_user_plan);
+    }catch(e){
+       dialog("Error","Error getting user plan "+e,BootstrapDialog.TYPE_INFO);
+    }
+}
 
 async function _init_user_plan(){
     try{
@@ -1317,7 +1376,8 @@ async function _init_indicators(){
 	$(document).ready(function(){
 	_init_indicators();
     _init_user_wallet();
-    _init_user_plan();
+    _get_user_plan();
+    _init_user_plan(); // todo: change function name and user_plan field
     init_algo_payload("system");
     get_plans();
 
@@ -2360,6 +2420,82 @@ $("#openChatRoom").click(function(){
         $(this).prop('disabled', true)
         $(".message-box").css("visibility","visible");
     });
+
+function format_datetime(date){
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    var day = date.getDay();
+    var hour = date.getHours();
+    var mins = date.getMinutes();
+    var secs = date.getSeconds();
+    alert(year +'-'+ month +'-'+ day +' '+ hour +':'+ mins +':'+ secs);
+}
+
+// change package plan
+$("#change_package_btn").on('click' ,async function(){
+    try{
+        // check if user change something
+        let now = new Date();
+        let new_package = $('input[name="change_package"]:checked').val();// == _user_plan[0][1];
+        let renewal_ind;
+        $('input[name="autoRenew"]').is(':checked')? renewal_ind = 'Y': renewal_ind = 'N';
+        if (new_package == _user_plan[0][1] && renewal_ind == _auto_renew){
+            dialog("Change Package","You have not made any changes to your current package. ",BootstrapDialog.TYPE_INFO);
+        }
+        else {    // the user change package or/and change renewal indicator
+            //1. check if upgrade
+            if (_plans[new_package][5] > _plans[_user_plan[0][1]][5]){
+                alert("Upgrade");
+                //a. calculate prorate
+                let start_date = new Date(_user_plan[0][2]);
+                let exp_date = new Date(_user_plan[0][3]);
+                let today = new Date();
+                let diff_date_prorate = diffDate(today,exp_date);
+                let diff_full_month = diffDate(start_date,exp_date);
+                let prorate = diff_date_prorate / diff_full_month ;
+                let credit_charge = -(_plans[_user_plan[0][1]][4] * prorate).toFixed(2)
+                let debit_charge = _plans[new_package][4];
+                let charge = debit_charge + credit_charge;
+                alert(`prorate factor : ${prorate}, credit: ${credit_charge}, debit: ${debit_charge}, total: ${charge}`);
+
+                //b. paymnet process
+                if (do_payment(charge) == true) {
+                    alert("Payment Successful");
+                }
+                //c. update immediately
+                    // expire old plan
+                    let query = "Close_Plan";
+                    let plan_comment = `Upgrade from ${_user_plan[0][1]} to ${new_package}`;
+                    let  url = _URL+'/get_query?query='+query+'&user='+user+'&plan='+new_package+'&plan_comment='+plan_comment;
+                    await fetch(url);
+                    // insert new plan
+                    query = "New_Plan";
+                    plan_comment = `Upgrade from ${_user_plan[0][1]} to ${new_package}`;
+                    now.setMonth(now.getMonth() + 1);
+                    let f_exp_date = now.toISOString().substring(0, 19);
+                    url = _URL+'/get_query?query='+query+'&user='+user+'&plan='+new_package+'&plan_exp_date='+f_exp_date+'&plan_renew_ind='+renewal_ind+'&plan_comment='+plan_comment;
+                    await fetch(url);
+
+                    // update billing
+
+                    // reset user plan
+                    _get_user_plan();
+
+                }
+            else if (_plans[new_package][5] < _plans[_user_plan[0][1]][5]){
+                alert("downgrade");
+                //a. Update next plan only
+                }
+            else {
+                alert("Only change to auto renewal indicator");
+            }
+
+        }
+    } catch(e){
+            dialog("Error","Error in change package: "+e,BootstrapDialog.TYPE_INFO);
+    }
+
+})
 
 // view charts functionality
 //1. overall leaders

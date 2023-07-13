@@ -210,6 +210,9 @@ def register():
         sql = f"INSERT INTO user_wallet (username) VALUES ('{form.username.data}');"
         curr.execute(sql)
         conn.commit()
+        sql = f"INSERT INTO user_plan (username) VALUES ('{form.username.data}');"
+        curr.execute(sql)
+        conn.commit()
         curr.close()
         conn.close()
         flash('Your account has been created! You are now able to log in', 'success')
@@ -1026,8 +1029,12 @@ def get_query():
         query = request.args.get('query')
         user = request.args.get('user')
         amount = request.args.get('amount')
-        start_date = request.args.get('start_date');
-        end_date = request.args.get('end_date');
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        plan = request.args.get('plan')
+        plan_comment = request.args.get('plan_comment')
+        plan_exp_date = request.args.get('plan_exp_date')
+        plan_renew_ind = request.args.get('plan_renew_ind')
         match query:
             case "Total_Duration":
                 sql = f"SELECT sum(duration) from user_algorun where username='{user}' and run_date = '{today}';"
@@ -1041,6 +1048,13 @@ def get_query():
                 sql = f"UPDATE user_wallet SET curr_wallet_amount = {round(float(amount),2)} , last_wallet_date = '{formatted_date}', gain_pct = curr_wallet_amount/init_wallet_amount*100-100 where username='{user}';"
             case "Archive_Wallet":
                 sql = f"INSERT INTO user_wallet_history SELECT * from user_wallet where username='{user}';"
+            case "User_Plan":
+                sql = f"SELECT * FROM user_plan where username = '{user}' and plan_exp_date > '{formatted_date}';"
+            case "New_Plan":
+                sql = f"INSERT INTO user_plan (username,plan,plan_exp_date,next_plan,auto_renew_ind,comment)\
+                 values ('{user}','{plan}','{plan_exp_date}','{plan}','{plan_renew_ind}','{plan_comment}');"
+            case "Close_Plan":
+                sql = f"UPDATE user_plan set plan_exp_date = '{formatted_date}', next_plan = '{plan}', comment = '{plan_comment}' where username = '{user}' and plan_exp_date > '{formatted_date}';"
             case "New_Wallet":
                 sql = f"update user_wallet set wallet_ind = wallet_ind +1, init_wallet_amount = {amount}, init_wallet_date = '{formatted_date}', curr_wallet_amount = {amount}, last_wallet_date ='{formatted_date}',gain_pct=0 where username='{user}';"
             case "Indicators":
