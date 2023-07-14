@@ -287,6 +287,15 @@
              <div class="grid-collapse-history">
                  <div class="collapse" id="change_plan">
                      <div class="well">
+                         <div class="title"><label>Current Plan</label></div>
+                         <p>Plan: <span class="userPlan"></span></p>
+                         <p>Plan Activation Date: <span class="planActiveDate"></span></p>
+                         <p>Plan Expiration Date: <span class="planExpDate"></span></p>
+                         <p>Plan Monthly Subscription Fee: <span class="planFee"></span></p>
+                         <p>Next Billing Date: <span class="planInvDate"></span></p>
+                         <p>Next Month Plan: <span class="nextPlan"></span></p>
+                         <br><hr><br>
+
                          <div class="title"><label>Change Plan</label></div>
                     <form class="form-inline">
                         <div class="form-group">
@@ -300,12 +309,12 @@
                               <input type="radio" name="change_package" value="PLATINUM">PLATINUM - $300 per/month
                             </label>
                         </div>
-                         <div>
-                             <br><br>
-                            <label >
-                              <input id="autoRenewal" type="checkbox" name="autoRenew" >&nbsp&nbspAuto Renew Indicator
-                            </label>
-                         </div>
+<!--                         <div>-->
+<!--                             <br><br>-->
+<!--                            <label >-->
+<!--                              <input id="autoRenewal" type="checkbox" name="autoRenew" >&nbsp&nbspAuto Renew Indicator-->
+<!--                            </label>-->
+<!--                         </div>-->
                         <br><br>
                         <button type="button" id="change_package_btn" class="btn btn-info">Update Plan</button>
                     </form>
@@ -329,9 +338,12 @@
                          <p>Timezone: <span id="userTz">{{current_user.timezone}}</span></p>
                          <hr>
                          <h3>Price Plan</h3>
-                         <p>Plan: <span id="userPlan">SILVER</span></p>
-                         <p>Renewal Date: <span id="planRenewDate">2023-08-07</span></p>
-                         <p>Auto Renewal: <span id="AutoRenew">Yes</span></p>
+                         <p>Plan: <span class="userPlan"></span></p>
+                         <p>Plan Activation Date: <span class="planActiveDate"></span></p>
+                         <p>Plan Expiration Date: <span class="planExpDate"></span></p>
+                         <p>Plan Monthly Subscription Fee: <span class="planFee"></span></p>
+                         <p>Next Billing Date: <span class="planInvDate"></span></p>
+                         <p>Next Month Plan: <span class="nextPlan"></span></p>
                          <button>Change Plan</button>
 
                     </div>
@@ -1220,6 +1232,22 @@ async function update_user_wallet(amount){
 <!--   .then(response => response.json()).then(data => {_user_wallet = data});-->
 };
 
+function last_day_of_the_month(){
+    var date = new Date();
+    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    var formattedDate = lastDay.getFullYear() + '-' + (lastDay.getMonth() + 1) + '-' + lastDay.getDate();
+    return formattedDate;
+};
+
+function days_in_current_month(){
+    const today = new Date();
+    const month = today.getMonth();
+    const year = today.getFullYear();
+// Get the number of days in the current month
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    return daysInMonth;
+}
+
 function init_strategy(){
 	//populate strategy left hand side - attirube 1
       $.each(_tech_indicators, function(index, value) {
@@ -1296,8 +1324,16 @@ async function _get_user_plan(){
           return 0
         };
         _user_plan = await response.json();
-        _user_plan[0][6] == 'Y' ? ($('#autoRenewal').prop('checked', true), _auto_renew = true) : ($('#autoRenewal').prop('checked', false), _auto_renew = false);
+<!--        _user_plan[0][6] == 'Y' ? ($('#autoRenewal').prop('checked', true), _auto_renew = true) : ($('#autoRenewal').prop('checked', false), _auto_renew = false);-->
         $(`input[type=radio][value=${_user_plan[0][1]}]`).prop('checked', true);
+        //update user plan data
+        $(".userPlan").text(_user_plan[0][1]);
+        $(".planActiveDate").text(_user_plan[0][2]);
+        $(".planExpDate").text(_user_plan[0][3]);
+        $(".planInvDate").text(last_day_of_the_month());
+        $(".planFee").text('$'+_plans[_user_plan[0][1]][4]);
+        $(".nextPlan").text(_user_plan[0][5]);
+
         console.log(_user_plan);
     }catch(e){
        dialog("Error","Error getting user plan "+e,BootstrapDialog.TYPE_INFO);
@@ -2438,25 +2474,24 @@ $("#change_package_btn").on('click' ,async function(){
         let now = new Date();
         let new_package = $('input[name="change_package"]:checked').val();// == _user_plan[0][1];
         let renewal_ind;
-        $('input[name="autoRenew"]').is(':checked')? renewal_ind = 'Y': renewal_ind = 'N';
-        if (new_package == _user_plan[0][1] && renewal_ind == _auto_renew){
+<!--        $('input[name="autoRenew"]').is(':checked')? renewal_ind = 'Y': renewal_ind = 'N';-->
+        if (new_package == _user_plan[0][1]){
             dialog("Change Package","You have not made any changes to your current package. ",BootstrapDialog.TYPE_INFO);
         }
         else {    // the user change package or/and change renewal indicator
             //1. check if upgrade
             if (_plans[new_package][5] > _plans[_user_plan[0][1]][5]){
-                alert("Upgrade");
                 //a. calculate prorate
                 let start_date = new Date(_user_plan[0][2]);
-                let exp_date = new Date(_user_plan[0][3]);
+                let exp_date = new Date(last_day_of_the_month());
                 let today = new Date();
-                let diff_date_prorate = diffDate(today,exp_date);
-                let diff_full_month = diffDate(start_date,exp_date);
-                let prorate = diff_date_prorate / diff_full_month ;
+                let diff_days_prorate = diffDate(today,exp_date);
+<!--                let diff_full_month = diffDate(start_date,exp_date);-->
+                let prorate = diff_days_prorate / days_in_current_month() ;
                 let credit_charge = -(_plans[_user_plan[0][1]][4] * prorate).toFixed(2)
-                let debit_charge = _plans[new_package][4];
+                let debit_charge = (_plans[new_package][4] * prorate).toFixed(2);
                 let charge = debit_charge + credit_charge;
-                alert(`prorate factor : ${prorate}, credit: ${credit_charge}, debit: ${debit_charge}, total: ${charge}`);
+                alert(`Upgrade:\n days in the month: ${days_in_current_month()},\n days left till eom: ${diff_days_prorate.toFixed(2)},\n prorate factor : ${prorate.toFixed(2)},\n credit: ${credit_charge},\n debit: ${debit_charge},\n total: ${Number(charge)}`);
 
                 //b. paymnet process
                 if (do_payment(charge) == true) {
@@ -2465,31 +2500,42 @@ $("#change_package_btn").on('click' ,async function(){
                 //c. update immediately
                     // expire old plan
                     let query = "Close_Plan";
-                    let plan_comment = `Upgrade from ${_user_plan[0][1]} to ${new_package}`;
+                    let plan_comment = `Upgrade from ${_user_plan[0][1]} to ${new_package} - Closing current plan`;
                     let  url = _URL+'/get_query?query='+query+'&user='+user+'&plan='+new_package+'&plan_comment='+plan_comment;
                     await fetch(url);
                     // insert new plan
                     query = "New_Plan";
                     plan_comment = `Upgrade from ${_user_plan[0][1]} to ${new_package}`;
-                    now.setMonth(now.getMonth() + 1);
-                    let f_exp_date = now.toISOString().substring(0, 19);
-                    url = _URL+'/get_query?query='+query+'&user='+user+'&plan='+new_package+'&plan_exp_date='+f_exp_date+'&plan_renew_ind='+renewal_ind+'&plan_comment='+plan_comment;
+<!--                    now.setMonth(now.getMonth() + 1);-->
+<!--                    let f_exp_date = now.toISOString().substring(0, 19);-->
+                    url = _URL+'/get_query?query='+query+'&user='+user+'&plan='+new_package+'&plan_comment='+plan_comment;
                     await fetch(url);
 
                     // update billing
 
                     // reset user plan
                     _get_user_plan();
+                    dialog("Change Package","Upgrade completed successfully. The new package is active.",BootstrapDialog.TYPE_INFO);
 
                 }
             else if (_plans[new_package][5] < _plans[_user_plan[0][1]][5]){
                 alert("downgrade");
                 //a. Update next plan only
+                query = "Downgrade_Plan";
+                    let f_exp_date = last_day_of_the_month() + ' 23:59:59';
+                    alert('expiring package at: '+f_exp_date);
+                plan_comment = `Downgrade from ${_user_plan[0][1]} to ${new_package} - Downgrade request`;
+                url = _URL+'/get_query?query='+query+'&user='+user+'&plan='+new_package+'&end_date='+f_exp_date+'&plan_comment='+plan_comment;
+                 await fetch(url);
+                // update billing
+
+                // reset user plan
+                _get_user_plan();
+                dialog("Change Package","Downgrade completed successfully. The new package will be effective from next month.",BootstrapDialog.TYPE_INFO);
                 }
             else {
-                alert("Only change to auto renewal indicator");
+                alert("Unheld scenario");
             }
-
         }
     } catch(e){
             dialog("Error","Error in change package: "+e,BootstrapDialog.TYPE_INFO);
